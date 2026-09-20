@@ -13,8 +13,8 @@ the goal and is not reported as a finding.
 
 | Stage | Scope | State |
 |---|---|---|
-| 1 | Data pipeline, corporate actions, validation, point-in-time universe, leakage tooling | **done** (this commit) |
-| 2 | Statistical toolkit: ADF, Engle–Granger, Johansen, OU, half-life | not started |
+| 1 | Data pipeline, corporate actions, validation, point-in-time universe, leakage tooling | **done** |
+| 2 | Statistical toolkit: ADF, Engle–Granger, Johansen, OU, half-life | **done** (this commit) |
 | 3 | Pair discovery on training data only | not started |
 | 4 | Pair strategy: hedge ratios, spread, z-score, entry/exit/stop | not started |
 | 5 | Walk-forward backtest, train/validation/holdout | not started |
@@ -45,12 +45,14 @@ statarb/
     storage/           Parquet files + DuckDB catalog
     leakage.py         reusable look-ahead detectors
     pipeline.py        the facade research code reads through
+  selection/           adf, cointegration (Engle-Granger), johansen, hurst (exploratory only)
+  models/              ou (OU fit, half-life, simulation), rolling (causal rolling statistics)
 tests/                 pytest + hypothesis
-experiments/           experiment registry (Stage 8+)
+experiments/           runnable experiments and their JSON results (registry: Stage 8+)
 ```
 
-Later stages add `selection/`, `models/`, `signals/`, `portfolio/`, `backtest/`, `statistics/`,
-`research/` beside `data/` inside `statarb/`.
+Later stages add `signals/`, `portfolio/`, `backtest/`, `statistics/`, `research/` beside `data/`
+inside `statarb/`.
 
 ## 1. Data
 
@@ -279,7 +281,103 @@ uv venv --python 3.13 .venv && uv pip install --python .venv/bin/python -e ".[de
 .venv/bin/python -m pytest
 ```
 
-## 4. Statistical-arbitrage methodology *(Stages 2–9: specification only)*
+## 4. Statistical toolkit (Stage 2)
+
+`statarb/selection/{adf,cointegration,johansen,hurst}.py`, `statarb/models/{ou,rolling}.py`. Everything is
+implemented from first principles and validated against a reference implementation or an analytically
+known case; the MacKinnon and Johansen critical-value tables are taken from statsmodels **as data** and
+are never re-derived. Each test function documents its null hypothesis, assumptions and interpretation in
+its module docstring, and every call is *one hypothesis test* to be counted when selection is corrected
+(Stage 8; `engle_granger_both` reports `n_tests = 2`).
+
+### 4.1 What was validated, against what
+
+| Component | Reference | Agreement |
+|---|---|---|
+| ADF (`n`, `c`, `ct`, `ctt` × AIC/BIC/fixed lags) | `statsmodels.adfuller` | statistic ≤ 1e-9, lag and nobs identical |
+| Engle–Granger, 1 and 2 regressors | `statsmodels.coint` | statistic ≤ 1e-9, p-value and critical values identical |
+| Johansen, `det_order` ∈ {−1, 0, 1}, `k_ar_diff` ∈ {1, 2, 3}, ranks 0–2 | `statsmodels.coint_johansen` | eigenvalues, trace/max-eig statistics, critical values, eigenvectors ≤ 1e-8 |
+| Johansen rank decisions | `statsmodels` `select_coint_rank` | identical |
+| Johansen, every `k_ar_diff` incl. 0 | independent brute-force reduced-rank regression | ≤ 1e-7 (see the `k = 0` note in the module) |
+| OU / half-life | exact recovery on a noiseless path; Monte-Carlo consistency; AR(1) coverage | analytic |
+| Rolling statistics | brute-force windows; the Stage-1 look-ahead detectors | exact / pass |
+| Hurst | fractional Brownian motion with known H | ±0.06 |
+
+Beyond agreement, the tests check *statistical behaviour*: size and power by Monte Carlo (ADF: 5 % nominal,
+600 draws; Engle–Granger 500 draws; Johansen 400 draws), rank recovery on simulated VECMs, and failure
+modes (a level shift read as a unit root). **301 tests in total.** A mutation sweep of the new code injected
+20 deliberate bugs (wrong degrees of freedom, `y_t` instead of `y_{t-1}`, plain instead of cointegration
+critical values, a centred rolling window, …); 19 are caught. It exposed one test gap (a zero-variance
+z-score) which is now covered; the one survivor is an equivalent mutant (exact information-criterion
+ties do not occur with continuous data).
+
+### 4.2 Findings that change how the tools may be used
+
+1. **Engle–Granger needs its own critical values.** On 400 pairs of independent random walks (T = 250)
+   the ordinary ADF table applied to the residual rejects **55.2 %** of the time; the cointegration
+   tables reject **5.5 %**. OLS chooses β to make the residual look stationary, so the naive test is the
+   spurious-regression trap. (`test_ordinary_adf_critical_values_on_the_residual_over_reject_badly`)
+2. **OLS half-lives are biased fast.** With a true half-life of 23 days and n = 100, the median OLS
+   κ is **0.068 (a ~10-day half-life, 2.3× too fast)**; Kendall's correction gives 0.041. Half-life
+   intervals are asymmetric and can be unbounded (a `b` interval reaching 1). Spread selection on a
+   short-sample half-life therefore favours spuriously fast reversion.
+3. **`det_order` is an assumption about drift.** `0` (constant) uses critical values that assume the
+   data drift. On driftless rank-2 data it recovers the right rank 69 % of the time against 95 % for
+   `det_order=-1`. Log prices drift; a demeaned spread does not. The rank must be reported with its
+   `det_order`.
+4. **Johansen's rank recovery is imperfect even when the model is right:** on simulated VECMs (T = 600)
+   the true rank is recovered 96–99 % (rank 0), 97–98 % (rank 1) and 89 % (rank 2) of the time, and
+   the test over-rejects a true rank 0 at 8.1 % (nominal 5 %; three series, T = 250, `k_ar_diff = 0`,
+   1000 draws).
+5. statsmodels' `coint_johansen` pairs `Δy_t` with `y_t` (not `y_{t-1}`) when `k_ar_diff = 0`. This
+   implementation follows Johansen's VAR(1) form and differs from it there (and only there); neither
+   was shown to have the better size.
+
+### 4.3 Real-data calibration of the Engle–Granger p-value
+
+`experiments/stage2_null_size.py` (seed 20260920, data fingerprint `07d3aa14cdacd9c9`, results in
+`experiments/results/stage2_null_size.json`). Null with **real marginals**: each stock's log-price path is
+paired with a *different* stock's returns, circularly shifted by a random offset and re-accumulated. Fat tails
+and volatility clustering are preserved; shared shocks are destroyed; the pair is independent by
+construction, so P(p < 0.05) should be 5 %. Windows use only tickers with full data (survivors), which is
+appropriate for a size check but says nothing about the index as it was. This is a size diagnostic: no pair
+is ranked or reported.
+
+| Window | Days | Pairs | Null @5 % | Null @1 % | Null @5 %, `ct` tables | Best-of-2 dirs @5 % | Ctrl: both Gaussian @5 % | Ctrl: real y, Gaussian x @5 % | Unshifted real pairs @5 % |
+|---|---|---|---|---|---|---|---|---|---|
+| 2011–2015 | 252 | 768 | 9.1% | 1.6% | 8.6% | 14.2% | 5.5% | 9.4% | 9.9% |
+| 2011–2015 | 1250 | 768 | 7.3% | 2.0% | 11.7% | 10.5% | 4.8% | 6.5% | 9.0% |
+| 2016–2020 | 252 | 843 | 2.1% | 0.4% | 1.9% | 5.1% | 5.0% | 4.9% | 4.6% |
+| 2016–2020 | 1250 | 843 | 14.5% | 4.3% | 13.9% | 15.8% | 4.2% | 10.0% | 9.0% |
+| 2021–2025 | 252 | 897 | 7.9% | 1.9% | 7.8% | 12.3% | 5.8% | 8.2% | 8.1% |
+| 2021–2025 | 1250 | 897 | 10.6% | 3.0% | 8.9% | 13.9% | 4.0% | 10.8% | 10.1% |
+
+* **The nominal 5 % is not the false-positive rate on real prices.** For five-year windows the null
+  rate is 7.3–14.5 % (all six cells above 5 %; at a nominal 1 % it is 1.7–4.3 %, i.e. 2–4× nominal);
+  for one-year windows it ranges from 1.9 % to 9.1 %. That spread across windows is itself the message:
+  the miscalibration is unstable.
+* **Testing both regression directions and keeping the better one raises it further** (3.8–21.5 %), which
+  is why `engle_granger_both` counts two tests.
+* **The Gaussian control sits at 4.0–5.8 %**, so the harness and the implementation are sound; the
+  distortion comes from the data. With only *one* real leg (real y, Gaussian x) the five-year rate is
+  already 6.5–10.8 %, so the real-return dynamics of a single stock are enough to distort the test.
+* **A hypothesis I held was refuted.** I expected drift in log prices to be the cause (a drifting
+  regressor detrends the residual, so the constant-only tables over-reject) and the `ct` tables to fix
+  it. They do not (5-year: 11.7 %, 13.9 %, 8.9 %). The cause is therefore unexplained here; the leading
+  candidates are volatility clustering, fat tails and return autocorrelation, none isolated yet.
+* Unshifted real pairs reject at 4.6–10.1 % (`c` tables): the same order as the *null*, so an "apparently
+  significant" rate of about 5–10 % among random stocks is, to a first approximation, what miscalibration
+  alone produces; it is not evidence of hundreds of cointegrated pairs.
+* The Wilson intervals stored in the JSON assume independent pairs. They are not (every y carries the
+  market factor; stocks recur across pairings), so they are too narrow; treat the between-window range as
+  the uncertainty. Reported rates also move by 1–2 pp with the random pairing (they did when the controls
+  shared the random stream); the final run keeps the controls on a separate stream.
+
+**Consequence for later stages.** Nominal p-values are a ranking, not error rates. Stage 3 will calibrate
+the screen against an empirical null built with this same circular-shift construction, and Stage 8's
+multiple-testing corrections (which assume valid p-values) will be applied to calibrated ones.
+
+## 5. Statistical-arbitrage methodology *(Stages 3–9: specification only)*
 
 Hypotheses to be tested, each with its data, method, assumptions, uncertainty, failure cases and
 limitations recorded when run:
@@ -296,7 +394,7 @@ limitations recorded when run:
 The train / validation / final-holdout split, the walk-forward scheme, the cost model, the
 multiple-testing framework and the experiment registry will be documented here as each is built.
 
-## 5. Limitations of Stage 1
+## 6. Limitations so far
 
 * The reconstructed S&P 500 membership is trustworthy only from 2011-01-01 (§2.1); earlier dates are
   not used for any claim, and even later dates inherit the change log's residual gaps.
@@ -309,3 +407,8 @@ multiple-testing framework and the experiment registry will be documented here a
 * Retroactive vendor restatements of *dividend* history that do not touch prices are invisible to the
   overlap check; the 90-day full refresh bounds, but does not eliminate, that exposure.
 * Yahoo is an unofficial source and can change or rate-limit without notice.
+* (Stage 2) The Engle–Granger p-values are not calibrated on real prices (§4.3) and the cause is not
+  isolated; the OU half-life is biased fast in short samples (§4.2); Johansen's size is distorted in small
+  samples and depends on `det_order`; ADF/Engle–Granger assume homoskedastic errors and read a structural
+  break as a unit root. None of these are corrected for yet beyond what §4 states.
+* (Stage 2) Critical-value tables come from statsmodels; a defect there would propagate.

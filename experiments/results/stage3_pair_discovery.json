@@ -1,0 +1,130 @@
+{
+  "experiment": "stage3_pair_discovery",
+  "seed": 20260920,
+  "git_commit": "925cd72",
+  "data_fingerprint": "07d3aa14cdacd9c9",
+  "train_window": [
+    "2011-01-03",
+    "2015-12-31"
+  ],
+  "oos_window": [
+    "2016-01-04",
+    "2016-12-30"
+  ],
+  "screen_config": {
+    "candidate_method": "correlation",
+    "k_neighbours": 5,
+    "same_sector": true,
+    "cluster_target_size": 8,
+    "trend": "c",
+    "maxlag": 10,
+    "autolag": "aic",
+    "n_null_panels": 10,
+    "seed": 20260920,
+    "alpha": 0.05,
+    "half_life_min": 5.0,
+    "half_life_max": 60.0,
+    "require_positive_beta": true,
+    "max_pairs": 20,
+    "min_coverage": 1.0,
+    "min_median_dollar_volume": 5000000.0,
+    "max_zero_volume_share": 0.01,
+    "max_dividend_yield": 0.1
+  },
+  "funnel": {
+    "members_on_train_end": 506,
+    "n_excluded": 190,
+    "exclusion_reasons": {
+      "not in store": 86,
+      "no sector classification": 57,
+      "no bars in the training window": 20,
+      "coverage # < #": 20,
+      "non-ordinary distribution (# of prior close)": 6,
+      "price history not verified as this company's (symbol reuse / no prices)": 1
+    },
+    "n_eligible": 316,
+    "n_family": 5405,
+    "n_candidates": 1259,
+    "n_tests": 2518,
+    "n_failed": 0,
+    "naive_discoveries_at_5pct": 144,
+    "discoveries": {
+      "0.001": 1,
+      "0.005": 2,
+      "0.01": 5,
+      "0.05": 43
+    },
+    "expected_false": {
+      "0.001": 1.2590000000000001,
+      "0.005": 6.295,
+      "0.01": 12.59,
+      "0.05": 62.95
+    },
+    "estimated_fdr": {
+      "0.001": 1.0,
+      "0.005": 1.0,
+      "0.01": 1.0,
+      "0.05": 1.0
+    },
+    "n_selected": 20,
+    "n_null_candidates": [
+      960,
+      967,
+      965,
+      957,
+      980,
+      979,
+      951,
+      971,
+      957,
+      957
+    ]
+  },
+  "oos_by_group": {
+    "selected": {
+      "n": 20,
+      "share_oos_adf_rejects_5pct": 0.0,
+      "ci95_adf": [
+        -1.3877787807814457e-17,
+        0.16113012549493322
+      ],
+      "share_reverting_slope": 1.0,
+      "median_oos_sd_ratio": 1.2768706901629259,
+      "share_sd_ratio_below_1p5": 0.8,
+      "median_oos_mean_shift_sd": 1.3482077508759487,
+      "median_oos_half_life": 283.2498888243177
+    },
+    "significant_not_selected": {
+      "n": 23,
+      "share_oos_adf_rejects_5pct": 0.13043478260869565,
+      "ci95_adf": [
+        0.04537576514344702,
+        0.32127897973018194
+      ],
+      "share_reverting_slope": 1.0,
+      "median_oos_sd_ratio": 1.0501200857982687,
+      "share_sd_ratio_below_1p5": 0.782608695652174,
+      "median_oos_mean_shift_sd": 1.1412700175689734,
+      "median_oos_half_life": 77.98467816446845
+    },
+    "not_significant_baseline": {
+      "n": 1216,
+      "share_oos_adf_rejects_5pct": 0.10526315789473684,
+      "ci95_adf": [
+        0.08923921747967134,
+        0.12377335726773847
+      ],
+      "share_reverting_slope": 0.9745065789473685,
+      "median_oos_sd_ratio": 0.7090351518702238,
+      "share_sd_ratio_below_1p5": 0.959703947368421,
+      "median_oos_mean_shift_sd": 1.1512857881074454,
+      "median_oos_half_life": 45.96344813188334
+    }
+  },
+  "universe_caveats": [
+    "RECONSTRUCTED membership: walked backwards from the snapshot using a volunteer-maintained change log. The log is sparse before ~2010, so membership is only trustworthy from the 'reliable_from' date reported by the size check.",
+    "Tickers that were acquired, went bankrupt or were renamed often have no free price history; the resulting price universe is survivor-tilted. Coverage by date is reported by `survivorship_report`; the return of the missing names is unobservable.",
+    "GICS sectors are today's classification applied to all dates (look-ahead in sector labels); delisted names have sector 'Unknown'."
+  ],
+  "note": "one pre-specified window; no parameter was changed after seeing results"
+}

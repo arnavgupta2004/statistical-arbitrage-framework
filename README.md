@@ -14,8 +14,8 @@ the goal and is not reported as a finding.
 | Stage | Scope | State |
 |---|---|---|
 | 1 | Data pipeline, corporate actions, validation, point-in-time universe, leakage tooling | **done** |
-| 2 | Statistical toolkit: ADF, Engle–Granger, Johansen, OU, half-life | **done** (this commit) |
-| 3 | Pair discovery on training data only | not started |
+| 2 | Statistical toolkit: ADF, Engle–Granger, Johansen, OU, half-life | **done** |
+| 3 | Pair discovery on training data only | **done** (this commit) |
 | 4 | Pair strategy: hedge ratios, spread, z-score, entry/exit/stop | not started |
 | 5 | Walk-forward backtest, train/validation/holdout | not started |
 | 6 | Transaction costs: spread, commissions, impact | not started |
@@ -45,7 +45,8 @@ statarb/
     storage/           Parquet files + DuckDB catalog
     leakage.py         reusable look-ahead detectors
     pipeline.py        the facade research code reads through
-  selection/           adf, cointegration (Engle-Granger), johansen, hurst (exploratory only)
+  selection/           adf, cointegration (Engle-Granger), johansen, hurst (exploratory only),
+                       correlation, clustering, screening (pair discovery + empirical null)
   models/              ou (OU fit, half-life, simulation), rolling (causal rolling statistics)
 tests/                 pytest + hypothesis
 experiments/           runnable experiments and their JSON results (registry: Stage 8+)
@@ -377,7 +378,149 @@ is ranked or reported.
 the screen against an empirical null built with this same circular-shift construction, and Stage 8's
 multiple-testing corrections (which assume valid p-values) will be applied to calibrated ones.
 
-## 5. Statistical-arbitrage methodology *(Stages 3–9: specification only)*
+## 5. Pair discovery (Stage 3)
+
+`statarb/selection/{correlation,clustering,screening}.py`, experiments `stage3_pair_discovery.py` and
+`stage3_null_diagnostics.py`. Every step of a screen sees the training window only.
+
+### 5.1 The funnel
+
+1. **Universe**: point-in-time S&P 500 members on `train_end`, identity-verified (§2.3).
+2. **Eligibility**, each exclusion recorded with its reason: price history present and verified; full
+   coverage of the window (no imputation); median dollar volume ≥ $5 M; < 1 % zero-volume days; no
+   non-ordinary distribution (> 10 % of price, §1.8) *inside the window*; a sector label.
+3. **Candidates**: each stock's `k = 5` best-correlated peers inside its sector (or inside a
+   hierarchical cluster). *Rank-based, never a correlation threshold*: the null below could never meet
+   a threshold, so the calibration would be empty.
+4. **Test**: Engle–Granger in both directions on dividend-adjusted log prices; statistic
+   `T = min(stat_YX, stat_XY)`, which makes the direction choice part of the statistic instead of a
+   hidden second test.
+5. **Diagnostics** for every candidate: bias-corrected OU half-life and interval, spread volatility,
+   Hurst (exploratory only), hedge ratio in each half of the window, ADF p-value in each half.
+6. **Empirical null.** Stage 2 showed nominal p-values are not error rates on real prices, so the whole
+   pipeline (correlation neighbours → both-direction test) is re-run on 10 panels in which every
+   stock's returns are circularly shifted by its own random offset: fat tails, volatility clustering and
+   autocorrelation are kept, all cross-stock dependence is destroyed, and the same *selection* is
+   applied. A candidate's calibrated p-value is the share of null candidates at least as extreme.
+   `estimated_fdr(α) = α · n_candidates / n_discoveries(α)` is the permutation estimate of the false-
+   discovery proportion.
+7. **Selection rule, fixed a priori and not tuned**: calibrated p ≤ 0.05, bias-corrected half-life
+   between 5 and 60 trading days (faster is untradeable, slower ties up capital), hedge ratio > 0, at
+   most 20 pairs, ranked by an economic proxy `κ · σ_stationary` (bps of log price per day). The counts
+   Stage 8's corrections need (`n_family` = all same-sector pairs, `n_candidates`, `n_tests`) are
+   recorded.
+
+### 5.2 Validation
+
+Tests (331 in total). The shifted panels preserve each stock's return distribution exactly and destroy
+cross-sectional correlation (mean |ρ| 0.22 → below 0.06, asserted). On a **factor-null panel** (a market
+factor plus idiosyncratic random walks: no cointegration exists, yet candidates are chosen for high
+correlation and the better direction is kept) the measured rejection at a nominal 5 % is **5.2 %** with
+the calibrated p-value against **10.0 %** with the naive best-of-two MacKinnon p-value (6 panels, 658
+candidates). Planted cointegrated pairs are recovered (the tests assert a hedge ratio within 5 % and a
+half-life within 20 % of the truth, averaged over seeds), and a planted pair that reverts in under a day
+is significant but correctly rejected by the half-life rule. **Three look-ahead tests** run the screen on
+a store where every price after `train_end` is scrambled, on a store that ends at `train_end`, and on a
+store with a later stock split: the results are identical (the split case to 1e-9). A mutation sweep of
+the new code injected 21 bugs (an unshifted null, a missing `+1` in the empirical p-value, panels read
+past `train_end`, membership taken at the wrong date, …) and **all 21 are caught**; three initial
+survivors led to stronger tests, and the tests found a real pandas-3 bug (a read-only array in the
+clustering code).
+
+### 5.3 Result: one pre-specified window, 2011-01-03 → 2015-12-31
+
+Written down before running: the window, the default configuration, the seed (`20260920`) and three
+hypotheses; nothing was changed afterwards, and no second window was run. The data fingerprint is
+`07d3aa14cdacd9c9`.
+
+**Funnel.** 506 index members on 2015-12-31 → 190 excluded
+(37.5%) → **316 eligible**. Exclusions: 86 members
+have no Yahoo price history, 57 have no GICS sector (they are not in today's constituent list), 20 have
+no bars in the window, 20 fail coverage, 6 have a non-ordinary distribution and 1 fails the identity
+check. **At least 143 of 506 true members (28 %) are lost to survivorship**
+(no history or no sector: by inspection overwhelmingly companies that later left the index, not
+verified name by name) before any statistical step.
+Of 5,405 same-sector pairs, 1,259 were tested (2,518 regressions).
+
+**H1 — does the screen find more than the null expects? No.**
+
+| Level α | Naive (best-of-two MacKinnon p < α) | Calibrated discoveries | Expected under the null (α · 1,259) | Estimated FDR |
+|---|---|---|---|---|
+| 0.05 | 144 (11.4%) | 43 (3.4%) | 63.0 | 1.00 |
+| 0.01 | – | 5 | 12.6 | 1.00 |
+| 0.005 | – | 2 | 6.3 | 1.00 |
+| 0.001 | – | 1 | 1.3 | 1.00 |
+
+At every level the number of calibrated discoveries is *below* what pure chance produces under the same
+selection: the estimated false-discovery proportion is capped at 1, i.e. **the screen cannot distinguish
+its discoveries from noise**. The naive best-of-two p-value would have reported 144
+"cointegrated pairs". This is the multiple-testing and calibration problem, seen directly.
+
+*Post-hoc check (added after seeing this, explanatory only).* Real candidates are far more correlated than
+null ones (median ρ 0.60 vs 0.04), so I
+checked whether the null is simply the wrong benchmark. It is not: the two distributions of `T` agree
+through the bulk and differ only in a slightly *thinner* lower tail for real pairs, and the calibrated rate
+shows no trend with correlation (terciles 3.3% / 2.6% / 4.3%).
+
+| Quantile of `T` | Real candidates | Shifted-null candidates |
+|---|---|---|
+| 1% | -4.23 | -4.45 |
+| 5% | -3.65 | -3.82 |
+| 25% | -2.97 | -2.99 |
+| 50% | -2.49 | -2.47 |
+| 75% | -1.99 | -1.98 |
+| 95% | -1.31 | -1.35 |
+
+**H2 and H3 — do the selected pairs stay mean-reverting out of sample?** The next 252 sessions (2016) are
+scored with the *training* hedge ratio and mean (no re-fitting; this is a descriptive look, not a
+backtest; Stage 5's walk-forward supersedes it):
+
+| Group | n | OOS ADF rejects at 5 % | median OOS sd / training sd | share with ratio < 1.5 | median OOS half-life (days) |
+|---|---|---|---|---|---|
+| **Selected** | 20 | **0%** (95 % CI 0–16%) | 1.28 | 80% | 283 |
+| Significant, not selected | 23 | 13% | 1.05 | 78% | 78 |
+| Baseline: non-significant candidates | 1,216 | 10.5% | 0.71 | 96% | 46 |
+
+* **H2 is refuted.** None of the 20 selected spreads rejects a unit root out of sample, against 10.5 % of
+  the baseline. With n = 20 the interval (0–16 %) cannot exclude the baseline rate, so this is *no evidence
+  of persistence*, not proof of its absence. The baseline's own 10.5 % (at a nominal 5 %) is Stage 2's
+  miscalibration again.
+* Their in-sample half-lives (median 29 days, by construction 5–60) do not persist: the median out-of-
+  sample half-life is 283 days over the 14 pairs that revert at all, and **6 of 20 show no mean reversion
+  whatsoever** (bias-corrected AR(1) coefficient ≥ 1).
+* **H3 holds only loosely**: median out-of-sample spread volatility is 1.28× the training figure (80 %
+  below 1.5×), but the median mean-shift is 1.35 training standard deviations, 10 of 20 hedge ratios
+  moved by > 20 % between the two halves of the *training* window, and 4 spreads widened by more than 1.5×.
+
+Representative failures (the full list is `experiments/results/stage3_selected_pairs_2011_2015.csv`;
+they are shown because they are the typical outcome, not the exception):
+
+| Rank | Pair (Y/X) | β | Calibrated p | Train half-life | OOS half-life | OOS sd ratio | OOS mean shift (sd) |
+|---|---|---|---|---|---|---|---|
+| 1 | CRM/ADBE | 0.73 | 0.015 | 26 | 95 | 0.90 | 0.54 |
+| 4 | AMAT/MU | 0.45 | 0.015 | 30 | 1,239 | 2.03 | 7.59 |
+| 10 | MCHP/TEL | 0.59 | 0.005 | 23 | none | 2.50 | 4.02 |
+| 11 | DHR/HSIC | 0.80 | 0.001 | 14 | none | 7.45 | 5.38 |
+| 14 | EL/KMB | 0.77 | 0.020 | 32 | 31 | 0.55 | 0.01 |
+| 15 | PH/PCAR | 0.87 | 0.002 | 24 | 212 | 0.96 | 1.21 |
+
+AMAT/MU's spread is twice as wide with a 7.6σ mean shift; DHR/HSIC's is 7.4× wider, which coincides with
+DHR's July 2016 spin-off, the very `LARGE_DIVIDEND` event of §1.8. It sat *after* the training window, so
+no training-time filter could have removed it: a live strategy needs stop-losses and event masks (Stage 4).
+
+### 5.4 What this does and does not show
+
+* One window, one configuration, 20 selected pairs: low power. It is **no evidence for** persistent
+  cointegration in this sample; it is not proof that no cointegrated pair exists.
+* The universe is survivor-tilted (28 % of true members lost up front); the direction of the bias for
+  cointegration is not obvious, but it is not zero.
+* Sectors are today's GICS labels (look-ahead in classification).
+* "Estimated FDR = 1" means the discoveries cannot be told apart from the null, not that all are false.
+  Stage 8 applies the formal corrections to these same counts.
+* Half-life bounds, `k`, `α` and the 20-pair cap are researcher degrees of freedom; they were fixed before
+  the run and any change now counts as a new trial (Stage 9's sensitivity analysis must be registered).
+
+## 6. Statistical-arbitrage methodology *(Stages 4–9: specification only)*
 
 Hypotheses to be tested, each with its data, method, assumptions, uncertainty, failure cases and
 limitations recorded when run:
@@ -394,7 +537,7 @@ limitations recorded when run:
 The train / validation / final-holdout split, the walk-forward scheme, the cost model, the
 multiple-testing framework and the experiment registry will be documented here as each is built.
 
-## 6. Limitations so far
+## 7. Limitations so far
 
 * The reconstructed S&P 500 membership is trustworthy only from 2011-01-01 (§2.1); earlier dates are
   not used for any claim, and even later dates inherit the change log's residual gaps.
@@ -412,3 +555,6 @@ multiple-testing framework and the experiment registry will be documented here a
   samples and depends on `det_order`; ADF/Engle–Granger assume homoskedastic errors and read a structural
   break as a unit root. None of these are corrected for yet beyond what §4 states.
 * (Stage 2) Critical-value tables come from statsmodels; a defect there would propagate.
+* (Stage 3) The screen was run on one window with one configuration; the empirical null uses independent
+  circular shifts (a small share of pairs keep aligned volatility regimes) and has no factor structure
+  (checked only on synthetic data); candidate generation depends on `k` and on today's sector labels.

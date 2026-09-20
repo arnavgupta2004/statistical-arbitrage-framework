@@ -1,0 +1,17 @@
+# environments / caches
+.venv/
+__pycache__/
+*.egg-info/
+.pytest_cache/
+.ruff_cache/
+.hypothesis/
+.ipynb_checkpoints/
+.DS_Store
+
+# local data store: regenerable from the pipeline, large, and vendor-licensed
+var/
+*.duckdb
+*.duckdb.wal
+
+# secrets
+.env

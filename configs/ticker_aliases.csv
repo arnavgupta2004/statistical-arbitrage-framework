@@ -1,0 +1,10 @@
+# Renamed tickers: the whole history of `old` is mapped onto `new` (Yahoo serves the full history under the new symbol).
+# Deliberately short: only renames verified by hand. Unresolved renames appear as reconstruction anomalies and as
+# missing-price coverage in the survivorship report; add rows here to fix them, never guess.
+old,new
+FB,META
+ANTM,ELV
+CTL,LUMN
+UTX,RTX
+PCLN,BKNG
+LB,BBWI

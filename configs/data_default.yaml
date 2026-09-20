@@ -1,0 +1,32 @@
+# Default data-layer configuration.  Paths are relative to the repository root.
+store_dir: var/store
+source: yahoo
+start: 2005-01-03        # earliest date ever downloaded; membership is only reliable later (see report)
+calendar: XNYS
+
+refresh:
+  overlap_days: 10               # re-fetched on every incremental run to detect vendor restatements
+  full_refresh_after_days: 90    # force a full re-download of a ticker this old (0 = never)
+  retry_no_data_days: 30
+  request_pause_s: 0.25
+  max_retries: 3
+  restatement_tol: 1.0e-4
+  finalize_buffer_hours: 2.0
+
+universe:
+  mode: sp500_wikipedia          # static | membership_file | sp500_wikipedia
+  snapshot: latest
+  aliases_file: configs/ticker_aliases.csv
+  expected_size: 500
+  size_tolerance: 0.03
+
+validation:
+  max_abs_log_return: 0.5
+  stale_run_length: 5
+  max_gap_sessions: 5
+  split_ratio_tol: 0.03
+  adj_close_tol: 0.005
+  ohlc_tol: 1.0e-6
+
+alignment:
+  min_coverage: 0.95

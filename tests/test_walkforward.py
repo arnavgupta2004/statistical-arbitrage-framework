@@ -152,7 +152,7 @@ def test_the_run_is_deterministic(research):
 
 def test_costs_are_a_hook_that_leaves_gross_untouched(research):
     base = walk_forward([research], STRAT).daily
-    cost = walk_forward([research], STRAT, cost_fn=lambda f: 0.001 * f["trade"]).daily
+    cost = walk_forward([research], STRAT, cost_fn=lambda f, y, x: 0.001 * f["trade"]).daily
     assert cost["pnl"].sum() == pytest.approx(base["pnl"].sum())
     assert cost["cost"].sum() == pytest.approx(0.001 * base["trade"].sum())
     assert cost["net"].sum() == pytest.approx(base["pnl"].sum() - 0.001 * base["trade"].sum())

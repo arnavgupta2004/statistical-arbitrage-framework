@@ -17,8 +17,8 @@ the goal and is not reported as a finding.
 | 2 | Statistical toolkit: ADF, Engle–Granger, Johansen, OU, half-life | **done** |
 | 3 | Pair discovery on training data only | **done** |
 | 4 | Pair strategy: hedge ratios, spread, z-score, entry/exit/stop | **done** |
-| 5 | Walk-forward backtest, train/validation/holdout | **done** (this commit) |
-| 6 | Transaction costs: spread, commissions, impact | not started |
+| 5 | Walk-forward backtest, train/validation/holdout | **done** |
+| 6 | Transaction costs: spread, commissions, impact | **done** (this commit) |
 | 7 | PCA statistical arbitrage | not started |
 | 8 | Multiple-testing correction, deflated Sharpe, reality check | not started |
 | 9 | Robustness: sensitivity, regimes, structural breaks, capacity | not started |
@@ -50,7 +50,8 @@ statarb/
   models/              ou, rolling, hedge_ratio (static/expanding/rolling), kalman
   signals/             zscore (closed-form, time-varying hedge), pairs (entry/exit/stop state machine)
   portfolio/           construction (leg weights, volatility targeting)
-  backtest/            pair_pnl (single-pair accounting), walkforward (folds, engine), metrics
+  backtest/            pair_pnl (single-pair accounting), walkforward (folds, engine), metrics,
+                       costs (spread, commission, impact, borrow; Corwin-Schultz)
   research/            registry (append-only trial log)
   statistics/          bootstrap (stationary block bootstrap)
   data/holdout.py      sealed-holdout guard and ledger
@@ -837,7 +838,154 @@ no exploitable relationship exists, and it says nothing yet about validation or 
 * Missing returns (delistings) are treated as zero and counted; none occurred in these blocks.
 * The event blackout uses a one-day-ahead calendar fact; the results with it disabled were not run.
 
-## 8. Statistical-arbitrage methodology *(Stages 6–9: specification only)*
+## 8. Transaction costs (Stage 6)
+
+`statarb/backtest/costs.py`; experiment `stage6_costs.py`. Every number in this section is **net of costs
+unless it says gross**, on the same trades as Stage 5.
+
+### 8.1 The cost model, and its assumptions
+
+For each leg, on the traded dollar notional `Q` of a bar (`Q` = traded amount × `capital / slots`):
+
+| Component | Charge | Central assumption |
+|---|---|---|
+| Spread | `Q · half-spread` | tiered by trailing dollar ADV: 1.0 bp above $500 M, 1.5 bp $100–500 M, 2.5 bp $25–100 M, else 5 bp |
+| Commission and fees | `Q · (commission + regulatory)` | 0.5 bp + 0.25 bp on all traded notional |
+| Market impact | `Q · Y · σ · √(Q / ADV)` | `Y` = 0.5; ADV a trailing 20-day median, σ a trailing 20-day volatility |
+| Short borrow | short notional held × rate / 252 per day | 50 bps a year |
+
+* **Capital enters through impact.** Impact grows like `√Q` per dollar, so it is the one component that grows
+  faster than trade size; the central case is $100 M over 20 slots ($5 M per pair). Capital is an explicit,
+  swept assumption, not a hidden constant.
+* **Spread.** Free data has no historical quotes. The central model is the documented tier above (a
+  conservative-to-realistic reading of S&P 500 quoted half-spreads). A **Corwin–Schultz (2012)** estimate from
+  daily high/low is implemented and reported as a sensitivity: on simulated bars it recovers a 100 bps spread
+  (mean 101.5 bps) but is **biased upward and very noisy for tiny spreads** (a true 0 gives ≈ 5 bps on average
+  and is negative on a large share of days), which is why it is not the central case.
+* **Execution** is at the decision close (market-on-close), with no partial fills or rejections. Inputs are
+  **causal**: ADV, σ and spread use data through `t − 1`; a trade decided at the close of `t` cannot know
+  `t`'s own volume. Participation above 10 % of ADV is flagged, not cured.
+* Not modelled: hard-to-borrow names, financing of the long leg, taxes, intraday timing, queue position.
+
+### 8.2 Validation
+
+Tests (453 in total): cost components and their sum against hand-worked values (impact = `Y σ √(Q/ADV)` for
+each leg with its own ADV, σ and spread; borrow only on the *held* short leg, which is the y-leg for a short
+spread), scaling laws (impact ×2 when capital ×4, ×3 when σ ×3, ×1/2 when ADV ×4; spread and commission
+linear), monotonicity in every parameter, the participation flag, a loud error if a trade has no ADV, causal
+inputs (the leakage detectors on the market data, and a planted enormous volume *today* that must not move
+today's ADV), Corwin–Schultz against the formula by hand, the overnight adjustment (this test caught a sign
+error in my first version), and recovery on simulated bars. A mutation sweep injected 20 bugs (impact linear
+instead of square-root, ignoring σ, a same-day ADV, borrow on the wrong leg, capital not divided by slots, a
+missing regulatory fee, …); **all 20 are caught** after two tests were strengthened (a median that swapping
+one value on the same side cannot move; hand tests that all used σ = 0.02).
+
+### 8.3 Result: the research phase, net of costs (2015–2018)
+
+The fold screens were re-computed from the same seed and the gross series **reproduces Stage 5 to 2e-16**,
+so gross and net are on identical trades. Central cost case, with the Stage 5 placebo re-scored net (same
+300 draws):
+
+| Configuration | Gross Sharpe | **Net Sharpe** [95 % CI] | Gross return / yr | Net return / yr | Cost / yr | Turnover / yr | Breakeven cost multiple | Net placebo median | Screened's percentile |
+|---|---|---|---|---|---|---|---|---|---|
+| static, entry 1.5 | +0.23 | **-0.64** [-1.51, +0.33] | +1.09 % | -2.99 % | 4.08 % | 27.7 | 0.27 | -0.55 | 41% |
+| static, entry 2.0 | -0.16 | **-0.84** [-1.80, +0.11] | -0.66 % | -3.53 % | 2.87 % | 19.3 | 0 | -0.41 | 13% |
+| static, entry 2.5 | -0.32 | **-0.85** [-1.79, +0.16] | -1.16 % | -3.05 % | 1.89 % | 12.7 | 0 | -0.37 | 13% |
+| expanding, entry 1.5 | +0.30 | **-0.58** [-1.46, +0.35] | +1.41 % | -2.66 % | 4.07 % | 27.9 | 0.35 | -0.61 | 52% |
+| expanding, entry 2.0 | +0.01 | **-0.71** [-1.65, +0.24] | +0.05 % | -2.92 % | 2.97 % | 20.0 | 0.02 | -0.45 | 26% |
+| expanding, entry 2.5 | -0.30 | **-0.83** [-1.81, +0.20] | -1.06 % | -2.96 % | 1.89 % | 12.8 | 0 | -0.38 | 12% |
+| Kalman δ=1e-5, entry 1.5 | -0.25 | **-1.01** [-1.79, -0.23] | -1.12 % | -4.43 % | 3.31 % | 23.6 | 0 | -0.58 | 13% |
+| Kalman δ=1e-5, entry 2.0 | -0.11 | **-0.71** [-1.56, +0.11] | -0.43 % | -2.82 % | 2.39 % | 17.2 | 0 | -0.44 | 25% |
+| Kalman δ=1e-5, entry 2.5 | -0.18 | **-0.65** [-1.55, +0.19] | -0.59 % | -2.18 % | 1.59 % | 11.4 | 0 | -0.27 | 16% |
+
+* **H6a (costs remove the gross edge): confirmed.** Net Sharpe is below gross for all nine and negative for all
+  nine (−0.58 to −1.01). The best gross configurations give up about 4 points a year: static, entry 1.5 earns
+  1.09 % gross and pays 4.08 % in costs. The **breakeven cost multiple** (the factor on *all* costs at which
+  net return reaches zero) is 0.27 and 0.35 for the two configurations with a clearly positive gross return
+  and ~0 for the rest: costs would have to fall to about a third of the central case.
+* **H6b (turnover ranks the drag): confirmed.** Cost per year is 4.07–4.08 % at entry 1.5, about 2.9 % at 2.0
+  and 1.9 % at 2.5. An average traded unit costs 14–15 bps all-in.
+* **Where the cost comes from.** 77% of the cost is market impact, 11% spread,
+  5% commission and fees, 7% borrow (expanding, entry 1.5; the shares are within
+  three points across the grid). Participation is mostly small (median about 0, 90th percentile 0.2–0.5 % of ADV;
+  2.4% of trade-days above 5 %, 0.6% above 10 %), but the square root is concave, so small
+  participations still cost several bps each.
+* **Against the placebo, net.** Costs hit random pairs about as hard (net placebo median −0.27 to −0.61); the
+  screened portfolio's percentile is 12–52 %. The one configuration above the placebo median (expanding, entry
+  1.5, 52 %) has a net Sharpe of −0.58.
+
+Sharpe as each cost component is added (central case):
+
+| Configuration | Gross | + spread | + commission | + borrow | + impact |
+|---|---|---|---|---|---|
+| static, entry 1.5 | +0.23 | +0.13 | +0.09 | +0.03 | -0.64 |
+| static, entry 2.0 | -0.16 | -0.23 | -0.27 | -0.32 | -0.84 |
+| static, entry 2.5 | -0.32 | -0.38 | -0.41 | -0.45 | -0.85 |
+| expanding, entry 1.5 | +0.30 | +0.21 | +0.16 | +0.10 | -0.58 |
+| expanding, entry 2.0 | +0.01 | -0.07 | -0.10 | -0.16 | -0.71 |
+| expanding, entry 2.5 | -0.30 | -0.35 | -0.38 | -0.42 | -0.83 |
+| Kalman δ=1e-5, entry 1.5 | -0.25 | -0.34 | -0.38 | -0.43 | -1.01 |
+| Kalman δ=1e-5, entry 2.0 | -0.11 | -0.18 | -0.21 | -0.26 | -0.71 |
+| Kalman δ=1e-5, entry 2.5 | -0.18 | -0.23 | -0.26 | -0.30 | -0.65 |
+
+Spread, commission and borrow together remove about 0.2 Sharpe; impact takes the two best configurations from
+≈ 0 to about −0.6.
+
+### 8.4 Sensitivity: what would have to be true
+
+Net Sharpe of the two best-gross configurations across impact coefficient and capital (the other cost
+components at their central values):
+
+*static, entry 1.5*
+
+| Capital | Y = 0 | 0.25 | 0.5 | 1.0 | 2.0 |
+|---|---|---|---|---|---|
+| $10 M | +0.03 | -0.07 | -0.18 | -0.39 | -0.82 |
+| $100 M | +0.03 | -0.30 | -0.64 | -1.31 | -2.66 |
+| $1 B | +0.03 | -1.03 | -2.10 | -4.17 | -7.47 |
+
+*expanding, entry 1.5*
+
+| Capital | Y = 0 | 0.25 | 0.5 | 1.0 | 2.0 |
+|---|---|---|---|---|---|
+| $10 M | +0.10 | -0.00 | -0.11 | -0.33 | -0.76 |
+| $100 M | +0.10 | -0.24 | -0.58 | -1.27 | -2.64 |
+| $1 B | +0.10 | -0.98 | -2.07 | -4.16 | -7.50 |
+
+* **Impact is the swing factor, and it scales with size.** At Y = 0 the two configurations net +0.03 and +0.10
+  (indistinguishable from zero: the intervals are about ±1). Impact costs ≈ 0.2 Sharpe at $10 M, ≈ 0.7 at
+  $100 M and ≈ 2.1 at $1 B (Y = 0.5): at $1 B it swamps everything else (H6c: confirmed for $1 B; at $10 M
+  impact is *comparable* to the other three components together, not minor as I had guessed).
+* **Even a free spread does not rescue it.** With a zero half-spread (impact still at Y = 0.5) the best
+  configuration nets −0.48. Across the whole impact × capital grid the highest net Sharpe anywhere is +0.10
+  (expanding, entry 1.5, Y = 0); across the spread grid −0.48. Borrow of 0 / 50 / 150 bps moves the same
+  configuration only from −0.52 to −0.70.
+* No cost assumption in the swept range makes any configuration's net Sharpe distinguishable from zero on the
+  research folds, and the reasonable ones make it clearly negative.
+
+### 8.5 The pre-specified finalist rule, and its outcome
+
+Written before any net result: a configuration advances to validation only if its research-phase net Sharpe
+(central costs) is positive **and** at or above the median of its own net placebo; the finalist is the best
+qualifier; if none qualifies, nothing advances and validation is not run.
+
+**No configuration qualifies. No finalist advances; the validation phase (2019–2021) and the holdout remain
+untouched.** That is the honest outcome of this stage, not a failure to be tuned away.
+
+### 8.6 Limits of Stage 6
+
+* The cost model is a model. Spreads are a documented tier (no quotes), impact uses a coefficient of order 0.5,
+  and market-on-close execution is idealised; real costs could be lower (better execution, internal crossing)
+  or higher (crowding, adverse selection, a wider spread when the signal fires).
+* Costs were evaluated on the four research folds only; the conclusion is about *this* strategy family on
+  *these* blocks, with intervals of roughly ±1 Sharpe: it does not prove that no profitable configuration exists.
+* The cost hook was changed to `cost_fn(frame, y, x)` and the P&L frame now carries per-leg turnover; Stage 5's
+  gross results are unchanged (checked to 2e-16).
+* Costs re-score the nine registered Stage 5 configurations (logged as diagnostics, not new strategy trials, so
+  the registry's count of real-data strategy trials stays at 18); the sensitivity grid is explanatory and no
+  configuration was chosen from it.
+
+## 9. Statistical-arbitrage methodology *(Stages 7–9: specification only)*
 
 Hypotheses to be tested, each with its data, method, assumptions, uncertainty, failure cases and
 limitations recorded when run:
@@ -854,7 +1002,7 @@ limitations recorded when run:
 The train / validation / final-holdout split, the walk-forward scheme, the cost model, the
 multiple-testing framework and the experiment registry will be documented here as each is built.
 
-## 9. Limitations so far
+## 10. Limitations so far
 
 * The reconstructed S&P 500 membership is trustworthy only from 2011-01-01 (§2.1); earlier dates are
   not used for any claim, and even later dates inherit the change log's residual gaps.
@@ -872,6 +1020,8 @@ multiple-testing framework and the experiment registry will be documented here a
   samples and depends on `det_order`; ADF/Engle–Granger assume homoskedastic errors and read a structural
   break as a unit root. None of these are corrected for yet beyond what §4 states.
 * (Stage 2) Critical-value tables come from statsmodels; a defect there would propagate.
+* (Stage 6) The cost model is a documented model, not measured execution (no quotes; impact coefficient
+  and market-on-close fills are assumptions); costs were evaluated on the four research folds only.
 * (Stage 5) Four research-phase test blocks with 20-pair portfolios (Sharpe intervals of about ±1);
   everything gross; validation and the holdout have not been evaluated; the holdout is unopened.
 * (Stage 4) All P&L so far is gross of costs and frictionless, on one year of data for the real-pair look;

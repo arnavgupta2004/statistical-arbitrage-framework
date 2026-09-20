@@ -23,8 +23,10 @@ a live system can stay out: the spread is blacked out from ``event_lead`` days b
 ``blackout`` days after (default: the z-window).  This is the *only* place the engine reads a
 calendar fact one day ahead of a decision, and it is documented as such.
 
-Costs: ``cost_fn(frame) -> Series`` (Stage 6) receives a pair's frame (with ``trade``) and returns a
-per-day cost in pair-capital units; the default is no costs, i.e. every result here is *gross*.
+Costs: ``cost_fn(frame, y, x)`` receives a pair's frame (with per-leg ``trade_y`` / ``trade_x``)
+and the two tickers, and returns a per-day cost in pair-capital units -- a Series, or a DataFrame
+of components (``cost_*`` columns plus ``cost``).  The default is no costs: every result is
+*gross*.
 """
 
 from __future__ import annotations
@@ -131,6 +133,10 @@ class FoldData:
     logp: pd.DataFrame
     ret: pd.DataFrame
     event: pd.DataFrame  # bool (session x ticker): non-ordinary distribution on that ex-date
+    dollar_volume: pd.DataFrame | None = None  # close x volume, split-invariant (for cost models)
+    high: pd.DataFrame | None = None
+    low: pd.DataFrame | None = None
+    close: pd.DataFrame | None = None
 
 
 def prepare_fold(
@@ -141,7 +147,17 @@ def prepare_fold(
     tickers = sorted(set(screen.pairs["y"]) | set(screen.pairs["x"]))
     panel = pipe.panel(tickers, fold.train_start, fold.test_end)
     event = (panel.dividends / panel.close.shift(1)) > max_dividend_yield
-    return FoldData(fold, screen, np.log(panel.tr_close()), panel.ret, event.fillna(False))
+    return FoldData(
+        fold,
+        screen,
+        np.log(panel.tr_close()),
+        panel.ret,
+        event.fillna(False),
+        panel.dollar_volume,
+        panel.high,
+        panel.low,
+        panel.close,
+    )
 
 
 def blackout_mask(event: np.ndarray, lead: int, after: int) -> np.ndarray:
@@ -165,7 +181,7 @@ def run_pairs(
     fd: FoldData,
     strat: StrategyConfig,
     pairs: Iterable[tuple[str, str]],
-    cost_fn: Callable[[pd.DataFrame], pd.Series] | None = None,
+    cost_fn: Callable[[pd.DataFrame, str, str], pd.Series | pd.DataFrame] | None = None,
 ) -> list[PairRun]:
     """Trade each (y, x) with the fold's frozen hedge ratio over the test block."""
     fold, out = fd.fold, []
@@ -188,7 +204,15 @@ def run_pairs(
             on_missing_return="zero",
         )
         frame = run["returns"].loc[fold.test_start : fold.test_end].copy()
-        frame["cost"] = cost_fn(frame) if cost_fn is not None else 0.0
+        if cost_fn is None:
+            frame["cost"] = 0.0
+        else:
+            c = cost_fn(frame, y, x)
+            if isinstance(c, pd.DataFrame):
+                for col in c.columns:
+                    frame[col] = c[col].reindex(frame.index).to_numpy()
+            else:
+                frame["cost"] = np.asarray(c, dtype=float)
         frame["net"] = frame["pnl"] - frame["cost"]
         tr = run["trades"]
         tr = tr[tr["entry"] >= fold.test_start].assign(y=y, x=x)
@@ -199,6 +223,7 @@ def run_pairs(
 def aggregate(runs: list[PairRun], index: pd.DatetimeIndex, slots: int) -> pd.DataFrame:
     """Fixed-slot equal-weight portfolio: sum of pair P&L / ``slots`` (return on total capital)."""
     cols = ["pnl", "cost", "net", "trade", "gross"]
+    cols += sorted({c for r in runs for c in r.frame.columns if c.startswith("cost_")})
     total = pd.DataFrame(0.0, index=index, columns=cols)
     opened = pd.Series(0.0, index=index)
     for r in runs:
@@ -228,10 +253,17 @@ def walk_forward(
     selector: Literal["screen", "random"] = "screen",
     rng: np.random.Generator | None = None,
     alpha: float = 0.05,
-    cost_fn: Callable[[pd.DataFrame], pd.Series] | None = None,
+    cost_fn: Callable[[pd.DataFrame, str, str], pd.Series | pd.DataFrame] | None = None,
     allowed_phases: tuple[str, ...] = ("research",),
+    cost_factory: Callable[[FoldData], Callable] | None = None,
 ) -> WalkForwardResult:
-    """Trade every fold's selected pairs (placebo: random same-count non-significant pairs)."""
+    """Trade every fold's selected pairs (placebo: random same-count non-significant pairs).
+
+    Costs come from ``cost_fn`` (one function for all folds) or ``cost_factory(fold_data)`` (a cost
+    function built per fold, as a cost model needs each fold's own market data); not both.
+    """
+    if cost_fn is not None and cost_factory is not None:
+        raise ValueError("pass cost_fn or cost_factory, not both")
     bad = {fd.fold.phase for fd in fold_data} - set(allowed_phases)
     if bad:
         raise ValueError(
@@ -248,7 +280,8 @@ def walk_forward(
             k = min(len(chosen), len(pool))
             chosen = pool.iloc[rng.choice(len(pool), k, replace=False)] if k else pool.iloc[0:0]
         index = fd.logp.loc[fd.fold.test_start : fd.fold.test_end].index
-        runs = run_pairs(fd, strat, list(zip(chosen["y"], chosen["x"], strict=True)), cost_fn)
+        fold_cost = cost_factory(fd) if cost_factory is not None else cost_fn
+        runs = run_pairs(fd, strat, list(zip(chosen["y"], chosen["x"], strict=True)), fold_cost)
         daily = aggregate(runs, index, strat.slots)
         daily["fold"] = fd.fold.index
         parts.append(daily)

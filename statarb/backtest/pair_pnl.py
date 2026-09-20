@@ -71,11 +71,15 @@ def pair_returns(
         )
     ry0, rx0 = np.nan_to_num(r_y), np.nan_to_num(r_x)
     pnl = held_y * ry0 + held_x * rx0
-    trade = np.abs(w_y - held_y * (1 + ry0)) + np.abs(w_x - held_x * (1 + rx0))
+    trade_y = np.abs(w_y - held_y * (1 + ry0))
+    trade_x = np.abs(w_x - held_x * (1 + rx0))
+    trade = trade_y + trade_x
     return pd.DataFrame(
         {
             "pnl": pnl,
             "trade": trade,
+            "trade_y": trade_y,
+            "trade_x": trade_x,
             "gross": np.abs(w_y) + np.abs(w_x),
             "w_y": w_y,
             "w_x": w_x,

@@ -1,0 +1,2280 @@
+{
+  "experiment": "stage6_costs",
+  "seed": 20260922,
+  "git_commit": "9f0f7c2",
+  "data_fingerprint": "07d3aa14cdacd9c9",
+  "central_cost": {
+    "capital": 100000000.0,
+    "slots": 20,
+    "spread_model": "tiered",
+    "spread_mult": 1.0,
+    "commission_bps": 0.5,
+    "regulatory_bps": 0.25,
+    "borrow_bps_per_year": 50.0,
+    "impact_y": 0.5,
+    "adv_window": 20,
+    "vol_window": 20,
+    "cs_window": 60,
+    "max_participation": 0.1
+  },
+  "gross_reproduction_max_abs_diff": 2.220446049250313e-16,
+  "results": {
+    "static_in1.5": {
+      "config": {
+        "hedge_method": "static",
+        "hedge_window": null,
+        "kalman_delta": 1e-05,
+        "entry": 1.5,
+        "exit": 0.5,
+        "stop": 4.0,
+        "max_hold": 60,
+        "z_window": 60,
+        "target_vol": null,
+        "freeze_beta": false,
+        "slots": 20,
+        "max_dividend_yield": 0.1,
+        "event_lead": 1,
+        "event_blackout": null
+      },
+      "gross": {
+        "sharpe": 0.22915015349100143,
+        "mean_daily_bps": 0.43113609090258065,
+        "ann_return_pct": 1.0864629490745032
+      },
+      "net": {
+        "net_sharpe": -0.6372742140819032,
+        "net_ann_return_pct": -2.992248202692143,
+        "max_drawdown_pct": -14.326155644858385,
+        "turnover_per_year": 27.74795920496447,
+        "sharpe_ci95": [
+          -1.507726670954209,
+          0.3264024913227643
+        ],
+        "mean_daily_bps": -1.1874000804333902
+      },
+      "cost": {
+        "mean_daily_bps": 1.6185361713359712,
+        "ann_pct": 4.0787111517666474,
+        "share_of_gross_pct": 375.41189556818966,
+        "components_share": {
+          "cost_spread": 0.11171478484270878,
+          "cost_commission": 0.051023395943861634,
+          "cost_borrow": 0.06528861074473108,
+          "cost_impact": 0.7719732084686985
+        },
+        "bps_per_unit_traded": 14.69913921106282,
+        "breakeven_multiple": 0.2663740845202814
+      },
+      "participation": {
+        "n_trade_days": 10997,
+        "median": 0.000322332053314448,
+        "p90": 0.004846756846857318,
+        "share_above_5pct": 0.028553241793216333,
+        "share_above_10pct": 0.006638174047467491
+      },
+      "placebo_net": {
+        "sharpe_median": -0.5518510547751813,
+        "sharpe_5_95": [
+          -1.2237900211137303,
+          0.19117181767194022
+        ],
+        "screened_percentile": 0.41333333333333333
+      }
+    },
+    "static_in2": {
+      "config": {
+        "hedge_method": "static",
+        "hedge_window": null,
+        "kalman_delta": 1e-05,
+        "entry": 2.0,
+        "exit": 0.5,
+        "stop": 4.0,
+        "max_hold": 60,
+        "z_window": 60,
+        "target_vol": null,
+        "freeze_beta": false,
+        "slots": 20,
+        "max_dividend_yield": 0.1,
+        "event_lead": 1,
+        "event_blackout": null
+      },
+      "gross": {
+        "sharpe": -0.1568767577609831,
+        "mean_daily_bps": -0.26166572794483284,
+        "ann_return_pct": -0.6593976344209787
+      },
+      "net": {
+        "net_sharpe": -0.8442456489585867,
+        "net_ann_return_pct": -3.527562239183677,
+        "max_drawdown_pct": -16.224862394115558,
+        "turnover_per_year": 19.334022061809144,
+        "sharpe_ci95": [
+          -1.7977063854539697,
+          0.10628161828794051
+        ],
+        "mean_daily_bps": -1.399826285390348
+      },
+      "cost": {
+        "mean_daily_bps": 1.1381605574455151,
+        "ann_pct": 2.8681646047626983,
+        "share_of_gross_pct": null,
+        "components_share": {
+          "cost_spread": 0.1101897582615836,
+          "cost_commission": 0.05055677948984585,
+          "cost_borrow": 0.0761182309199529,
+          "cost_impact": 0.7631352313286177
+        },
+        "bps_per_unit_traded": 14.834805689128894,
+        "breakeven_multiple": 0.0
+      },
+      "participation": {
+        "n_trade_days": 8910,
+        "median": 0.0003195992616075573,
+        "p90": 0.002192633814652944,
+        "share_above_5pct": 0.023793490460157128,
+        "share_above_10pct": 0.005723905723905724
+      },
+      "placebo_net": {
+        "sharpe_median": -0.4129343728294968,
+        "sharpe_5_95": [
+          -1.015683047292543,
+          0.3828358943154601
+        ],
+        "screened_percentile": 0.13333333333333333
+      }
+    },
+    "static_in2.5": {
+      "config": {
+        "hedge_method": "static",
+        "hedge_window": null,
+        "kalman_delta": 1e-05,
+        "entry": 2.5,
+        "exit": 0.5,
+        "stop": 4.0,
+        "max_hold": 60,
+        "z_window": 60,
+        "target_vol": null,
+        "freeze_beta": false,
+        "slots": 20,
+        "max_dividend_yield": 0.1,
+        "event_lead": 1,
+        "event_blackout": null
+      },
+      "gross": {
+        "sharpe": -0.32221440978804905,
+        "mean_daily_bps": -0.46170517414169243,
+        "ann_return_pct": -1.163497038837065
+      },
+      "net": {
+        "net_sharpe": -0.8489205653473528,
+        "net_ann_return_pct": -3.051751201234023,
+        "max_drawdown_pct": -14.256243058651952,
+        "turnover_per_year": 12.668728686173083,
+        "sharpe_ci95": [
+          -1.788829012338623,
+          0.16496823437370128
+        ],
+        "mean_daily_bps": -1.2110123814420726
+      },
+      "cost": {
+        "mean_daily_bps": 0.74930720730038,
+        "ann_pct": 1.8882541623969578,
+        "share_of_gross_pct": null,
+        "components_share": {
+          "cost_spread": 0.10962621245941484,
+          "cost_commission": 0.05031921392705159,
+          "cost_borrow": 0.0829589457052248,
+          "cost_impact": 0.7570956279083089
+        },
+        "bps_per_unit_traded": 14.904843328579906,
+        "breakeven_multiple": 0.0
+      },
+      "participation": {
+        "n_trade_days": 6456,
+        "median": 0.00031685184845485156,
+        "p90": 0.0019603326707140437,
+        "share_above_5pct": 0.021065675340768277,
+        "share_above_10pct": 0.005421313506815365
+      },
+      "placebo_net": {
+        "sharpe_median": -0.37484081464860636,
+        "sharpe_5_95": [
+          -1.0015174163803438,
+          0.37062731604484084
+        ],
+        "screened_percentile": 0.12666666666666668
+      }
+    },
+    "expanding_in1.5": {
+      "config": {
+        "hedge_method": "expanding",
+        "hedge_window": null,
+        "kalman_delta": 1e-05,
+        "entry": 1.5,
+        "exit": 0.5,
+        "stop": 4.0,
+        "max_hold": 60,
+        "z_window": 60,
+        "target_vol": null,
+        "freeze_beta": false,
+        "slots": 20,
+        "max_dividend_yield": 0.1,
+        "event_lead": 1,
+        "event_blackout": null
+      },
+      "gross": {
+        "sharpe": 0.30473362849774527,
+        "mean_daily_bps": 0.5597399619761584,
+        "ann_return_pct": 1.4105447041799193
+      },
+      "net": {
+        "net_sharpe": -0.5801331986690469,
+        "net_ann_return_pct": -2.6622706976734882,
+        "max_drawdown_pct": -13.042325439285307,
+        "turnover_per_year": 27.873237172548034,
+        "sharpe_ci95": [
+          -1.4553994084472868,
+          0.3546137158053741
+        ],
+        "mean_daily_bps": -1.056456626060908
+      },
+      "cost": {
+        "mean_daily_bps": 1.6161965880370661,
+        "ann_pct": 4.072815401853407,
+        "share_of_gross_pct": 288.74061132442534,
+        "components_share": {
+          "cost_spread": 0.11262572541632199,
+          "cost_commission": 0.05132795331184878,
+          "cost_borrow": 0.06541231396456042,
+          "cost_impact": 0.7706340073072688
+        },
+        "bps_per_unit_traded": 14.611921021734304,
+        "breakeven_multiple": 0.3463316072557637
+      },
+      "participation": {
+        "n_trade_days": 11078,
+        "median": 0.0003243622910400077,
+        "p90": 0.0051846380751506185,
+        "share_above_5pct": 0.02924715652644882,
+        "share_above_10pct": 0.006409099115363784
+      },
+      "placebo_net": {
+        "sharpe_median": -0.6093095586490018,
+        "sharpe_5_95": [
+          -1.212801617650832,
+          0.13365061583092178
+        ],
+        "screened_percentile": 0.52
+      }
+    },
+    "expanding_in2": {
+      "config": {
+        "hedge_method": "expanding",
+        "hedge_window": null,
+        "kalman_delta": 1e-05,
+        "entry": 2.0,
+        "exit": 0.5,
+        "stop": 4.0,
+        "max_hold": 60,
+        "z_window": 60,
+        "target_vol": null,
+        "freeze_beta": false,
+        "slots": 20,
+        "max_dividend_yield": 0.1,
+        "event_lead": 1,
+        "event_blackout": null
+      },
+      "gross": {
+        "sharpe": 0.012825013419926501,
+        "mean_daily_bps": 0.021120315307918292,
+        "ann_return_pct": 0.0532231945759541
+      },
+      "net": {
+        "net_sharpe": -0.708184969893947,
+        "net_ann_return_pct": -2.9201674566792453,
+        "max_drawdown_pct": -14.56006364452872,
+        "turnover_per_year": 20.031899550841757,
+        "sharpe_ci95": [
+          -1.645978051970362,
+          0.2403323598414004
+        ],
+        "mean_daily_bps": -1.1587966097933513
+      },
+      "cost": {
+        "mean_daily_bps": 1.179916925101269,
+        "ann_pct": 2.973390651255198,
+        "share_of_gross_pct": 5586.6444600801115,
+        "components_share": {
+          "cost_spread": 0.11063498402503248,
+          "cost_commission": 0.050527920563646966,
+          "cost_borrow": 0.07425494619445056,
+          "cost_impact": 0.7645821492168701
+        },
+        "bps_per_unit_traded": 14.843278560321327,
+        "breakeven_multiple": 0.01789983248702496
+      },
+      "participation": {
+        "n_trade_days": 9090,
+        "median": 0.0003209569604015215,
+        "p90": 0.0022319814019605053,
+        "share_above_5pct": 0.025412541254125412,
+        "share_above_10pct": 0.00572057205720572
+      },
+      "placebo_net": {
+        "sharpe_median": -0.45093045437883816,
+        "sharpe_5_95": [
+          -1.0716970087701685,
+          0.3308453158038244
+        ],
+        "screened_percentile": 0.26
+      }
+    },
+    "expanding_in2.5": {
+      "config": {
+        "hedge_method": "expanding",
+        "hedge_window": null,
+        "kalman_delta": 1e-05,
+        "entry": 2.5,
+        "exit": 0.5,
+        "stop": 4.0,
+        "max_hold": 60,
+        "z_window": 60,
+        "target_vol": null,
+        "freeze_beta": false,
+        "slots": 20,
+        "max_dividend_yield": 0.1,
+        "event_lead": 1,
+        "event_blackout": null
+      },
+      "gross": {
+        "sharpe": -0.2958424720759331,
+        "mean_daily_bps": -0.4208482287503989,
+        "ann_return_pct": -1.0605375364510052
+      },
+      "net": {
+        "net_sharpe": -0.8281533518303018,
+        "net_ann_return_pct": -2.9553174844785306,
+        "max_drawdown_pct": -13.96564901952263,
+        "turnover_per_year": 12.750940779027795,
+        "sharpe_ci95": [
+          -1.8095718870098276,
+          0.20357011205169592
+        ],
+        "mean_daily_bps": -1.1727450335232266
+      },
+      "cost": {
+        "mean_daily_bps": 0.7518968047728282,
+        "ann_pct": 1.894779948027527,
+        "share_of_gross_pct": null,
+        "components_share": {
+          "cost_spread": 0.10970922781988618,
+          "cost_commission": 0.05047132567676885,
+          "cost_borrow": 0.08290490023867705,
+          "cost_impact": 0.7569145462646679
+        },
+        "bps_per_unit_traded": 14.859922737183286,
+        "breakeven_multiple": 0.0
+      },
+      "participation": {
+        "n_trade_days": 6538,
+        "median": 0.00031456366942310193,
+        "p90": 0.0019119176490145552,
+        "share_above_5pct": 0.020801468338941573,
+        "share_above_10pct": 0.00504741511165494
+      },
+      "placebo_net": {
+        "sharpe_median": -0.37709937368055946,
+        "sharpe_5_95": [
+          -1.060510488113482,
+          0.37015804058511687
+        ],
+        "screened_percentile": 0.11666666666666667
+      }
+    },
+    "kalman1e-05_in1.5": {
+      "config": {
+        "hedge_method": "kalman",
+        "hedge_window": null,
+        "kalman_delta": 1e-05,
+        "entry": 1.5,
+        "exit": 0.5,
+        "stop": 4.0,
+        "max_hold": 60,
+        "z_window": 60,
+        "target_vol": null,
+        "freeze_beta": false,
+        "slots": 20,
+        "max_dividend_yield": 0.1,
+        "event_lead": 1,
+        "event_blackout": null
+      },
+      "gross": {
+        "sharpe": -0.25336679615714,
+        "mean_daily_bps": -0.44499009476911683,
+        "ann_return_pct": -1.1213750388181742
+      },
+      "net": {
+        "net_sharpe": -1.0082978283016266,
+        "net_ann_return_pct": -4.434151517360275,
+        "max_drawdown_pct": -17.81535363261083,
+        "turnover_per_year": 23.64072335998807,
+        "sharpe_ci95": [
+          -1.7940181909305077,
+          -0.23325587985636267
+        ],
+        "mean_daily_bps": -1.7595839354604266
+      },
+      "cost": {
+        "mean_daily_bps": 1.31459384069131,
+        "ann_pct": 3.312776478542101,
+        "share_of_gross_pct": null,
+        "components_share": {
+          "cost_spread": 0.11789538325772757,
+          "cost_commission": 0.05352169889769918,
+          "cost_borrow": 0.06949683591102067,
+          "cost_impact": 0.7590860819335525
+        },
+        "bps_per_unit_traded": 14.01300809665146,
+        "breakeven_multiple": 0.0
+      },
+      "participation": {
+        "n_trade_days": 11171,
+        "median": 0.00030415983781488195,
+        "p90": 0.005146159990802073,
+        "share_above_5pct": 0.02345358517590189,
+        "share_above_10pct": 0.003401665025512488
+      },
+      "placebo_net": {
+        "sharpe_median": -0.5786951275649078,
+        "sharpe_5_95": [
+          -1.2602007512898503,
+          0.16015213376407256
+        ],
+        "screened_percentile": 0.12666666666666668
+      }
+    },
+    "kalman1e-05_in2": {
+      "config": {
+        "hedge_method": "kalman",
+        "hedge_window": null,
+        "kalman_delta": 1e-05,
+        "entry": 2.0,
+        "exit": 0.5,
+        "stop": 4.0,
+        "max_hold": 60,
+        "z_window": 60,
+        "target_vol": null,
+        "freeze_beta": false,
+        "slots": 20,
+        "max_dividend_yield": 0.1,
+        "event_lead": 1,
+        "event_blackout": null
+      },
+      "gross": {
+        "sharpe": -0.10823062326044136,
+        "mean_daily_bps": -0.1722784397118636,
+        "ann_return_pct": -0.43414166807389626
+      },
+      "net": {
+        "net_sharpe": -0.7073433064777266,
+        "net_ann_return_pct": -2.8213329380057797,
+        "max_drawdown_pct": -13.910299000316261,
+        "turnover_per_year": 17.1732671124269,
+        "sharpe_ci95": [
+          -1.559826756508709,
+          0.11397116530190174
+        ],
+        "mean_daily_bps": -1.1195765627007062
+      },
+      "cost": {
+        "mean_daily_bps": 0.9472981229888424,
+        "ann_pct": 2.3871912699318827,
+        "share_of_gross_pct": null,
+        "components_share": {
+          "cost_spread": 0.11807920583573649,
+          "cost_commission": 0.05395441285560539,
+          "cost_borrow": 0.07767418160835116,
+          "cost_impact": 0.750292199700307
+        },
+        "bps_per_unit_traded": 13.900623884225654,
+        "breakeven_multiple": 0.0
+      },
+      "participation": {
+        "n_trade_days": 8944,
+        "median": 0.00029911070400475066,
+        "p90": 0.0022328562319587375,
+        "share_above_5pct": 0.020684257602862254,
+        "share_above_10pct": 0.0031305903398926656
+      },
+      "placebo_net": {
+        "sharpe_median": -0.44008291453981047,
+        "sharpe_5_95": [
+          -1.1019894820068965,
+          0.2737820576184552
+        ],
+        "screened_percentile": 0.25333333333333335
+      }
+    },
+    "kalman1e-05_in2.5": {
+      "config": {
+        "hedge_method": "kalman",
+        "hedge_window": null,
+        "kalman_delta": 1e-05,
+        "entry": 2.5,
+        "exit": 0.5,
+        "stop": 4.0,
+        "max_hold": 60,
+        "z_window": 60,
+        "target_vol": null,
+        "freeze_beta": false,
+        "slots": 20,
+        "max_dividend_yield": 0.1,
+        "event_lead": 1,
+        "event_blackout": null
+      },
+      "gross": {
+        "sharpe": -0.17613670869194398,
+        "mean_daily_bps": -0.23586632071994576,
+        "ann_return_pct": -0.5943831282142633
+      },
+      "net": {
+        "net_sharpe": -0.6475816682249302,
+        "net_ann_return_pct": -2.1817459117345126,
+        "max_drawdown_pct": -11.158080141405236,
+        "turnover_per_year": 11.377409420710313,
+        "sharpe_ci95": [
+          -1.55221180505541,
+          0.18803418609397132
+        ],
+        "mean_daily_bps": -0.8657721871962352
+      },
+      "cost": {
+        "mean_daily_bps": 0.6299058664762893,
+        "ann_pct": 1.5873627835202493,
+        "share_of_gross_pct": null,
+        "components_share": {
+          "cost_spread": 0.11670115308181596,
+          "cost_commission": 0.053756187017369894,
+          "cost_borrow": 0.08605716886391436,
+          "cost_impact": 0.7434854910368996
+        },
+        "bps_per_unit_traded": 13.95188240858038,
+        "breakeven_multiple": 0.0
+      },
+      "participation": {
+        "n_trade_days": 6601,
+        "median": 0.0002883620233938447,
+        "p90": 0.0018749323894517813,
+        "share_above_5pct": 0.016815633994849265,
+        "share_above_10pct": 0.002423875170428723
+      },
+      "placebo_net": {
+        "sharpe_median": -0.2667688213750818,
+        "sharpe_5_95": [
+          -0.9811339253827547,
+          0.43746917086961445
+        ],
+        "screened_percentile": 0.16333333333333333
+      }
+    }
+  },
+  "sensitivity": {
+    "impact_y_x_capital": {
+      "static_in1.5|1e+07|0.0": {
+        "net_sharpe": 0.03303340904907915,
+        "net_ann_return_pct": 0.15640753155421555,
+        "max_drawdown_pct": -7.600715059193675,
+        "turnover_per_year": 27.74795920496447
+      },
+      "static_in1.5|1e+07|0.25": {
+        "net_sharpe": -0.0722221948302752,
+        "net_ann_return_pct": -0.34143865284420105,
+        "max_drawdown_pct": -8.113304310424752,
+        "turnover_per_year": 27.74795920496447
+      },
+      "static_in1.5|1e+07|0.5": {
+        "net_sharpe": -0.1777857912401794,
+        "net_ann_return_pct": -0.8392848372426169,
+        "max_drawdown_pct": -8.623067099019256,
+        "turnover_per_year": 27.74795920496447
+      },
+      "static_in1.5|1e+07|1.0": {
+        "net_sharpe": -0.3897434017691083,
+        "net_ann_return_pct": -1.8349772060394505,
+        "max_drawdown_pct": -10.906706932651844,
+        "turnover_per_year": 27.74795920496447
+      },
+      "static_in1.5|1e+07|2.0": {
+        "net_sharpe": -0.8163042408712493,
+        "net_ann_return_pct": -3.826361943633115,
+        "max_drawdown_pct": -16.76020326430565,
+        "turnover_per_year": 27.74795920496447
+      },
+      "static_in1.5|1e+08|0.0": {
+        "net_sharpe": 0.03303340904907915,
+        "net_ann_return_pct": 0.15640753155421555,
+        "max_drawdown_pct": -7.600715059193675,
+        "turnover_per_year": 27.74795920496447
+      },
+      "static_in1.5|1e+08|0.25": {
+        "net_sharpe": -0.30083614929471575,
+        "net_ann_return_pct": -1.4179203355689642,
+        "max_drawdown_pct": -9.663464530258913,
+        "turnover_per_year": 27.74795920496447
+      },
+      "static_in1.5|1e+08|0.5": {
+        "net_sharpe": -0.6372742140819032,
+        "net_ann_return_pct": -2.992248202692143,
+        "max_drawdown_pct": -14.326155644858385,
+        "turnover_per_year": 27.74795920496447
+      },
+      "static_in1.5|1e+08|1.0": {
+        "net_sharpe": -1.3147309383845038,
+        "net_ann_return_pct": -6.140903936938503,
+        "max_drawdown_pct": -23.324839898644832,
+        "turnover_per_year": 27.74795920496447
+      },
+      "static_in1.5|1e+08|2.0": {
+        "net_sharpe": -2.664989573442579,
+        "net_ann_return_pct": -12.438215405431222,
+        "max_drawdown_pct": -39.41573619510713,
+        "turnover_per_year": 27.74795920496447
+      },
+      "static_in1.5|1e+09|0.0": {
+        "net_sharpe": 0.03303340904907915,
+        "net_ann_return_pct": 0.15640753155421555,
+        "max_drawdown_pct": -7.600715059193675,
+        "turnover_per_year": 27.74795920496447
+      },
+      "static_in1.5|1e+09|0.25": {
+        "net_sharpe": -1.0305093968349297,
+        "net_ann_return_pct": -4.82205431242995,
+        "max_drawdown_pct": -19.609947507657775,
+        "turnover_per_year": 27.74795920496447
+      },
+      "static_in1.5|1e+09|0.5": {
+        "net_sharpe": -2.1025056054239797,
+        "net_ann_return_pct": -9.800516156414114,
+        "max_drawdown_pct": -32.8964810313574,
+        "turnover_per_year": 27.74795920496447
+      },
+      "static_in1.5|1e+09|1.0": {
+        "net_sharpe": -4.169055612152842,
+        "net_ann_return_pct": -19.757439844382443,
+        "max_drawdown_pct": -54.775344052086616,
+        "turnover_per_year": 27.74795920496447
+      },
+      "static_in1.5|1e+09|2.0": {
+        "net_sharpe": -7.4728022096249775,
+        "net_ann_return_pct": -39.6712872203191,
+        "max_drawdown_pct": -79.61963465217728,
+        "turnover_per_year": 27.74795920496447
+      },
+      "static_in2|1e+07|0.0": {
+        "net_sharpe": -0.31879660398148285,
+        "net_ann_return_pct": -1.3387647800395428,
+        "max_drawdown_pct": -10.013419003562408,
+        "turnover_per_year": 19.334022061809144
+      },
+      "static_in2|1e+07|0.25": {
+        "net_sharpe": -0.40160037839773377,
+        "net_ann_return_pct": -1.6848440454237823,
+        "max_drawdown_pct": -11.025213750526975,
+        "turnover_per_year": 19.334022061809144
+      },
+      "static_in2|1e+07|0.5": {
+        "net_sharpe": -0.48453289415194606,
+        "net_ann_return_pct": -2.0309233108080234,
+        "max_drawdown_pct": -12.02568000820403,
+        "turnover_per_year": 19.334022061809144
+      },
+      "static_in2|1e+07|1.0": {
+        "net_sharpe": -0.6507159855910281,
+        "net_ann_return_pct": -2.723081841576505,
+        "max_drawdown_pct": -13.99313087018339,
+        "turnover_per_year": 19.334022061809144
+      },
+      "static_in2|1e+07|2.0": {
+        "net_sharpe": -0.9838692476994993,
+        "net_ann_return_pct": -4.107398903113467,
+        "max_drawdown_pct": -17.797555018480416,
+        "turnover_per_year": 19.334022061809144
+      },
+      "static_in2|1e+08|0.0": {
+        "net_sharpe": -0.31879660398148285,
+        "net_ann_return_pct": -1.3387647800395428,
+        "max_drawdown_pct": -10.013419003562408,
+        "turnover_per_year": 19.334022061809144
+      },
+      "static_in2|1e+08|0.25": {
+        "net_sharpe": -0.5810627512837631,
+        "net_ann_return_pct": -2.4331635096116107,
+        "max_drawdown_pct": -13.174431617817762,
+        "turnover_per_year": 19.334022061809144
+      },
+      "static_in2|1e+08|0.5": {
+        "net_sharpe": -0.8442456489585867,
+        "net_ann_return_pct": -3.527562239183677,
+        "max_drawdown_pct": -16.224862394115558,
+        "turnover_per_year": 19.334022061809144
+      },
+      "static_in2|1e+08|1.0": {
+        "net_sharpe": -1.3711475243074063,
+        "net_ann_return_pct": -5.716359698327813,
+        "max_drawdown_pct": -22.18903972149008,
+        "turnover_per_year": 19.334022061809144
+      },
+      "static_in2|1e+08|2.0": {
+        "net_sharpe": -2.411457029385883,
+        "net_ann_return_pct": -10.093954616616085,
+        "max_drawdown_pct": -33.69097071347614,
+        "turnover_per_year": 19.334022061809144
+      },
+      "static_in2|1e+09|0.0": {
+        "net_sharpe": -0.31879660398148285,
+        "net_ann_return_pct": -1.3387647800395428,
+        "max_drawdown_pct": -10.013419003562408,
+        "turnover_per_year": 19.334022061809144
+      },
+      "static_in2|1e+09|0.25": {
+        "net_sharpe": -1.1505582995832844,
+        "net_ann_return_pct": -4.799557433881947,
+        "max_drawdown_pct": -19.660475922517083,
+        "turnover_per_year": 19.334022061809144
+      },
+      "static_in2|1e+09|0.5": {
+        "net_sharpe": -1.9794507589812094,
+        "net_ann_return_pct": -8.260350087724353,
+        "max_drawdown_pct": -29.011567620127753,
+        "turnover_per_year": 19.334022061809144
+      },
+      "static_in2|1e+09|1.0": {
+        "net_sharpe": -3.560622947672817,
+        "net_ann_return_pct": -15.181935395409162,
+        "max_drawdown_pct": -45.65881896753387,
+        "turnover_per_year": 19.334022061809144
+      },
+      "static_in2|1e+09|2.0": {
+        "net_sharpe": -6.095648437707178,
+        "net_ann_return_pct": -29.025106010778778,
+        "max_drawdown_pct": -68.77365389282126,
+        "turnover_per_year": 19.334022061809144
+      },
+      "static_in2.5|1e+07|0.0": {
+        "net_sharpe": -0.4494426407807752,
+        "net_ann_return_pct": -1.6221622305036199,
+        "max_drawdown_pct": -9.879329591450547,
+        "turnover_per_year": 12.668728686173083
+      },
+      "static_in2.5|1e+07|0.25": {
+        "net_sharpe": -0.5124729639240353,
+        "net_ann_return_pct": -1.848200093771813,
+        "max_drawdown_pct": -10.57794144629417,
+        "turnover_per_year": 12.668728686173083
+      },
+      "static_in2.5|1e+07|0.5": {
+        "net_sharpe": -0.5755690626129681,
+        "net_ann_return_pct": -2.0742379570400065,
+        "max_drawdown_pct": -11.274241376874873,
+        "turnover_per_year": 12.668728686173083
+      },
+      "static_in2.5|1e+07|1.0": {
+        "net_sharpe": -0.7019145232786437,
+        "net_ann_return_pct": -2.5263136835763924,
+        "max_drawdown_pct": -12.665951840554213,
+        "turnover_per_year": 12.668728686173083
+      },
+      "static_in2.5|1e+07|2.0": {
+        "net_sharpe": -0.9549063580221497,
+        "net_ann_return_pct": -3.4304651366491634,
+        "max_drawdown_pct": -15.384567082306821,
+        "turnover_per_year": 12.668728686173083
+      },
+      "static_in2.5|1e+08|0.0": {
+        "net_sharpe": -0.4494426407807752,
+        "net_ann_return_pct": -1.6221622305036199,
+        "max_drawdown_pct": -9.879329591450547,
+        "turnover_per_year": 12.668728686173083
+      },
+      "static_in2.5|1e+08|0.25": {
+        "net_sharpe": -0.6489723307986157,
+        "net_ann_return_pct": -2.336956715868822,
+        "max_drawdown_pct": -12.085680750514172,
+        "turnover_per_year": 12.668728686173083
+      },
+      "static_in2.5|1e+08|0.5": {
+        "net_sharpe": -0.8489205653473528,
+        "net_ann_return_pct": -3.051751201234023,
+        "max_drawdown_pct": -14.256243058651952,
+        "turnover_per_year": 12.668728686173083
+      },
+      "static_in2.5|1e+08|1.0": {
+        "net_sharpe": -1.2486530577450559,
+        "net_ann_return_pct": -4.481340171964425,
+        "max_drawdown_pct": -18.43874252922818,
+        "turnover_per_year": 12.668728686173083
+      },
+      "static_in2.5|1e+08|2.0": {
+        "net_sharpe": -2.0375136965273284,
+        "net_ann_return_pct": -7.340518113425229,
+        "max_drawdown_pct": -26.603511953461943,
+        "turnover_per_year": 12.668728686173083
+      },
+      "static_in2.5|1e+09|0.0": {
+        "net_sharpe": -0.4494426407807752,
+        "net_ann_return_pct": -1.6221622305036199,
+        "max_drawdown_pct": -9.879329591450547,
+        "turnover_per_year": 12.668728686173083
+      },
+      "static_in2.5|1e+09|0.25": {
+        "net_sharpe": -1.0813726846235077,
+        "net_ann_return_pct": -3.8825408631855503,
+        "max_drawdown_pct": -16.712140673178276,
+        "turnover_per_year": 12.668728686173083
+      },
+      "static_in2.5|1e+09|0.5": {
+        "net_sharpe": -1.7097946180467531,
+        "net_ann_return_pct": -6.1429194958674795,
+        "max_drawdown_pct": -23.28614461412536,
+        "turnover_per_year": 12.668728686173083
+      },
+      "static_in2.5|1e+09|1.0": {
+        "net_sharpe": -2.9128369825594134,
+        "net_ann_return_pct": -10.663676761231338,
+        "max_drawdown_pct": -35.22101078294856,
+        "turnover_per_year": 12.668728686173083
+      },
+      "static_in2.5|1e+09|2.0": {
+        "net_sharpe": -4.891243799349258,
+        "net_ann_return_pct": -19.705191291959054,
+        "max_drawdown_pct": -54.62451601828906,
+        "turnover_per_year": 12.668728686173083
+      },
+      "expanding_in1.5|1e+07|0.0": {
+        "net_sharpe": 0.10305967576851367,
+        "net_ann_return_pct": 0.4763793564795676,
+        "max_drawdown_pct": -6.13132706825561,
+        "turnover_per_year": 27.873237172548034
+      },
+      "expanding_in1.5|1e+07|0.25": {
+        "net_sharpe": -0.004307658410941449,
+        "net_ann_return_pct": -0.019884790987157168,
+        "max_drawdown_pct": -6.655813827641288,
+        "turnover_per_year": 27.873237172548034
+      },
+      "expanding_in1.5|1e+07|0.5": {
+        "net_sharpe": -0.11195589398574649,
+        "net_ann_return_pct": -0.5161489384538814,
+        "max_drawdown_pct": -7.1773882668537015,
+        "turnover_per_year": 27.873237172548034
+      },
+      "expanding_in1.5|1e+07|1.0": {
+        "net_sharpe": -0.3279990443142055,
+        "net_ann_return_pct": -1.5086772333873293,
+        "max_drawdown_pct": -9.53781937504995,
+        "turnover_per_year": 27.873237172548034
+      },
+      "expanding_in1.5|1e+07|2.0": {
+        "net_sharpe": -0.7623811898271561,
+        "net_ann_return_pct": -3.4937338232542245,
+        "max_drawdown_pct": -15.505266429810593,
+        "turnover_per_year": 27.873237172548034
+      },
+      "expanding_in1.5|1e+08|0.0": {
+        "net_sharpe": 0.10305967576851367,
+        "net_ann_return_pct": 0.4763793564795676,
+        "max_drawdown_pct": -6.13132706825561,
+        "turnover_per_year": 27.873237172548034
+      },
+      "expanding_in1.5|1e+08|0.25": {
+        "net_sharpe": -0.23739431130102107,
+        "net_ann_return_pct": -1.09294567059696,
+        "max_drawdown_pct": -8.24468538673273,
+        "turnover_per_year": 27.873237172548034
+      },
+      "expanding_in1.5|1e+08|0.5": {
+        "net_sharpe": -0.5801331986690469,
+        "net_ann_return_pct": -2.6622706976734882,
+        "max_drawdown_pct": -13.042325439285307,
+        "turnover_per_year": 27.873237172548034
+      },
+      "expanding_in1.5|1e+08|1.0": {
+        "net_sharpe": -1.2692842876241484,
+        "net_ann_return_pct": -5.800920751826543,
+        "max_drawdown_pct": -22.17319798057613,
+        "turnover_per_year": 27.873237172548034
+      },
+      "expanding_in1.5|1e+08|2.0": {
+        "net_sharpe": -2.6391806593006555,
+        "net_ann_return_pct": -12.078220860132651,
+        "max_drawdown_pct": -38.55644287272245,
+        "turnover_per_year": 27.873237172548034
+      },
+      "expanding_in1.5|1e+09|0.0": {
+        "net_sharpe": 0.10305967576851367,
+        "net_ann_return_pct": 0.4763793564795676,
+        "max_drawdown_pct": -6.13132706825561,
+        "turnover_per_year": 27.873237172548034
+      },
+      "expanding_in1.5|1e+09|0.25": {
+        "net_sharpe": -0.9803153005778505,
+        "net_ann_return_pct": -4.486262118187674,
+        "max_drawdown_pct": -18.402587664899052,
+        "turnover_per_year": 27.873237172548034
+      },
+      "expanding_in1.5|1e+09|0.5": {
+        "net_sharpe": -2.0690735750130695,
+        "net_ann_return_pct": -9.448903592854913,
+        "max_drawdown_pct": -32.01954393535112,
+        "turnover_per_year": 27.873237172548034
+      },
+      "expanding_in1.5|1e+09|1.0": {
+        "net_sharpe": -4.160442325508657,
+        "net_ann_return_pct": -19.374186542189396,
+        "max_drawdown_pct": -54.070465129517544,
+        "turnover_per_year": 27.873237172548034
+      },
+      "expanding_in1.5|1e+09|2.0": {
+        "net_sharpe": -7.497471533404578,
+        "net_ann_return_pct": -39.22475244085836,
+        "max_drawdown_pct": -79.24912876688848,
+        "turnover_per_year": 27.873237172548034
+      },
+      "expanding_in2|1e+07|0.0": {
+        "net_sharpe": -0.1560025107407222,
+        "net_ann_return_pct": -0.646766042081196,
+        "max_drawdown_pct": -8.008586321661959,
+        "turnover_per_year": 20.031899550841757
+      },
+      "expanding_in2|1e+07|0.25": {
+        "net_sharpe": -0.24296018432193722,
+        "net_ann_return_pct": -1.0062223673801272,
+        "max_drawdown_pct": -9.076813639389625,
+        "turnover_per_year": 20.031899550841757
+      },
+      "expanding_in2|1e+07|0.5": {
+        "net_sharpe": -0.3300767709899921,
+        "net_ann_return_pct": -1.3656786926790556,
+        "max_drawdown_pct": -10.132687384169081,
+        "turnover_per_year": 20.031899550841757
+      },
+      "expanding_in2|1e+07|1.0": {
+        "net_sharpe": -0.5047110005614702,
+        "net_ann_return_pct": -2.0845913432769163,
+        "max_drawdown_pct": -12.207941631555851,
+        "turnover_per_year": 20.031899550841757
+      },
+      "expanding_in2|1e+07|2.0": {
+        "net_sharpe": -0.8550437658521131,
+        "net_ann_return_pct": -3.522416644472636,
+        "max_drawdown_pct": -16.290162314865054,
+        "turnover_per_year": 20.031899550841757
+      },
+      "expanding_in2|1e+08|0.0": {
+        "net_sharpe": -0.1560025107407222,
+        "net_ann_return_pct": -0.646766042081196,
+        "max_drawdown_pct": -8.008586321661959,
+        "turnover_per_year": 20.031899550841757
+      },
+      "expanding_in2|1e+08|0.25": {
+        "net_sharpe": -0.4315051151051904,
+        "net_ann_return_pct": -1.783466749380221,
+        "max_drawdown_pct": -11.344570919715647,
+        "turnover_per_year": 20.031899550841757
+      },
+      "expanding_in2|1e+08|0.5": {
+        "net_sharpe": -0.708184969893947,
+        "net_ann_return_pct": -2.9201674566792453,
+        "max_drawdown_pct": -14.56006364452872,
+        "turnover_per_year": 20.031899550841757
+      },
+      "expanding_in2|1e+08|1.0": {
+        "net_sharpe": -1.262608058296811,
+        "net_ann_return_pct": -5.193568871277296,
+        "max_drawdown_pct": -20.96095922575615,
+        "turnover_per_year": 20.031899550841757
+      },
+      "expanding_in2|1e+08|2.0": {
+        "net_sharpe": -2.3581978974709257,
+        "net_ann_return_pct": -9.740371700473391,
+        "max_drawdown_pct": -32.94883288374674,
+        "turnover_per_year": 20.031899550841757
+      },
+      "expanding_in2|1e+09|0.0": {
+        "net_sharpe": -0.1560025107407222,
+        "net_ann_return_pct": -0.646766042081196,
+        "max_drawdown_pct": -8.008586321661959,
+        "turnover_per_year": 20.031899550841757
+      },
+      "expanding_in2|1e+09|0.25": {
+        "net_sharpe": -1.030428747917995,
+        "net_ann_return_pct": -4.241329295070497,
+        "max_drawdown_pct": -18.319240524223634,
+        "turnover_per_year": 20.031899550841757
+      },
+      "expanding_in2|1e+09|0.5": {
+        "net_sharpe": -1.9031866640504722,
+        "net_ann_return_pct": -7.835892548059798,
+        "max_drawdown_pct": -28.03267724968217,
+        "turnover_per_year": 20.031899550841757
+      },
+      "expanding_in2|1e+09|1.0": {
+        "net_sharpe": -3.5674833405008055,
+        "net_ann_return_pct": -15.025019054038397,
+        "max_drawdown_pct": -45.31231795745349,
+        "turnover_per_year": 20.031899550841757
+      },
+      "expanding_in2|1e+09|2.0": {
+        "net_sharpe": -6.215463825981462,
+        "net_ann_return_pct": -29.403272065995594,
+        "max_drawdown_pct": -69.24027859034155,
+        "turnover_per_year": 20.031899550841757
+      },
+      "expanding_in2.5|1e+07|0.0": {
+        "net_sharpe": -0.424534909858942,
+        "net_ann_return_pct": -1.521130979845885,
+        "max_drawdown_pct": -10.177306727778534,
+        "turnover_per_year": 12.750940779027795
+      },
+      "expanding_in2.5|1e+07|0.25": {
+        "net_sharpe": -0.48821170633559835,
+        "net_ann_return_pct": -1.7478957770516248,
+        "max_drawdown_pct": -10.442956886795896,
+        "turnover_per_year": 12.750940779027795
+      },
+      "expanding_in2.5|1e+07|0.5": {
+        "net_sharpe": -0.551957612630622,
+        "net_ann_return_pct": -1.974660574257363,
+        "max_drawdown_pct": -10.845035506171586,
+        "turnover_per_year": 12.750940779027795
+      },
+      "expanding_in2.5|1e+07|1.0": {
+        "net_sharpe": -0.6796119929620964,
+        "net_ann_return_pct": -2.428190168668843,
+        "max_drawdown_pct": -12.301999611448855,
+        "turnover_per_year": 12.750940779027795
+      },
+      "expanding_in2.5|1e+07|2.0": {
+        "net_sharpe": -0.9352538299973634,
+        "net_ann_return_pct": -3.335249357491801,
+        "max_drawdown_pct": -15.145229076081346,
+        "turnover_per_year": 12.750940779027795
+      },
+      "expanding_in2.5|1e+08|0.0": {
+        "net_sharpe": -0.424534909858942,
+        "net_ann_return_pct": -1.521130979845885,
+        "max_drawdown_pct": -10.177306727778534,
+        "turnover_per_year": 12.750940779027795
+      },
+      "expanding_in2.5|1e+08|0.25": {
+        "net_sharpe": -0.6261200970945718,
+        "net_ann_return_pct": -2.238224232162209,
+        "max_drawdown_pct": -11.694639975560372,
+        "turnover_per_year": 12.750940779027795
+      },
+      "expanding_in2.5|1e+08|0.5": {
+        "net_sharpe": -0.8281533518303018,
+        "net_ann_return_pct": -2.9553174844785306,
+        "max_drawdown_pct": -13.96564901952263,
+        "turnover_per_year": 12.750940779027795
+      },
+      "expanding_in2.5|1e+08|1.0": {
+        "net_sharpe": -1.232121065300232,
+        "net_ann_return_pct": -4.389503989111178,
+        "max_drawdown_pct": -18.334774580225023,
+        "turnover_per_year": 12.750940779027795
+      },
+      "expanding_in2.5|1e+08|2.0": {
+        "net_sharpe": -2.0295406316550166,
+        "net_ann_return_pct": -7.25787699837647,
+        "max_drawdown_pct": -26.42161565679908,
+        "turnover_per_year": 12.750940779027795
+      },
+      "expanding_in2.5|1e+09|0.0": {
+        "net_sharpe": -0.424534909858942,
+        "net_ann_return_pct": -1.521130979845885,
+        "max_drawdown_pct": -10.177306727778534,
+        "turnover_per_year": 12.750940779027795
+      },
+      "expanding_in2.5|1e+09|0.25": {
+        "net_sharpe": -1.0630582588655426,
+        "net_ann_return_pct": -3.7887789519032813,
+        "max_drawdown_pct": -16.532255180379074,
+        "turnover_per_year": 12.750940779027795
+      },
+      "expanding_in2.5|1e+09|0.5": {
+        "net_sharpe": -1.6982396719949495,
+        "net_ann_return_pct": -6.056426923960677,
+        "max_drawdown_pct": -23.136170838012237,
+        "turnover_per_year": 12.750940779027795
+      },
+      "expanding_in2.5|1e+09|1.0": {
+        "net_sharpe": -2.9145288208507596,
+        "net_ann_return_pct": -10.591722868075468,
+        "max_drawdown_pct": -34.95756006562883,
+        "turnover_per_year": 12.750940779027795
+      },
+      "expanding_in2.5|1e+09|2.0": {
+        "net_sharpe": -4.914409838666012,
+        "net_ann_return_pct": -19.662314756305054,
+        "max_drawdown_pct": -54.54469527514496,
+        "turnover_per_year": 12.750940779027795
+      },
+      "kalman1e-05_in1.5|1e+07|0.0": {
+        "net_sharpe": -0.43415696546215016,
+        "net_ann_return_pct": -1.919468999942121,
+        "max_drawdown_pct": -10.061287417635212,
+        "turnover_per_year": 23.64072335998807
+      },
+      "kalman1e-05_in1.5|1e+07|0.25": {
+        "net_sharpe": -0.5246093407381199,
+        "net_ann_return_pct": -2.3170752173044917,
+        "max_drawdown_pct": -11.283214946544074,
+        "turnover_per_year": 23.64072335998807
+      },
+      "kalman1e-05_in1.5|1e+07|0.5": {
+        "net_sharpe": -0.6152064997191493,
+        "net_ann_return_pct": -2.7146814346668617,
+        "max_drawdown_pct": -12.488591655144333,
+        "turnover_per_year": 23.64072335998807
+      },
+      "kalman1e-05_in1.5|1e+07|1.0": {
+        "net_sharpe": -0.796774847785732,
+        "net_ann_return_pct": -3.509893869391603,
+        "max_drawdown_pct": -14.933804183890976,
+        "turnover_per_year": 23.64072335998807
+      },
+      "kalman1e-05_in1.5|1e+07|2.0": {
+        "net_sharpe": -1.1609777473159786,
+        "net_ann_return_pct": -5.100318738841086,
+        "max_drawdown_pct": -19.847629305395976,
+        "turnover_per_year": 23.64072335998807
+      },
+      "kalman1e-05_in1.5|1e+08|0.0": {
+        "net_sharpe": -0.43415696546215016,
+        "net_ann_return_pct": -1.919468999942121,
+        "max_drawdown_pct": -10.061287417635212,
+        "turnover_per_year": 23.64072335998807
+      },
+      "kalman1e-05_in1.5|1e+08|0.25": {
+        "net_sharpe": -0.7206675531211014,
+        "net_ann_return_pct": -3.176810258651197,
+        "max_drawdown_pct": -13.871161017192213,
+        "turnover_per_year": 23.64072335998807
+      },
+      "kalman1e-05_in1.5|1e+08|0.5": {
+        "net_sharpe": -1.0082978283016266,
+        "net_ann_return_pct": -4.434151517360275,
+        "max_drawdown_pct": -17.81535363261083,
+        "turnover_per_year": 23.64072335998807
+      },
+      "kalman1e-05_in1.5|1e+08|1.0": {
+        "net_sharpe": -1.5849513561725161,
+        "net_ann_return_pct": -6.94883403477843,
+        "max_drawdown_pct": -25.238554177082406,
+        "turnover_per_year": 23.64072335998807
+      },
+      "kalman1e-05_in1.5|1e+08|2.0": {
+        "net_sharpe": -2.7297753492116206,
+        "net_ann_return_pct": -11.97819906961474,
+        "max_drawdown_pct": -38.54364104352016,
+        "turnover_per_year": 23.64072335998807
+      },
+      "kalman1e-05_in1.5|1e+09|0.0": {
+        "net_sharpe": -0.43415696546215016,
+        "net_ann_return_pct": -1.919468999942121,
+        "max_drawdown_pct": -10.061287417635212,
+        "turnover_per_year": 23.64072335998807
+      },
+      "kalman1e-05_in1.5|1e+09|0.25": {
+        "net_sharpe": -1.3433625990838447,
+        "net_ann_return_pct": -5.895531173565826,
+        "max_drawdown_pct": -22.211310581794553,
+        "turnover_per_year": 23.64072335998807
+      },
+      "kalman1e-05_in1.5|1e+09|0.5": {
+        "net_sharpe": -2.253037805768598,
+        "net_ann_return_pct": -9.871593347189533,
+        "max_drawdown_pct": -33.23751161811814,
+        "turnover_per_year": 23.64072335998807
+      },
+      "kalman1e-05_in1.5|1e+09|1.0": {
+        "net_sharpe": -4.011516431843841,
+        "net_ann_return_pct": -17.823717694436947,
+        "max_drawdown_pct": -51.16558259250148,
+        "turnover_per_year": 23.64072335998807
+      },
+      "kalman1e-05_in1.5|1e+09|2.0": {
+        "net_sharpe": -6.95595323538132,
+        "net_ann_return_pct": -33.727966388931776,
+        "max_drawdown_pct": -74.12911998395846,
+        "turnover_per_year": 23.64072335998807
+      },
+      "kalman1e-05_in2|1e+07|0.0": {
+        "net_sharpe": -0.25705392761008933,
+        "net_ann_return_pct": -1.0302419489832184,
+        "max_drawdown_pct": -8.497861686860764,
+        "turnover_per_year": 17.1732671124269
+      },
+      "kalman1e-05_in2|1e+07|0.25": {
+        "net_sharpe": -0.3280053587469884,
+        "net_ann_return_pct": -1.3134383000789644,
+        "max_drawdown_pct": -9.37567491690382,
+        "turnover_per_year": 17.1732671124269
+      },
+      "kalman1e-05_in2|1e+07|0.5": {
+        "net_sharpe": -0.39906377334436993,
+        "net_ann_return_pct": -1.5966346511747116,
+        "max_drawdown_pct": -10.245098365363992,
+        "turnover_per_year": 17.1732671124269
+      },
+      "kalman1e-05_in2|1e+07|1.0": {
+        "net_sharpe": -0.5414608498282789,
+        "net_ann_return_pct": -2.1630273533662043,
+        "max_drawdown_pct": -11.95909470849731,
+        "turnover_per_year": 17.1732671124269
+      },
+      "kalman1e-05_in2|1e+07|2.0": {
+        "net_sharpe": -0.8270862615686444,
+        "net_ann_return_pct": -3.295812757749192,
+        "max_drawdown_pct": -15.28987467609012,
+        "turnover_per_year": 17.1732671124269
+      },
+      "kalman1e-05_in2|1e+08|0.0": {
+        "net_sharpe": -0.25705392761008933,
+        "net_ann_return_pct": -1.0302419489832184,
+        "max_drawdown_pct": -8.497861686860764,
+        "turnover_per_year": 17.1732671124269
+      },
+      "kalman1e-05_in2|1e+08|0.25": {
+        "net_sharpe": -0.48177436219222153,
+        "net_ann_return_pct": -1.9257874434944988,
+        "max_drawdown_pct": -11.245173129778374,
+        "turnover_per_year": 17.1732671124269
+      },
+      "kalman1e-05_in2|1e+08|0.5": {
+        "net_sharpe": -0.7073433064777266,
+        "net_ann_return_pct": -2.8213329380057797,
+        "max_drawdown_pct": -13.910299000316261,
+        "turnover_per_year": 17.1732671124269
+      },
+      "kalman1e-05_in2|1e+08|1.0": {
+        "net_sharpe": -1.1597025301893626,
+        "net_ann_return_pct": -4.612423927028341,
+        "max_drawdown_pct": -19.00371966356871,
+        "turnover_per_year": 17.1732671124269
+      },
+      "kalman1e-05_in2|1e+08|2.0": {
+        "net_sharpe": -2.0598307928620767,
+        "net_ann_return_pct": -8.194605905073463,
+        "max_drawdown_pct": -28.424506334184883,
+        "turnover_per_year": 17.1732671124269
+      },
+      "kalman1e-05_in2|1e+09|0.0": {
+        "net_sharpe": -0.25705392761008933,
+        "net_ann_return_pct": -1.0302419489832184,
+        "max_drawdown_pct": -8.497861686860764,
+        "turnover_per_year": 17.1732671124269
+      },
+      "kalman1e-05_in2|1e+09|0.25": {
+        "net_sharpe": -0.9701464660495465,
+        "net_ann_return_pct": -3.862205459940686,
+        "max_drawdown_pct": -16.90788292316776,
+        "turnover_per_year": 17.1732671124269
+      },
+      "kalman1e-05_in2|1e+09|0.5": {
+        "net_sharpe": -1.6844988052940972,
+        "net_ann_return_pct": -6.694168970898152,
+        "max_drawdown_pct": -24.547575906372344,
+        "turnover_per_year": 17.1732671124269
+      },
+      "kalman1e-05_in2|1e+09|1.0": {
+        "net_sharpe": -3.074736685171893,
+        "net_ann_return_pct": -12.358095992813086,
+        "max_drawdown_pct": -39.181232062297475,
+        "turnover_per_year": 17.1732671124269
+      },
+      "kalman1e-05_in2|1e+09|2.0": {
+        "net_sharpe": -5.466440906447781,
+        "net_ann_return_pct": -23.685950036642957,
+        "max_drawdown_pct": -61.316588276786135,
+        "turnover_per_year": 17.1732671124269
+      },
+      "kalman1e-05_in2.5|1e+07|0.0": {
+        "net_sharpe": -0.2968900337888467,
+        "net_ann_return_pct": -1.0015647131752599,
+        "max_drawdown_pct": -7.566458520911312,
+        "turnover_per_year": 11.377409420710313
+      },
+      "kalman1e-05_in2.5|1e+07|0.25": {
+        "net_sharpe": -0.35231556508265927,
+        "net_ann_return_pct": -1.1881677451329935,
+        "max_drawdown_pct": -8.143811488512863,
+        "turnover_per_year": 11.377409420710313
+      },
+      "kalman1e-05_in2.5|1e+07|0.5": {
+        "net_sharpe": -0.4077597082270692,
+        "net_ann_return_pct": -1.3747707770907271,
+        "max_drawdown_pct": -8.717576385989712,
+        "turnover_per_year": 11.377409420710313
+      },
+      "kalman1e-05_in2.5|1e+07|1.0": {
+        "net_sharpe": -0.51867689904111,
+        "net_ann_return_pct": -1.747976841006193,
+        "max_drawdown_pct": -9.854430580673256,
+        "turnover_per_year": 11.377409420710313
+      },
+      "kalman1e-05_in2.5|1e+07|2.0": {
+        "net_sharpe": -0.7404377880684205,
+        "net_ann_return_pct": -2.494388968837126,
+        "max_drawdown_pct": -12.086049242234608,
+        "turnover_per_year": 11.377409420710313
+      },
+      "kalman1e-05_in2.5|1e+08|0.0": {
+        "net_sharpe": -0.2968900337888467,
+        "net_ann_return_pct": -1.0015647131752599,
+        "max_drawdown_pct": -7.566458520911312,
+        "turnover_per_year": 11.377409420710313
+      },
+      "kalman1e-05_in2.5|1e+08|0.25": {
+        "net_sharpe": -0.4722156706638452,
+        "net_ann_return_pct": -1.591655312454886,
+        "max_drawdown_pct": -9.37997117887025,
+        "turnover_per_year": 11.377409420710313
+      },
+      "kalman1e-05_in2.5|1e+08|0.5": {
+        "net_sharpe": -0.6475816682249302,
+        "net_ann_return_pct": -2.1817459117345126,
+        "max_drawdown_pct": -11.158080141405236,
+        "turnover_per_year": 11.377409420710313
+      },
+      "kalman1e-05_in2.5|1e+08|1.0": {
+        "net_sharpe": -0.9975803219812357,
+        "net_ann_return_pct": -3.361927110293765,
+        "max_drawdown_pct": -14.634387054852427,
+        "turnover_per_year": 11.377409420710313
+      },
+      "kalman1e-05_in2.5|1e+08|2.0": {
+        "net_sharpe": -1.6887524221631027,
+        "net_ann_return_pct": -5.72228950741227,
+        "max_drawdown_pct": -21.273829234465357,
+        "turnover_per_year": 11.377409420710313
+      },
+      "kalman1e-05_in2.5|1e+09|0.0": {
+        "net_sharpe": -0.2968900337888467,
+        "net_ann_return_pct": -1.0015647131752599,
+        "max_drawdown_pct": -7.566458520911312,
+        "turnover_per_year": 11.377409420710313
+      },
+      "kalman1e-05_in2.5|1e+09|0.25": {
+        "net_sharpe": -0.8511733368447053,
+        "net_ann_return_pct": -2.867595032752593,
+        "max_drawdown_pct": -13.181158983624774,
+        "turnover_per_year": 11.377409420710313
+      },
+      "kalman1e-05_in2.5|1e+09|0.5": {
+        "net_sharpe": -1.4012581284861423,
+        "net_ann_return_pct": -4.733625352329926,
+        "max_drawdown_pct": -18.54320190230475,
+        "turnover_per_year": 11.377409420710313
+      },
+      "kalman1e-05_in2.5|1e+09|1.0": {
+        "net_sharpe": -2.463254249448475,
+        "net_ann_return_pct": -8.465685991484591,
+        "max_drawdown_pct": -28.989435365900164,
+        "turnover_per_year": 11.377409420710313
+      },
+      "kalman1e-05_in2.5|1e+09|2.0": {
+        "net_sharpe": -4.30107986036127,
+        "net_ann_return_pct": -15.929807269793924,
+        "max_drawdown_pct": -47.2111765292621,
+        "turnover_per_year": 11.377409420710313
+      }
+    },
+    "spread": {
+      "static_in1.5|tiered|0.0": {
+        "net_sharpe": -0.5399014489151388,
+        "net_ann_return_pct": -2.536595863936977,
+        "max_drawdown_pct": -12.952460482030526,
+        "turnover_per_year": 27.74795920496447
+      },
+      "static_in1.5|tiered|0.5": {
+        "net_sharpe": -0.588576231345355,
+        "net_ann_return_pct": -2.7644220333145606,
+        "max_drawdown_pct": -13.64203263223649,
+        "turnover_per_year": 27.74795920496447
+      },
+      "static_in1.5|tiered|1.0": {
+        "net_sharpe": -0.6372742140819032,
+        "net_ann_return_pct": -2.992248202692143,
+        "max_drawdown_pct": -14.326155644858385,
+        "turnover_per_year": 27.74795920496447
+      },
+      "static_in1.5|tiered|2.0": {
+        "net_sharpe": -0.7347333089202162,
+        "net_ann_return_pct": -3.4479005414473116,
+        "max_drawdown_pct": -15.678225734708873,
+        "turnover_per_year": 27.74795920496447
+      },
+      "static_in1.5|corwin_schultz|0.0": {
+        "net_sharpe": -0.5399014489151388,
+        "net_ann_return_pct": -2.536595863936977,
+        "max_drawdown_pct": -12.952460482030526,
+        "turnover_per_year": 27.74795920496447
+      },
+      "static_in1.5|corwin_schultz|0.5": {
+        "net_sharpe": -0.6011716919973784,
+        "net_ann_return_pct": -2.8235574734100837,
+        "max_drawdown_pct": -13.814631682420275,
+        "turnover_per_year": 27.74795920496447
+      },
+      "static_in1.5|corwin_schultz|1.0": {
+        "net_sharpe": -0.6624472511391584,
+        "net_ann_return_pct": -3.110519082883191,
+        "max_drawdown_pct": -14.668307059620178,
+        "turnover_per_year": 27.74795920496447
+      },
+      "static_in1.5|corwin_schultz|2.0": {
+        "net_sharpe": -0.7849766447390261,
+        "net_ann_return_pct": -3.684442301829404,
+        "max_drawdown_pct": -16.350502693322056,
+        "turnover_per_year": 27.74795920496447
+      },
+      "static_in1.5|max|0.0": {
+        "net_sharpe": -0.5399014489151388,
+        "net_ann_return_pct": -2.536595863936977,
+        "max_drawdown_pct": -12.952460482030526,
+        "turnover_per_year": 27.74795920496447
+      },
+      "static_in1.5|max|0.5": {
+        "net_sharpe": -0.6337211160518826,
+        "net_ann_return_pct": -2.975677494376755,
+        "max_drawdown_pct": -14.269250817968215,
+        "turnover_per_year": 27.74795920496447
+      },
+      "static_in1.5|max|1.0": {
+        "net_sharpe": -0.7276006074491784,
+        "net_ann_return_pct": -3.4147591248165354,
+        "max_drawdown_pct": -15.56618686638559,
+        "turnover_per_year": 27.74795920496447
+      },
+      "static_in1.5|max|2.0": {
+        "net_sharpe": -0.9154648350024174,
+        "net_ann_return_pct": -4.2929223856960945,
+        "max_drawdown_pct": -18.114296652512774,
+        "turnover_per_year": 27.74795920496447
+      },
+      "static_in2|tiered|0.0": {
+        "net_sharpe": -0.7683246161369193,
+        "net_ann_return_pct": -3.2115198747304445,
+        "max_drawdown_pct": -15.341412227735397,
+        "turnover_per_year": 19.334022061809144
+      },
+      "static_in2|tiered|0.5": {
+        "net_sharpe": -0.8062820811900249,
+        "net_ann_return_pct": -3.3695410569570616,
+        "max_drawdown_pct": -15.784292028038461,
+        "turnover_per_year": 19.334022061809144
+      },
+      "static_in2|tiered|1.0": {
+        "net_sharpe": -0.8442456489585867,
+        "net_ann_return_pct": -3.527562239183677,
+        "max_drawdown_pct": -16.224862394115558,
+        "turnover_per_year": 19.334022061809144
+      },
+      "static_in2|tiered|2.0": {
+        "net_sharpe": -0.9201866296867097,
+        "net_ann_return_pct": -3.84360460363691,
+        "max_drawdown_pct": -17.099122777981478,
+        "turnover_per_year": 19.334022061809144
+      },
+      "static_in2|corwin_schultz|0.0": {
+        "net_sharpe": -0.7683246161369193,
+        "net_ann_return_pct": -3.2115198747304445,
+        "max_drawdown_pct": -15.341412227735397,
+        "turnover_per_year": 19.334022061809144
+      },
+      "static_in2|corwin_schultz|0.5": {
+        "net_sharpe": -0.8182349586419827,
+        "net_ann_return_pct": -3.4191085860929893,
+        "max_drawdown_pct": -15.907813388603643,
+        "turnover_per_year": 19.334022061809144
+      },
+      "static_in2|corwin_schultz|1.0": {
+        "net_sharpe": -0.8681353257202656,
+        "net_ann_return_pct": -3.626697297455533,
+        "max_drawdown_pct": -16.47045126092467,
+        "turnover_per_year": 19.334022061809144
+      },
+      "static_in2|corwin_schultz|2.0": {
+        "net_sharpe": -0.9678783066438333,
+        "net_ann_return_pct": -4.041874720180624,
+        "max_drawdown_pct": -17.584536303501597,
+        "turnover_per_year": 19.334022061809144
+      },
+      "static_in2|max|0.0": {
+        "net_sharpe": -0.7683246161369193,
+        "net_ann_return_pct": -3.2115198747304445,
+        "max_drawdown_pct": -15.341412227735397,
+        "turnover_per_year": 19.334022061809144
+      },
+      "static_in2|max|0.5": {
+        "net_sharpe": -0.8431619729964317,
+        "net_ann_return_pct": -3.5228290867515373,
+        "max_drawdown_pct": -16.199473747038372,
+        "turnover_per_year": 19.334022061809144
+      },
+      "static_in2|max|1.0": {
+        "net_sharpe": -0.9180092723345146,
+        "net_ann_return_pct": -3.8341382987726305,
+        "max_drawdown_pct": -17.04887603674492,
+        "turnover_per_year": 19.334022061809144
+      },
+      "static_in2|max|2.0": {
+        "net_sharpe": -1.0676806507872532,
+        "net_ann_return_pct": -4.456756722814817,
+        "max_drawdown_pct": -18.72205008684563,
+        "turnover_per_year": 19.334022061809144
+      },
+      "static_in2.5|tiered|0.0": {
+        "net_sharpe": -0.7912180023236667,
+        "net_ann_return_pct": -2.8447490492497196,
+        "max_drawdown_pct": -13.626651610924178,
+        "turnover_per_year": 12.668728686173083
+      },
+      "static_in2.5|tiered|0.5": {
+        "net_sharpe": -0.8200704914574463,
+        "net_ann_return_pct": -2.948250125241871,
+        "max_drawdown_pct": -13.942020800128507,
+        "turnover_per_year": 12.668728686173083
+      },
+      "static_in2.5|tiered|1.0": {
+        "net_sharpe": -0.8489205653473528,
+        "net_ann_return_pct": -3.051751201234023,
+        "max_drawdown_pct": -14.256243058651952,
+        "turnover_per_year": 12.668728686173083
+      },
+      "static_in2.5|tiered|2.0": {
+        "net_sharpe": -0.9066105955693221,
+        "net_ann_return_pct": -3.2587533532183257,
+        "max_drawdown_pct": -14.881263387408051,
+        "turnover_per_year": 12.668728686173083
+      },
+      "static_in2.5|corwin_schultz|0.0": {
+        "net_sharpe": -0.7912180023236667,
+        "net_ann_return_pct": -2.8447490492497196,
+        "max_drawdown_pct": -13.626651610924178,
+        "turnover_per_year": 12.668728686173083
+      },
+      "static_in2.5|corwin_schultz|0.5": {
+        "net_sharpe": -0.8264722333912375,
+        "net_ann_return_pct": -2.9709881090205847,
+        "max_drawdown_pct": -14.017517194138108,
+        "turnover_per_year": 12.668728686173083
+      },
+      "static_in2.5|corwin_schultz|1.0": {
+        "net_sharpe": -0.8617116793464132,
+        "net_ann_return_pct": -3.097227168791449,
+        "max_drawdown_pct": -14.406628731291793,
+        "turnover_per_year": 12.668728686173083
+      },
+      "static_in2.5|corwin_schultz|2.0": {
+        "net_sharpe": -0.9321328996398185,
+        "net_ann_return_pct": -3.3497052883331775,
+        "max_drawdown_pct": -15.17962085661837,
+        "turnover_per_year": 12.668728686173083
+      },
+      "static_in2.5|max|0.0": {
+        "net_sharpe": -0.7912180023236667,
+        "net_ann_return_pct": -2.8447490492497196,
+        "max_drawdown_pct": -13.626651610924178,
+        "turnover_per_year": 12.668728686173083
+      },
+      "static_in2.5|max|0.5": {
+        "net_sharpe": -0.8456448278919881,
+        "net_ann_return_pct": -3.0397523533527213,
+        "max_drawdown_pct": -14.224399108996177,
+        "turnover_per_year": 12.668728686173083
+      },
+      "static_in2.5|max|1.0": {
+        "net_sharpe": -0.9000588068704433,
+        "net_ann_return_pct": -3.234755657455722,
+        "max_drawdown_pct": -14.818031053703873,
+        "turnover_per_year": 12.668728686173083
+      },
+      "static_in2.5|max|2.0": {
+        "net_sharpe": -1.0088210356850411,
+        "net_ann_return_pct": -3.6247622656617247,
+        "max_drawdown_pct": -15.993060856250663,
+        "turnover_per_year": 12.668728686173083
+      },
+      "expanding_in1.5|tiered|0.0": {
+        "net_sharpe": -0.47988792658108337,
+        "net_ann_return_pct": -2.203566908552979,
+        "max_drawdown_pct": -11.64088089351888,
+        "turnover_per_year": 27.873237172548034
+      },
+      "expanding_in1.5|tiered|0.5": {
+        "net_sharpe": -0.5299985461333765,
+        "net_ann_return_pct": -2.4329188031132336,
+        "max_drawdown_pct": -12.34439696875248,
+        "turnover_per_year": 27.873237172548034
+      },
+      "expanding_in1.5|tiered|1.0": {
+        "net_sharpe": -0.5801331986690469,
+        "net_ann_return_pct": -2.6622706976734882,
+        "max_drawdown_pct": -13.042325439285307,
+        "turnover_per_year": 27.873237172548034
+      },
+      "expanding_in1.5|tiered|2.0": {
+        "net_sharpe": -0.6804676188216493,
+        "net_ann_return_pct": -3.1209744867939966,
+        "max_drawdown_pct": -14.426865794792931,
+        "turnover_per_year": 27.873237172548034
+      },
+      "expanding_in1.5|corwin_schultz|0.0": {
+        "net_sharpe": -0.47988792658108337,
+        "net_ann_return_pct": -2.203566908552979,
+        "max_drawdown_pct": -11.64088089351888,
+        "turnover_per_year": 27.873237172548034
+      },
+      "expanding_in1.5|corwin_schultz|0.5": {
+        "net_sharpe": -0.5437984823324572,
+        "net_ann_return_pct": -2.496148495898521,
+        "max_drawdown_pct": -12.526133273449558,
+        "turnover_per_year": 27.873237172548034
+      },
+      "expanding_in1.5|corwin_schultz|1.0": {
+        "net_sharpe": -0.6077222158275729,
+        "net_ann_return_pct": -2.788730083244063,
+        "max_drawdown_pct": -13.402560100773819,
+        "turnover_per_year": 27.873237172548034
+      },
+      "expanding_in1.5|corwin_schultz|2.0": {
+        "net_sharpe": -0.7355685041414227,
+        "net_ann_return_pct": -3.3738932579351455,
+        "max_drawdown_pct": -15.134199512015755,
+        "turnover_per_year": 27.873237172548034
+      },
+      "expanding_in1.5|max|0.0": {
+        "net_sharpe": -0.47988792658108337,
+        "net_ann_return_pct": -2.203566908552979,
+        "max_drawdown_pct": -11.64088089351888,
+        "turnover_per_year": 27.873237172548034
+      },
+      "expanding_in1.5|max|0.5": {
+        "net_sharpe": -0.577114982010913,
+        "net_ann_return_pct": -2.6484065226624187,
+        "max_drawdown_pct": -12.986607848279675,
+        "turnover_per_year": 27.873237172548034
+      },
+      "expanding_in1.5|max|1.0": {
+        "net_sharpe": -0.674414492721992,
+        "net_ann_return_pct": -3.0932461367718584,
+        "max_drawdown_pct": -14.311904447537472,
+        "turnover_per_year": 27.873237172548034
+      },
+      "expanding_in1.5|max|2.0": {
+        "net_sharpe": -0.8691514000087472,
+        "net_ann_return_pct": -3.9829253649907375,
+        "max_drawdown_pct": -16.94762083662883,
+        "turnover_per_year": 27.873237172548034
+      },
+      "expanding_in2|tiered|0.0": {
+        "net_sharpe": -0.6281573418155654,
+        "net_ann_return_pct": -2.5912064294774457,
+        "max_drawdown_pct": -13.627570403252365,
+        "turnover_per_year": 20.031899550841757
+      },
+      "expanding_in2|tiered|0.5": {
+        "net_sharpe": -0.6681666641935122,
+        "net_ann_return_pct": -2.7556869430783455,
+        "max_drawdown_pct": -14.095078327927368,
+        "turnover_per_year": 20.031899550841757
+      },
+      "expanding_in2|tiered|1.0": {
+        "net_sharpe": -0.708184969893947,
+        "net_ann_return_pct": -2.9201674566792453,
+        "max_drawdown_pct": -14.56006364452872,
+        "turnover_per_year": 20.031899550841757
+      },
+      "expanding_in2|tiered|2.0": {
+        "net_sharpe": -0.788243562418516,
+        "net_ann_return_pct": -3.2491284838810452,
+        "max_drawdown_pct": -15.516141558224684,
+        "turnover_per_year": 20.031899550841757
+      },
+      "expanding_in2|corwin_schultz|0.0": {
+        "net_sharpe": -0.6281573418155654,
+        "net_ann_return_pct": -2.5912064294774457,
+        "max_drawdown_pct": -13.627570403252365,
+        "turnover_per_year": 20.031899550841757
+      },
+      "expanding_in2|corwin_schultz|0.5": {
+        "net_sharpe": -0.6796122273995168,
+        "net_ann_return_pct": -2.8023570803680147,
+        "max_drawdown_pct": -14.218559988365808,
+        "turnover_per_year": 20.031899550841757
+      },
+      "expanding_in2|corwin_schultz|1.0": {
+        "net_sharpe": -0.7310753713369126,
+        "net_ann_return_pct": -3.013507731258583,
+        "max_drawdown_pct": -14.817137823658587,
+        "turnover_per_year": 20.031899550841757
+      },
+      "expanding_in2|corwin_schultz|2.0": {
+        "net_sharpe": -0.8339989728661747,
+        "net_ann_return_pct": -3.435809033039722,
+        "max_drawdown_pct": -16.04015366051773,
+        "turnover_per_year": 20.031899550841757
+      },
+      "expanding_in2|max|0.0": {
+        "net_sharpe": -0.6281573418155654,
+        "net_ann_return_pct": -2.5912064294774457,
+        "max_drawdown_pct": -13.627570403252365,
+        "turnover_per_year": 20.031899550841757
+      },
+      "expanding_in2|max|0.5": {
+        "net_sharpe": -0.7060780664289473,
+        "net_ann_return_pct": -2.9110854396188777,
+        "max_drawdown_pct": -14.526034283450018,
+        "turnover_per_year": 20.031899550841757
+      },
+      "expanding_in2|max|1.0": {
+        "net_sharpe": -0.7840367595251886,
+        "net_ann_return_pct": -3.2309644497603105,
+        "max_drawdown_pct": -15.45083323393478,
+        "turnover_per_year": 20.031899550841757
+      },
+      "expanding_in2|max|2.0": {
+        "net_sharpe": -0.9400140891649967,
+        "net_ann_return_pct": -3.8707224700431766,
+        "max_drawdown_pct": -17.284750849220266,
+        "turnover_per_year": 20.031899550841757
+      },
+      "expanding_in2.5|tiered|0.0": {
+        "net_sharpe": -0.7697736517516091,
+        "net_ann_return_pct": -2.747442639491827,
+        "max_drawdown_pct": -13.30417099860357,
+        "turnover_per_year": 12.750940779027795
+      },
+      "expanding_in2.5|tiered|0.5": {
+        "net_sharpe": -0.7989642843301071,
+        "net_ann_return_pct": -2.85138006198518,
+        "max_drawdown_pct": -13.635541058538736,
+        "turnover_per_year": 12.750940779027795
+      },
+      "expanding_in2.5|tiered|1.0": {
+        "net_sharpe": -0.8281533518303018,
+        "net_ann_return_pct": -2.9553174844785306,
+        "max_drawdown_pct": -13.96564901952263,
+        "turnover_per_year": 12.750940779027795
+      },
+      "expanding_in2.5|tiered|2.0": {
+        "net_sharpe": -0.8865239690109317,
+        "net_ann_return_pct": -3.1631923294652355,
+        "max_drawdown_pct": -14.622097786751286,
+        "turnover_per_year": 12.750940779027795
+      },
+      "expanding_in2.5|corwin_schultz|0.0": {
+        "net_sharpe": -0.7697736517516091,
+        "net_ann_return_pct": -2.747442639491827,
+        "max_drawdown_pct": -13.30417099860357,
+        "turnover_per_year": 12.750940779027795
+      },
+      "expanding_in2.5|corwin_schultz|0.5": {
+        "net_sharpe": -0.8057969695438097,
+        "net_ann_return_pct": -2.875575407256821,
+        "max_drawdown_pct": -13.71699146576172,
+        "turnover_per_year": 12.750940779027795
+      },
+      "expanding_in2.5|corwin_schultz|1.0": {
+        "net_sharpe": -0.8418045828547639,
+        "net_ann_return_pct": -3.0037081750218153,
+        "max_drawdown_pct": -14.127860929266989,
+        "turnover_per_year": 12.750940779027795
+      },
+      "expanding_in2.5|corwin_schultz|2.0": {
+        "net_sharpe": -0.9137589135055748,
+        "net_ann_return_pct": -3.259973710551804,
+        "max_drawdown_pct": -14.943783408576916,
+        "turnover_per_year": 12.750940779027795
+      },
+      "expanding_in2.5|max|0.0": {
+        "net_sharpe": -0.7697736517516091,
+        "net_ann_return_pct": -2.747442639491827,
+        "max_drawdown_pct": -13.30417099860357,
+        "turnover_per_year": 12.750940779027795
+      },
+      "expanding_in2.5|max|0.5": {
+        "net_sharpe": -0.8251288782641654,
+        "net_ann_return_pct": -2.944370229700911,
+        "max_drawdown_pct": -13.932564066838193,
+        "turnover_per_year": 12.750940779027795
+      },
+      "expanding_in2.5|max|1.0": {
+        "net_sharpe": -0.88047132638406,
+        "net_ann_return_pct": -3.1412978199099926,
+        "max_drawdown_pct": -14.556423442799172,
+        "turnover_per_year": 12.750940779027795
+      },
+      "expanding_in2.5|max|2.0": {
+        "net_sharpe": -0.9910898720584842,
+        "net_ann_return_pct": -3.535153000328158,
+        "max_drawdown_pct": -15.790671118900034,
+        "turnover_per_year": 12.750940779027795
+      },
+      "kalman1e-05_in1.5|tiered|0.0": {
+        "net_sharpe": -0.9190542573685823,
+        "net_ann_return_pct": -4.043590464775368,
+        "max_drawdown_pct": -16.594630298307898,
+        "turnover_per_year": 23.64072335998807
+      },
+      "kalman1e-05_in1.5|tiered|0.5": {
+        "net_sharpe": -0.9636701293305817,
+        "net_ann_return_pct": -4.238870991067822,
+        "max_drawdown_pct": -17.20680769416678,
+        "turnover_per_year": 23.64072335998807
+      },
+      "kalman1e-05_in1.5|tiered|1.0": {
+        "net_sharpe": -1.0082978283016266,
+        "net_ann_return_pct": -4.434151517360275,
+        "max_drawdown_pct": -17.81535363261083,
+        "turnover_per_year": 23.64072335998807
+      },
+      "kalman1e-05_in1.5|tiered|2.0": {
+        "net_sharpe": -1.0975836138705228,
+        "net_ann_return_pct": -4.8247125699451825,
+        "max_drawdown_pct": -19.0265382823233,
+        "turnover_per_year": 23.64072335998807
+      },
+      "kalman1e-05_in1.5|corwin_schultz|0.0": {
+        "net_sharpe": -0.9190542573685823,
+        "net_ann_return_pct": -4.043590464775368,
+        "max_drawdown_pct": -16.594630298307898,
+        "turnover_per_year": 23.64072335998807
+      },
+      "kalman1e-05_in1.5|corwin_schultz|0.5": {
+        "net_sharpe": -0.9766515012345027,
+        "net_ann_return_pct": -4.295717098826084,
+        "max_drawdown_pct": -17.394903352660073,
+        "turnover_per_year": 23.64072335998807
+      },
+      "kalman1e-05_in1.5|corwin_schultz|1.0": {
+        "net_sharpe": -1.03423472571518,
+        "net_ann_return_pct": -4.547843732876799,
+        "max_drawdown_pct": -18.18753388350569,
+        "turnover_per_year": 23.64072335998807
+      },
+      "kalman1e-05_in1.5|corwin_schultz|2.0": {
+        "net_sharpe": -1.149326503312869,
+        "net_ann_return_pct": -5.052097000978229,
+        "max_drawdown_pct": -19.751793449066056,
+        "turnover_per_year": 23.64072335998807
+      },
+      "kalman1e-05_in1.5|max|0.0": {
+        "net_sharpe": -0.9190542573685823,
+        "net_ann_return_pct": -4.043590464775368,
+        "max_drawdown_pct": -16.594630298307898,
+        "turnover_per_year": 23.64072335998807
+      },
+      "kalman1e-05_in1.5|max|0.5": {
+        "net_sharpe": -1.006299734266182,
+        "net_ann_return_pct": -4.4252498273973035,
+        "max_drawdown_pct": -17.794200879212696,
+        "turnover_per_year": 23.64072335998807
+      },
+      "kalman1e-05_in1.5|max|1.0": {
+        "net_sharpe": -1.0935674464206648,
+        "net_ann_return_pct": -4.806909190019237,
+        "max_drawdown_pct": -18.980131315120875,
+        "turnover_per_year": 23.64072335998807
+      },
+      "kalman1e-05_in1.5|max|2.0": {
+        "net_sharpe": -1.2681075540362436,
+        "net_ann_return_pct": -5.570227915263105,
+        "max_drawdown_pct": -21.30566105372941,
+        "turnover_per_year": 23.64072335998807
+      },
+      "kalman1e-05_in2|tiered|0.0": {
+        "net_sharpe": -0.6364539783944886,
+        "net_ann_return_pct": -2.53945528867422,
+        "max_drawdown_pct": -13.061022648191756,
+        "turnover_per_year": 17.1732671124269
+      },
+      "kalman1e-05_in2|tiered|0.5": {
+        "net_sharpe": -0.6718953059339788,
+        "net_ann_return_pct": -2.680394113339999,
+        "max_drawdown_pct": -13.486699881172227,
+        "turnover_per_year": 17.1732671124269
+      },
+      "kalman1e-05_in2|tiered|1.0": {
+        "net_sharpe": -0.7073433064777266,
+        "net_ann_return_pct": -2.8213329380057797,
+        "max_drawdown_pct": -13.910299000316261,
+        "turnover_per_year": 17.1732671124269
+      },
+      "kalman1e-05_in2|tiered|2.0": {
+        "net_sharpe": -0.7782558265999424,
+        "net_ann_return_pct": -3.103210587337339,
+        "max_drawdown_pct": -14.751303309464102,
+        "turnover_per_year": 17.1732671124269
+      },
+      "kalman1e-05_in2|corwin_schultz|0.0": {
+        "net_sharpe": -0.6364539783944886,
+        "net_ann_return_pct": -2.53945528867422,
+        "max_drawdown_pct": -13.061022648191756,
+        "turnover_per_year": 17.1732671124269
+      },
+      "kalman1e-05_in2|corwin_schultz|0.5": {
+        "net_sharpe": -0.68286870889974,
+        "net_ann_return_pct": -2.7231319421669262,
+        "max_drawdown_pct": -13.60088809776564,
+        "turnover_per_year": 17.1732671124269
+      },
+      "kalman1e-05_in2|corwin_schultz|1.0": {
+        "net_sharpe": -0.7293075778467636,
+        "net_ann_return_pct": -2.9068085956596326,
+        "max_drawdown_pct": -14.137422075869388,
+        "turnover_per_year": 17.1732671124269
+      },
+      "kalman1e-05_in2|corwin_schultz|2.0": {
+        "net_sharpe": -0.822236537421242,
+        "net_ann_return_pct": -3.2741619026450466,
+        "max_drawdown_pct": -15.200577213117395,
+        "turnover_per_year": 17.1732671124269
+      },
+      "kalman1e-05_in2|max|0.0": {
+        "net_sharpe": -0.6364539783944886,
+        "net_ann_return_pct": -2.53945528867422,
+        "max_drawdown_pct": -13.061022648191756,
+        "turnover_per_year": 17.1732671124269
+      },
+      "kalman1e-05_in2|max|0.5": {
+        "net_sharpe": -0.7062289346227856,
+        "net_ann_return_pct": -2.8160038734300668,
+        "max_drawdown_pct": -13.879614500286031,
+        "turnover_per_year": 17.1732671124269
+      },
+      "kalman1e-05_in2|max|1.0": {
+        "net_sharpe": -0.7760575291645943,
+        "net_ann_return_pct": -3.092552458185914,
+        "max_drawdown_pct": -14.690529326653056,
+        "turnover_per_year": 17.1732671124269
+      },
+      "kalman1e-05_in2|max|2.0": {
+        "net_sharpe": -0.9158342943438713,
+        "net_ann_return_pct": -3.645649627697608,
+        "max_drawdown_pct": -16.289614084201396,
+        "turnover_per_year": 17.1732671124269
+      },
+      "kalman1e-05_in2.5|tiered|0.0": {
+        "net_sharpe": -0.5925774636555748,
+        "net_ann_return_pct": -1.9964988445385385,
+        "max_drawdown_pct": -10.590495268200273,
+        "turnover_per_year": 11.377409420710313
+      },
+      "kalman1e-05_in2.5|tiered|0.5": {
+        "net_sharpe": -0.6200810546721606,
+        "net_ann_return_pct": -2.089122378136525,
+        "max_drawdown_pct": -10.874737915416443,
+        "turnover_per_year": 11.377409420710313
+      },
+      "kalman1e-05_in2.5|tiered|1.0": {
+        "net_sharpe": -0.6475816682249302,
+        "net_ann_return_pct": -2.1817459117345126,
+        "max_drawdown_pct": -11.158080141405236,
+        "turnover_per_year": 11.377409420710313
+      },
+      "kalman1e-05_in2.5|tiered|2.0": {
+        "net_sharpe": -0.7025718950923777,
+        "net_ann_return_pct": -2.366992978930486,
+        "max_drawdown_pct": -11.722074689509954,
+        "turnover_per_year": 11.377409420710313
+      },
+      "kalman1e-05_in2.5|corwin_schultz|0.0": {
+        "net_sharpe": -0.5925774636555748,
+        "net_ann_return_pct": -1.9964988445385385,
+        "max_drawdown_pct": -10.590495268200273,
+        "turnover_per_year": 11.377409420710313
+      },
+      "kalman1e-05_in2.5|corwin_schultz|0.5": {
+        "net_sharpe": -0.6273956966819038,
+        "net_ann_return_pct": -2.1135527651836274,
+        "max_drawdown_pct": -10.958936608413062,
+        "turnover_per_year": 11.377409420710313
+      },
+      "kalman1e-05_in2.5|corwin_schultz|1.0": {
+        "net_sharpe": -0.6622035825110372,
+        "net_ann_return_pct": -2.230606685828717,
+        "max_drawdown_pct": -11.325871507106323,
+        "turnover_per_year": 11.377409420710313
+      },
+      "kalman1e-05_in2.5|corwin_schultz|2.0": {
+        "net_sharpe": -0.7317764562258027,
+        "net_ann_return_pct": -2.4647145271188964,
+        "max_drawdown_pct": -12.055246400505283,
+        "turnover_per_year": 11.377409420710313
+      },
+      "kalman1e-05_in2.5|max|0.0": {
+        "net_sharpe": -0.5925774636555748,
+        "net_ann_return_pct": -1.9964988445385385,
+        "max_drawdown_pct": -10.590495268200273,
+        "turnover_per_year": 11.377409420710313
+      },
+      "kalman1e-05_in2.5|max|0.5": {
+        "net_sharpe": -0.6456478960967138,
+        "net_ann_return_pct": -2.1750049776092064,
+        "max_drawdown_pct": -11.14408022349882,
+        "turnover_per_year": 11.377409420710313
+      },
+      "kalman1e-05_in2.5|max|1.0": {
+        "net_sharpe": -0.6987077841900782,
+        "net_ann_return_pct": -2.353511110679876,
+        "max_drawdown_pct": -11.694254188697295,
+        "turnover_per_year": 11.377409420710313
+      },
+      "kalman1e-05_in2.5|max|2.0": {
+        "net_sharpe": -0.8047730388739881,
+        "net_ann_return_pct": -2.710523376821214,
+        "max_drawdown_pct": -12.784452684316083,
+        "turnover_per_year": 11.377409420710313
+      }
+    },
+    "borrow": {
+      "static_in1.5|0.0": {
+        "net_sharpe": -0.5805806989417959,
+        "net_ann_return_pct": -2.725954817964258,
+        "max_drawdown_pct": -13.505805095214674,
+        "turnover_per_year": 27.74795920496447
+      },
+      "static_in1.5|50.0": {
+        "net_sharpe": -0.6372742140819032,
+        "net_ann_return_pct": -2.992248202692143,
+        "max_drawdown_pct": -14.326155644858385,
+        "turnover_per_year": 27.74795920496447
+      },
+      "static_in1.5|150.0": {
+        "net_sharpe": -0.7506467970246282,
+        "net_ann_return_pct": -3.5248349721479166,
+        "max_drawdown_pct": -15.943616882367051,
+        "turnover_per_year": 27.74795920496447
+      },
+      "static_in2|0.0": {
+        "net_sharpe": -0.7920647320553293,
+        "net_ann_return_pct": -3.3092426234819157,
+        "max_drawdown_pct": -15.601010352100985,
+        "turnover_per_year": 19.334022061809144
+      },
+      "static_in2|50.0": {
+        "net_sharpe": -0.8442456489585867,
+        "net_ann_return_pct": -3.527562239183677,
+        "max_drawdown_pct": -16.224862394115558,
+        "turnover_per_year": 19.334022061809144
+      },
+      "static_in2|150.0": {
+        "net_sharpe": -0.9485756655928363,
+        "net_ann_return_pct": -3.964201470587202,
+        "max_drawdown_pct": -17.458785135009926,
+        "turnover_per_year": 19.334022061809144
+      },
+      "static_in2.5|0.0": {
+        "net_sharpe": -0.805450082767833,
+        "net_ann_return_pct": -2.8951036266980683,
+        "max_drawdown_pct": -13.768225968547142,
+        "turnover_per_year": 12.668728686173083
+      },
+      "static_in2.5|50.0": {
+        "net_sharpe": -0.8489205653473528,
+        "net_ann_return_pct": -3.051751201234023,
+        "max_drawdown_pct": -14.256243058651952,
+        "turnover_per_year": 12.668728686173083
+      },
+      "static_in2.5|150.0": {
+        "net_sharpe": -0.935821757992923,
+        "net_ann_return_pct": -3.36504635030593,
+        "max_drawdown_pct": -15.224018986430465,
+        "turnover_per_year": 12.668728686173083
+      },
+      "expanding_in1.5|0.0": {
+        "net_sharpe": -0.522090236261496,
+        "net_ann_return_pct": -2.395858417887756,
+        "max_drawdown_pct": -12.212042573713767,
+        "turnover_per_year": 27.873237172548034
+      },
+      "expanding_in1.5|50.0": {
+        "net_sharpe": -0.5801331986690469,
+        "net_ann_return_pct": -2.6622706976734882,
+        "max_drawdown_pct": -13.042325439285307,
+        "turnover_per_year": 27.873237172548034
+      },
+      "expanding_in1.5|150.0": {
+        "net_sharpe": -0.6962095937846701,
+        "net_ann_return_pct": -3.1950952572449522,
+        "max_drawdown_pct": -14.692249514634026,
+        "turnover_per_year": 27.873237172548034
+      },
+      "expanding_in2|0.0": {
+        "net_sharpe": -0.654685744725249,
+        "net_ann_return_pct": -2.699378493855208,
+        "max_drawdown_pct": -13.925049452468185,
+        "turnover_per_year": 20.031899550841757
+      },
+      "expanding_in2|50.0": {
+        "net_sharpe": -0.708184969893947,
+        "net_ann_return_pct": -2.9201674566792453,
+        "max_drawdown_pct": -14.56006364452872,
+        "turnover_per_year": 20.031899550841757
+      },
+      "expanding_in2|150.0": {
+        "net_sharpe": -0.815157204539561,
+        "net_ann_return_pct": -3.36174538232732,
+        "max_drawdown_pct": -15.85966982613003,
+        "turnover_per_year": 20.031899550841757
+      },
+      "expanding_in2.5|0.0": {
+        "net_sharpe": -0.7842203698220784,
+        "net_ann_return_pct": -2.7982309419130633,
+        "max_drawdown_pct": -13.455088581509589,
+        "turnover_per_year": 12.750940779027795
+      },
+      "expanding_in2.5|50.0": {
+        "net_sharpe": -0.8281533518303018,
+        "net_ann_return_pct": -2.9553174844785306,
+        "max_drawdown_pct": -13.96564901952263,
+        "turnover_per_year": 12.750940779027795
+      },
+      "expanding_in2.5|150.0": {
+        "net_sharpe": -0.9159846453086592,
+        "net_ann_return_pct": -3.269490569609468,
+        "max_drawdown_pct": -14.977763639341635,
+        "turnover_per_year": 12.750940779027795
+      },
+      "kalman1e-05_in1.5|0.0": {
+        "net_sharpe": -0.9559594676627974,
+        "net_ann_return_pct": -4.203924034021146,
+        "max_drawdown_pct": -17.087782897597226,
+        "turnover_per_year": 23.64072335998807
+      },
+      "kalman1e-05_in1.5|50.0": {
+        "net_sharpe": -1.0082978283016266,
+        "net_ann_return_pct": -4.434151517360275,
+        "max_drawdown_pct": -17.81535363261083,
+        "turnover_per_year": 23.64072335998807
+      },
+      "kalman1e-05_in1.5|150.0": {
+        "net_sharpe": -1.112967632534844,
+        "net_ann_return_pct": -4.894606484038533,
+        "max_drawdown_pct": -19.27207169753321,
+        "turnover_per_year": 23.64072335998807
+      },
+      "kalman1e-05_in2|0.0": {
+        "net_sharpe": -0.6608734793720441,
+        "net_ann_return_pct": -2.6359098097712197,
+        "max_drawdown_pct": -13.331214347940989,
+        "turnover_per_year": 17.1732671124269
+      },
+      "kalman1e-05_in2|50.0": {
+        "net_sharpe": -0.7073433064777266,
+        "net_ann_return_pct": -2.8213329380057797,
+        "max_drawdown_pct": -13.910299000316261,
+        "turnover_per_year": 17.1732671124269
+      },
+      "kalman1e-05_in2|150.0": {
+        "net_sharpe": -0.8002729843871246,
+        "net_ann_return_pct": -3.192179194474899,
+        "max_drawdown_pct": -15.056900684118668,
+        "turnover_per_year": 17.1732671124269
+      },
+      "kalman1e-05_in2.5|0.0": {
+        "net_sharpe": -0.6070561692582441,
+        "net_ann_return_pct": -2.045141964624817,
+        "max_drawdown_pct": -10.730237597315885,
+        "turnover_per_year": 11.377409420710313
+      },
+      "kalman1e-05_in2.5|50.0": {
+        "net_sharpe": -0.6475816682249302,
+        "net_ann_return_pct": -2.1817459117345126,
+        "max_drawdown_pct": -11.158080141405236,
+        "turnover_per_year": 11.377409420710313
+      },
+      "kalman1e-05_in2.5|150.0": {
+        "net_sharpe": -0.7286218058942809,
+        "net_ann_return_pct": -2.454953805953903,
+        "max_drawdown_pct": -12.007631606259883,
+        "turnover_per_year": 11.377409420710313
+      }
+    },
+    "waterfall": {
+      "static_in1.5": {
+        "gross": 0.22915015349100143,
+        "+spread": 0.13317487831188674,
+        "+commission": 0.0892781915996229,
+        "+borrow": 0.033033409049079095,
+        "+impact": -0.6372742140819035
+      },
+      "static_in2": {
+        "gross": -0.1568767577609831,
+        "+spread": -0.23222409909229833,
+        "+commission": -0.2668312335704281,
+        "+borrow": -0.3187966039814828,
+        "+impact": -0.8442456489585869
+      },
+      "static_in2.5": {
+        "gross": -0.32221440978804905,
+        "+spread": -0.37969831429238793,
+        "+commission": -0.4060920723900832,
+        "+borrow": -0.44944264078077534,
+        "+impact": -0.8489205653473529
+      },
+      "expanding_in1.5": {
+        "gross": 0.30473362849774527,
+        "+spread": 0.20583361707116452,
+        "+commission": 0.16069888144488706,
+        "+borrow": 0.10305967576851346,
+        "+impact": -0.5801331986690468
+      },
+      "expanding_in2": {
+        "gross": 0.012825013419926501,
+        "+spread": -0.06649199298542745,
+        "+commission": -0.10275425781746572,
+        "+borrow": -0.15600251074072224,
+        "+impact": -0.7081849698939471
+      },
+      "expanding_in2.5": {
+        "gross": -0.2958424720759331,
+        "+spread": -0.35398066081103635,
+        "+commission": -0.38073359382730004,
+        "+borrow": -0.42453490985894204,
+        "+impact": -0.8281533518303018
+      },
+      "kalman1e-05_in1.5": {
+        "gross": -0.25336679615714,
+        "+spread": -0.34186694598394124,
+        "+commission": -0.3820893725173325,
+        "+borrow": -0.4341569654621498,
+        "+impact": -1.0082978283016266
+      },
+      "kalman1e-05_in2": {
+        "gross": -0.10823062326044136,
+        "+spread": -0.17860649452521915,
+        "+commission": -0.21079513932046795,
+        "+borrow": -0.2570539276100893,
+        "+impact": -0.7073433064777264
+      },
+      "kalman1e-05_in2.5": {
+        "gross": -0.17613670869194398,
+        "+spread": -0.23108364024769873,
+        "+commission": -0.2564052457326641,
+        "+borrow": -0.29689003378884665,
+        "+impact": -0.6475816682249304
+      }
+    }
+  },
+  "finalist_rule": "net Sharpe > 0 AND net-placebo percentile >= 50 %; highest net Sharpe among qualifiers; none -> no configuration advances and validation is not run",
+  "qualifying": [],
+  "finalist": null,
+  "phases_evaluated": [
+    "research"
+  ]
+}

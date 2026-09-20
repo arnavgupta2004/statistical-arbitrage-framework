@@ -81,7 +81,13 @@ def git_commit() -> str | None:
 
 def main() -> None:
     warnings.filterwarnings("ignore")
-    pipe = DataPipeline(load_config("configs/data_default.yaml"))
+    # This experiment PREDATES the holdout guard and its 2021-2025 window overlaps what is now the
+    # sealed holdout.  It used independent shifted pairs (a size diagnostic): no strategy,
+    # parameter, feature or universe was selected from it.  The guard is therefore switched off
+    # here, and the overlap is disclosed in the README.  Its conclusion (miscalibration) is
+    # visible in the 2011-2015 and 2016-2020 windows alone.
+    cfg = load_config("configs/data_default.yaml").model_copy(update={"split": None})
+    pipe = DataPipeline(cfg)
     manifest = pipe.store.manifest()
     tickers = list(manifest.loc[manifest["status"] == "ok", "ticker"])
     rng = np.random.default_rng(SEED)  # pairings and shifts: the main experiment

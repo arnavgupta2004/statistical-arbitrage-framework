@@ -25,6 +25,7 @@ from statarb.data.cleaning.corporate_actions import as_traded_close, rebase_to_a
 from statarb.data.cleaning.issues import Issue, issues_to_frame
 from statarb.data.cleaning.validation import audit_history
 from statarb.data.download.refresh import Refresher, RefreshReport
+from statarb.data.holdout import HoldoutLedger, HoldoutViolation
 from statarb.data.sources.base import DataSource
 from statarb.data.storage.store import ParquetStore
 from statarb.data.universe.builders import Universe, build_universe
@@ -59,6 +60,8 @@ class DataPipeline:
         self.source = source or make_source(cfg)
         self.calendar = calendar or TradingCalendar(cfg.calendar)
         self._universe: Universe | None = None
+        self.ledger = HoldoutLedger(cfg.split.ledger_path) if cfg.split is not None else None
+        self._holdout_unlocked = False
 
     @classmethod
     def from_config_path(cls, path: str | Path) -> DataPipeline:
@@ -66,6 +69,29 @@ class DataPipeline:
 
     def close(self) -> None:
         self.store.close()
+
+    # ---- holdout guard -------------------------------------------------------------------
+    def _guard(self, *dates) -> None:
+        """Refuse a research read that reaches the sealed holdout (through ``end`` or ``as_of``)."""
+        split = self.cfg.split
+        if split is None or self._holdout_unlocked:
+            return
+        latest = max(pd.Timestamp(d) for d in dates)
+        if latest.date() >= split.holdout_start:
+            raise HoldoutViolation(
+                f"read through {latest.date()} reaches the sealed holdout "
+                f"(from {split.holdout_start}); "
+                "research must stay before it. Unlocking is a one-time, recorded act: "
+                "pipeline.unlock_holdout(purpose)."
+            )
+
+    def unlock_holdout(self, purpose: str, allow_reopen: bool = False) -> dict:
+        """Open the holdout for this pipeline instance and record it in the ledger."""
+        if self.ledger is None:
+            raise ValueError("no split is configured; there is no holdout to unlock")
+        event = self.ledger.unlock(purpose, self.fingerprint(), allow_reopen)
+        self._holdout_unlocked = True
+        return event
 
     # ---- universe ----------------------------------------------------------------------
     def universe(self, rebuild: bool = False) -> Universe:
@@ -104,6 +130,7 @@ class DataPipeline:
         """
         start, end = pd.Timestamp(start), pd.Timestamp(end)
         as_of = pd.Timestamp(as_of) if as_of is not None else end
+        self._guard(end, as_of)
         sessions = self.calendar.sessions(start, end)
         histories, missing = {}, {}
         for t in sorted(set(tickers)):
@@ -124,31 +151,50 @@ class DataPipeline:
         construction) -- use it for what genuinely needs the printed price: tick-size and
         minimum-price screens, share counts, and bps-of-price cost conversions.
         """
+        self._guard(end)
         prices = self.store.read_prices(ticker)
         if prices is None:
             raise KeyError(f"{ticker} not in store")
         raw = as_traded_close(prices["close"], self.store.read_actions(ticker))
         return raw.loc[pd.Timestamp(start) : pd.Timestamp(end)]
 
-    def identity_report(self) -> pd.DataFrame:
-        """Per membership interval: is the stored price series plausibly that company's?"""
+    def identity_report(self, as_of=None, since=None) -> pd.DataFrame:
+        """Per membership interval: is the stored price series plausibly that company's?
+
+        Point-in-time: with ``as_of`` only bars up to that date are judged (a later stub history
+        must not exclude a ticker *before* it appears, and later liquid bars must not launder early
+        zero-volume rows); ``since`` starts the judged window (e.g. the training window).
+        """
         today = pd.Timestamp.now().normalize()
-        sessions = self.calendar.sessions(self.cfg.start, today)
+        end = min(today, pd.Timestamp(as_of)) if as_of is not None else today
+        self._guard(end)
+        start = (
+            max(pd.Timestamp(self.cfg.start), pd.Timestamp(since))
+            if since is not None
+            else pd.Timestamp(self.cfg.start)
+        )
+        sessions = self.calendar.sessions(start, end)
         return check_identity(
             self.universe(),
             self.store.read_prices,
             sessions,
-            self.cfg.start,
-            today,
+            start,
+            end,
             self.cfg.universe.min_volume_share,
         )
 
     def members_mask(self, panel: AlignedPanel, verified: bool = False) -> pd.DataFrame:
-        """Point-in-time membership as a boolean (session x ticker) matrix aligned to ``panel``."""
+        """Point-in-time membership as a boolean (session x ticker) matrix aligned to ``panel``.
+
+        ``verified=True`` also drops cells whose prices fail the identity check, judged only on the
+        panel's own window (``since`` its first session, ``as_of`` its as-of date).
+        """
         m = self.universe().membership.matrix(panel.close.index)
         mask = m.reindex(columns=panel.close.columns, fill_value=False)
         if verified:  # drop (ticker, interval) cells whose prices are probably another company's
-            bad = self.identity_report()
+            bad = self.identity_report(
+                as_of=panel.as_of or panel.close.index[-1], since=panel.close.index[0]
+            )
             bad = bad[bad["verdict"].isin(["suspect", "no_prices"])]
             for t, s, e in bad[["ticker", "start", "end"]].itertuples(index=False):
                 if t in mask.columns:

@@ -29,7 +29,7 @@ from dataclasses import dataclass
 import numpy as np
 import pandas as pd
 
-REASONS = {0: "", 1: "mean", 2: "stop", 3: "time", 4: "data"}
+REASONS = {0: "", 1: "mean", 2: "stop", 3: "time", 4: "data", 5: "end"}
 
 
 @dataclass(frozen=True)

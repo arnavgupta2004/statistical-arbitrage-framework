@@ -24,11 +24,16 @@ from statarb.data.universe.survivorship import survivorship_report
 
 
 def _sample_dates(pipe: DataPipeline, freq: str = "YS") -> pd.DatetimeIndex:
-    """Yearly Jan-1 samples from ``start`` plus the last finalised session."""
+    """Yearly Jan-1 samples from ``start`` plus the last finalised session.
+
+    With a split configured the samples stop before the sealed holdout.
+    """
     start = pd.Timestamp(pipe.cfg.start).normalize()
     last = pipe.calendar.last_complete_session(
         pd.Timestamp.now(tz="UTC"), pipe.cfg.refresh.finalize_buffer_hours
     )
+    if pipe.cfg.split is not None:
+        last = min(last, pd.Timestamp(pipe.cfg.split.holdout_start) - pd.Timedelta(days=1))
     return pd.date_range(start, last, freq=freq).append(pd.DatetimeIndex([last]))
 
 
@@ -92,7 +97,7 @@ def main(argv: list[str] | None = None) -> int:
 
         elif args.command == "survivorship":
             uni = pipe.universe()
-            ident = pipe.identity_report()
+            ident = pipe.identity_report(as_of=_sample_dates(pipe)[-1])
             ident.to_csv(pipe.store.root / "reports" / "identity_check.csv", index=False)
             tbl, summary = survivorship_report(
                 uni,

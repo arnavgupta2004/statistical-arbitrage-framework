@@ -11,8 +11,9 @@ from datetime import date
 from pathlib import Path
 from typing import Literal
 
+import pandas as pd
 import yaml
-from pydantic import BaseModel, ConfigDict, Field
+from pydantic import BaseModel, ConfigDict, Field, model_validator
 
 
 class _Strict(BaseModel):
@@ -90,6 +91,38 @@ class AlignmentConfig(_Strict):
     )
 
 
+class SplitConfig(_Strict):
+    """Chronological research / validation / final-holdout split (see the README)."""
+
+    data_start: date
+    research_end: date
+    validation_start: date
+    validation_end: date
+    holdout_start: date
+    ledger_path: str = "experiments/holdout_ledger.jsonl"
+
+    @model_validator(mode="after")
+    def _ordered(self):
+        if not (
+            self.data_start
+            < self.research_end
+            < self.validation_start
+            <= self.validation_end
+            < self.holdout_start
+        ):
+            raise ValueError(
+                "need data_start < research_end < validation_start <= validation_end "
+                "< holdout_start"
+            )
+        return self
+
+    def phase_of(self, d) -> str:
+        d = pd.Timestamp(d).date()
+        if d >= self.holdout_start:
+            return "holdout"
+        return "validation" if d >= self.validation_start else "research"
+
+
 class DataConfig(_Strict):
     store_dir: str = "var/store"
     source: Literal["yahoo", "csv", "synthetic"] = "yahoo"
@@ -100,6 +133,7 @@ class DataConfig(_Strict):
     universe: UniverseConfig = UniverseConfig()
     validation: ValidationConfig = ValidationConfig()
     alignment: AlignmentConfig = AlignmentConfig()
+    split: SplitConfig | None = None
 
     @property
     def store_path(self) -> Path:

@@ -1,7 +1,7 @@
 {
   "experiment": "stage3_pair_discovery",
   "seed": 20260920,
-  "git_commit": "925cd72",
+  "git_commit": "8dced87",
   "data_fingerprint": "07d3aa14cdacd9c9",
   "train_window": [
     "2011-01-03",

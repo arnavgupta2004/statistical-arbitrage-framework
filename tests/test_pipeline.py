@@ -194,3 +194,30 @@ def test_verified_members_mask_drops_intervals_whose_prices_are_another_companys
     verified = pipe.members_mask(p, verified=True)
     assert verified["AAA"].all() and not verified["BBB"].any()
     assert pipe.identity_report().set_index("ticker").loc["BBB", "verdict"] == "suspect"
+
+
+def test_identity_check_is_point_in_time(make_pipeline):
+    """Only bars up to as_of are judged: a later stub must not exclude a ticker earlier, and later
+    liquid bars must not launder earlier zero-volume rows."""
+    pipe = make_pipeline(subdir="pit_ident")
+    pipe.refresh(["AAA", "BBB"])
+    cut = ts("2016-01-04")
+    aaa = pipe.store.read_prices("AAA")
+    aaa.loc[aaa.index > cut, "volume"] = 0.0  # a stub period that starts AFTER the cut
+    pipe.store.write_history("AAA", aaa, pipe.store.read_actions("AAA"))
+    bbb = pipe.store.read_prices("BBB")
+    bbb.loc[bbb.index[:20], "volume"] = 0.0  # 20 zero rows: 7.9 % of the as-of window, 4.0 % of all
+    pipe.store.write_history("BBB", bbb, pipe.store.read_actions("BBB"))
+
+    early = pipe.identity_report(as_of=cut).set_index("ticker")
+    assert early.loc["AAA", "verdict"] == "ok"  # the future stub is invisible at `cut`
+    assert early.loc["BBB", "verdict"] == "suspect"  # judged on the past only
+    late = pipe.identity_report().set_index("ticker")  # judged on everything
+    assert late.loc["AAA", "verdict"] == "suspect" and late.loc["BBB", "verdict"] == "ok"
+
+    windowed = pipe.identity_report(as_of=cut, since="2015-03-01").set_index("ticker")
+    assert windowed.loc["BBB", "verdict"] == "ok"  # the judged window starts after the bad rows
+
+    panel = pipe.panel(["AAA", "BBB"], "2015-01-02", cut)
+    mask = pipe.members_mask(panel, verified=True)
+    assert mask["AAA"].all() and not mask["BBB"].any()  # uses the panel's own window and as-of

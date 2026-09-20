@@ -16,8 +16,8 @@ the goal and is not reported as a finding.
 | 1 | Data pipeline, corporate actions, validation, point-in-time universe, leakage tooling | **done** |
 | 2 | Statistical toolkit: ADF, Engle–Granger, Johansen, OU, half-life | **done** |
 | 3 | Pair discovery on training data only | **done** |
-| 4 | Pair strategy: hedge ratios, spread, z-score, entry/exit/stop | **done** (this commit) |
-| 5 | Walk-forward backtest, train/validation/holdout | not started |
+| 4 | Pair strategy: hedge ratios, spread, z-score, entry/exit/stop | **done** |
+| 5 | Walk-forward backtest, train/validation/holdout | **done** (this commit) |
 | 6 | Transaction costs: spread, commissions, impact | not started |
 | 7 | PCA statistical arbitrage | not started |
 | 8 | Multiple-testing correction, deflated Sharpe, reality check | not started |
@@ -50,8 +50,10 @@ statarb/
   models/              ou, rolling, hedge_ratio (static/expanding/rolling), kalman
   signals/             zscore (closed-form, time-varying hedge), pairs (entry/exit/stop state machine)
   portfolio/           construction (leg weights, volatility targeting)
-  backtest/            pair_pnl (gross single-pair accounting; the Stage 5 engine builds on it)
+  backtest/            pair_pnl (single-pair accounting), walkforward (folds, engine), metrics
+  research/            registry (append-only trial log)
   statistics/          bootstrap (stationary block bootstrap)
+  data/holdout.py      sealed-holdout guard and ledger
 tests/                 pytest + hypothesis
 experiments/           runnable experiments and their JSON results (registry: Stage 8+)
 ```
@@ -685,7 +687,157 @@ dropped: vendor total returns around a spin-off are not trustworthy.
 * Stops fired on 5–10 % of trades in the 60- and 120-day-window variants (0.7 % with a 30-day window);
   the DHR/HSIC spin-off blow-up shows the stop and an event mask matter.
 
-## 7. Statistical-arbitrage methodology *(Stages 5–9: specification only)*
+## 7. Walk-forward backtesting and the sealed holdout (Stage 5)
+
+`statarb/backtest/{walkforward,metrics}.py`, `statarb/data/holdout.py`, `statarb/research/registry.py`,
+`configs/data_default.yaml` (the `split:` block); experiment `stage5_walkforward.py`.
+
+### 7.1 The chronological split, and how it is enforced
+
+Fixed **before any result after 2018 was seen**:
+
+| Phase | Dates | Role |
+|---|---|---|
+| Research / training | 2011-01-03 → 2018-12-31 | development, configuration search (all trials here count) |
+| Validation | 2019-01-01 → 2021-12-31 | pre-selected finalists are scored once; not used to tune |
+| **Final holdout** | 2022-01-01 → end of data | sealed until the final evaluation; one look |
+
+2011-01-03 is the first date with a reliable point-in-time universe (§2.1). The blocks are calendar years,
+so a walk-forward test block never straddles two phases (the engine refuses a split that would).
+
+**Enforced in code, not by intention.** With a split configured, every research-facing read
+(`DataPipeline.panel`, `raw_close`, `identity_report`) refuses a request that reaches the holdout, whether
+through its `end` *or* through `as_of`, which could otherwise smuggle later splits into a price basis
+(`HoldoutViolation`). Unlocking is one call, **allowed once**, and is written to an append-only ledger
+(`experiments/holdout_ledger.jsonl`, committed: it is empty as of this commit, i.e. the holdout has never
+been opened). A second unlock raises unless it is explicitly recorded as a contaminating `reopen`. Data
+*operations* (refresh, audit) read the whole store because data integrity is not a modelling choice, and
+code that bypasses the pipeline and reads Parquet files directly is outside the guard: it prevents
+accidents, not sabotage.
+
+**Disclosures.**
+* Stage 2's null-size diagnostic used a 2021–2025 window, which now overlaps the holdout. It paired
+  *independent* shifted stocks to test a p-value's calibration; no strategy, parameter, feature or universe
+  was selected from it, and its conclusion (five-year null rejection of 7.3 % and 14.5 %) is visible in the
+  2011–2015 and 2016–2020 windows alone. It predates the guard and is logged as such in the registry.
+* The 2016 look in Stages 3–4 is research-phase data.
+* **A look-ahead defect was found and fixed while building this stage.** The identity check
+  (§2.3) judged each membership interval on bars up to *today*, not up to the fold's `train_end`: later bars
+  could launder early zero-volume rows. It is now point-in-time (`identity_report(as_of, since)`), with a
+  regression test that the earlier tests could not have caught (they scrambled prices, not volumes). I
+  re-ran Stage 3 with the fix: the funnel, the 43 discoveries, the 20 selected pairs and every
+  out-of-sample number are **identical**; four tickers that would have passed only because of later bars are
+  excluded earlier by other filters. The defect was in the code, not in a reported result.
+
+### 7.2 The engine
+
+A **fold** screens pairs on a training window and trades the following block::
+
+    train [train_start, train_end] -> point-in-time universe, eligibility, pair screen, hedge ratios (frozen)
+    test  [test_start,  test_end]  -> trade bar by bar; every position is forced flat at test_end
+
+* **Blocks are independent**: a position opened in a block is closed at its end (the exit trade is
+  counted), so there is nothing to purge or embargo: no label is built from future returns, and a fold's
+  selection uses data at or before its `train_end`.
+* **Portfolio**: fixed-slot equal weight. Each of 20 slots gets 1/20 of capital and a pair's unit-notional
+  P&L is scaled by that, so the return is on total capital and does not depend on how many pairs passed the
+  screen (unused slots earn nothing). In the run below the mean gross exposure is 0.81× capital (max 1.75×)
+  with 8.5 pairs open on average.
+* **Events**: an ex-date with a distribution above 10 % of price (a spin-off; §1.8) distorts total returns
+  and the trailing z-window. Ex-dates are public in advance, so the spread is blacked out from one day before
+  to `z_window` days after. This is the only place the engine reads a calendar fact one day ahead of a
+  decision.
+* **Costs**: a `cost_fn(frame)` hook charges the drift-aware turnover of Stage 4; the default is none, so
+  every number in this stage is **gross**.
+* **Registry**: `experiments/registry.jsonl` is an append-only log of every trial (date, stage, universe, phases
+  used, windows, parameters, costs, results, seed, git commit, data fingerprint). Stages 2–4 were back-filled.
+  **18 real-data strategy trials are registered so far** (Stage 3 screen: 1, Stage 4 variants: 8, Stage 5
+  grid: 9); simulations and diagnostics are logged but not counted. Stage 8's corrections use this count.
+
+### 7.3 Validation
+
+Tests (431, all green). The look-ahead tests exercise the whole engine: scrambling every price after
+`test_end`, scrambling every price from the first test day (the screen is unchanged; trading is not),
+scrambling prices after a date *inside* the block (P&L up to that date is identical), and a store that
+simply ends at `test_end` (identical) all leave the results unchanged. Other tests cover fold boundaries and
+phase labels, the holdout guard on every read path, one-time unlocking, slot arithmetic, forced liquidation
+with its exit turnover, blocks being independent, event blackouts, the cost hook, and the metrics against
+hand-worked values (drawdowns, Sortino, profit factor). A mutation sweep injected 26 bugs (a screen trained
+through the test block, a hedge ratio fitted through it, no liquidation, a guard that ignores `as_of` or is
+off by one, a ledger that permits a second unlock, an identity check reading to today, …); **all 26 are
+caught**. Three initial survivors exposed real test gaps (a placebo that could include significant pairs; a
+drawdown that ignored the starting equity), now covered.
+
+### 7.4 Result: the research phase, walk-forward, gross (2015–2018)
+
+`experiments/stage5_walkforward.py`, pre-specified: four test years (2015–2018), each screened on the four
+years before it; the 9-configuration grid (hedge ∈ {static, expanding, Kalman} × entry ∈ {1.5, 2.0, 2.5});
+a **placebo** that trades random pairs (same count as the screen selected, drawn from that fold's
+*non-significant* candidates with β > 0, 300 draws shared across configurations). Validation and the holdout
+are not touched. The grid was pruned to these hedge methods using Stage 4, and all 9 are registered as trials.
+
+The screen in each fold (a fresh window each time; the calibrated p-values use 10 shifted-null panels):
+
+| Test year | Training window | Eligible | Candidates | Calibrated discoveries @5 % | Expected under the null | Estimated FDR |
+|---|---|---|---|---|---|---|
+| 2015 | 2011-01-03 → 2014-12-31 | 308 | 1,222 | 68 (5.6%) | 61 | 0.90 |
+| 2016 | 2012-01-04 → 2015-12-31 | 324 | 1,275 | 47 (3.7%) | 64 | 1.00 |
+| 2017 | 2013-01-03 → 2016-12-30 | 340 | 1,345 | 52 (3.9%) | 67 | 1.00 |
+| 2018 | 2014-01-02 → 2017-12-29 | 361 | 1,401 | 54 (3.9%) | 70 | 1.00 |
+
+Stage 3's pattern **replicates in four new windows**: the calibrated discoveries are about what the null
+produces (3.7–5.6 % of candidates against 5 % by construction), and the estimated false-discovery
+proportion is 0.90–1.00.
+
+Gross performance of the stitched 2015–2018 out-of-sample series (1,006 days; Sharpe with a stationary
+block-bootstrap 95 % interval; placebo = 300 random-pair portfolios):
+
+| Configuration | Screened Sharpe [95 % CI] | Placebo Sharpe: median (5–95 %) | Screened's percentile in placebo | Ann. vol | Max drawdown | Turnover / yr | Trades |
+|---|---|---|---|---|---|---|---|
+| static, entry 1.5 | +0.23 [-0.67, +1.24] | +0.37 (-0.33, +1.20) | 37% | 4.7 % | -6.4 % | 27.7 | 520 |
+| static, entry 2.0 | -0.16 [-1.10, +0.80] | +0.33 (-0.34, +1.12) | 11% | 4.2 % | -8.2 % | 19.3 | 359 |
+| static, entry 2.5 | -0.32 [-1.29, +0.69] | +0.21 (-0.46, +0.99) | 11% | 3.6 % | -9.0 % | 12.7 | 233 |
+| expanding, entry 1.5 | +0.30 [-0.59, +1.26] | +0.33 (-0.37, +1.12) | 49% | 4.6 % | -5.8 % | 27.9 | 527 |
+| expanding, entry 2.0 | +0.01 [-0.93, +0.98] | +0.29 (-0.38, +1.05) | 23% | 4.1 % | -7.0 % | 20.0 | 374 |
+| expanding, entry 2.5 | -0.30 [-1.29, +0.76] | +0.21 (-0.48, +0.99) | 12% | 3.6 % | -9.5 % | 12.8 | 236 |
+| Kalman δ=1e-5, entry 1.5 | -0.25 [-1.02, +0.56] | +0.30 (-0.38, +1.06) | 10% | 4.4 % | -7.5 % | 23.6 | 514 |
+| Kalman δ=1e-5, entry 2.0 | -0.11 [-0.97, +0.74] | +0.27 (-0.40, +1.04) | 17% | 4.0 % | -7.2 % | 17.2 | 367 |
+| Kalman δ=1e-5, entry 2.5 | -0.18 [-1.09, +0.69] | +0.30 (-0.45, +1.09) | 13% | 3.4 % | -6.8 % | 11.4 | 240 |
+
+* **H5a (the screened portfolio beats random pairs) is refuted.** The best configuration (expanding,
+  entry 1.5, +0.30) sits at the 49th percentile of the placebo, i.e. at its median; in **all nine**
+  configurations the screened portfolio is at or below the placebo median (10th–49th percentile), and none
+  is anywhere near the 95th. Its mean daily return is below the placebo's by 0.2–0.9 bp in eight of nine.
+* **H5b (the strategy itself is positive gross): weakly.** The placebo median is +0.21 to +0.37 and 69–80 %
+  of the random portfolios have a positive Sharpe, but every placebo 5–95 % band spans zero. This is far
+  below Stage 4's +1.67 for a 1,192-pair 2016 portfolio: that figure was inflated by diversification and one
+  favourable year.
+* **H5c (hedge ordering echoes the simulator): partly.** Static and expanding are close (e.g. entry 2.0:
+  −0.16 vs +0.01); the Kalman filter is no better. Differences are far inside the intervals.
+* **Uncertainty dominates.** Every screened Sharpe interval is roughly ±1, and the by-year Sharpe of one
+  configuration swings from -1.51 to +0.68 (static, entry 2.0: 0: -0.50, 1: +0.68, 2: -1.51, 3: +0.54), so a single block says little.
+* **Entry threshold and cost exposure.** Lower entry thresholds have the higher gross Sharpe *and* the higher
+  turnover (27.7 vs 12.7 units/yr, entry 1.5 vs 2.5), so the ranking is exactly what costs will reshuffle;
+  no configuration is chosen here (Stage 6 re-scores them with costs, and the finalists go to validation
+  once).
+
+**What this establishes.** On four fresh walk-forward blocks, pairs chosen by the calibrated cointegration
+screen are not distinguishable from randomly chosen correlated same-sector pairs, and both earn close to
+nothing gross. That is a negative result for Experiment A on the research phase; it is *not* evidence that
+no exploitable relationship exists, and it says nothing yet about validation or the holdout.
+
+### 7.5 Limits of Stage 5
+
+* Four test blocks and 20-pair portfolios: low power (intervals of ±1 Sharpe); the placebo controls the
+  selection effect but not the sampling noise.
+* Gross of costs and financing; one screening configuration; the survivor-tilted universe and today's sector
+  labels apply unchanged.
+* Positions are closed at each block boundary, which a live system would not do; it removes cross-block
+  leakage at the price of some realism (an extra exit and entry per surviving trade at each year end).
+* Missing returns (delistings) are treated as zero and counted; none occurred in these blocks.
+* The event blackout uses a one-day-ahead calendar fact; the results with it disabled were not run.
+
+## 8. Statistical-arbitrage methodology *(Stages 6–9: specification only)*
 
 Hypotheses to be tested, each with its data, method, assumptions, uncertainty, failure cases and
 limitations recorded when run:
@@ -702,7 +854,7 @@ limitations recorded when run:
 The train / validation / final-holdout split, the walk-forward scheme, the cost model, the
 multiple-testing framework and the experiment registry will be documented here as each is built.
 
-## 8. Limitations so far
+## 9. Limitations so far
 
 * The reconstructed S&P 500 membership is trustworthy only from 2011-01-01 (§2.1); earlier dates are
   not used for any claim, and even later dates inherit the change log's residual gaps.
@@ -720,6 +872,8 @@ multiple-testing framework and the experiment registry will be documented here a
   samples and depends on `det_order`; ADF/Engle–Granger assume homoskedastic errors and read a structural
   break as a unit root. None of these are corrected for yet beyond what §4 states.
 * (Stage 2) Critical-value tables come from statsmodels; a defect there would propagate.
+* (Stage 5) Four research-phase test blocks with 20-pair portfolios (Sharpe intervals of about ±1);
+  everything gross; validation and the holdout have not been evaluated; the holdout is unopened.
 * (Stage 4) All P&L so far is gross of costs and frictionless, on one year of data for the real-pair look;
   the hedge-ratio comparison rests on a simulator that favours the Kalman filter; nothing has been
   evaluated on a holdout.

@@ -1,0 +1,590 @@
+{
+  "experiment": "stage5_walkforward",
+  "seed": 20260922,
+  "git_commit": "8dced87",
+  "data_fingerprint": "07d3aa14cdacd9c9",
+  "split": {
+    "data_start": "2011-01-03",
+    "research_end": "2018-12-31",
+    "validation_start": "2019-01-01",
+    "validation_end": "2021-12-31",
+    "holdout_start": "2022-01-01",
+    "ledger_path": "experiments/holdout_ledger.jsonl"
+  },
+  "folds": [
+    {
+      "fold": 0,
+      "train": [
+        "2011-01-03",
+        "2014-12-31"
+      ],
+      "test": [
+        "2015-01-02",
+        "2015-12-31"
+      ],
+      "eligible": 308,
+      "candidates": 1222,
+      "selected": 20,
+      "discoveries_5pct": 68,
+      "estimated_fdr_5pct": 0.8985294117647059
+    },
+    {
+      "fold": 1,
+      "train": [
+        "2012-01-04",
+        "2015-12-31"
+      ],
+      "test": [
+        "2016-01-04",
+        "2016-12-30"
+      ],
+      "eligible": 324,
+      "candidates": 1275,
+      "selected": 20,
+      "discoveries_5pct": 47,
+      "estimated_fdr_5pct": 1.0
+    },
+    {
+      "fold": 2,
+      "train": [
+        "2013-01-03",
+        "2016-12-30"
+      ],
+      "test": [
+        "2017-01-03",
+        "2017-12-29"
+      ],
+      "eligible": 340,
+      "candidates": 1345,
+      "selected": 20,
+      "discoveries_5pct": 52,
+      "estimated_fdr_5pct": 1.0
+    },
+    {
+      "fold": 3,
+      "train": [
+        "2014-01-02",
+        "2017-12-29"
+      ],
+      "test": [
+        "2018-01-02",
+        "2018-12-31"
+      ],
+      "eligible": 361,
+      "candidates": 1401,
+      "selected": 20,
+      "discoveries_5pct": 54,
+      "estimated_fdr_5pct": 1.0
+    }
+  ],
+  "results": {
+    "static_in1.5": {
+      "config": {
+        "hedge_method": "static",
+        "hedge_window": null,
+        "kalman_delta": 1e-05,
+        "entry": 1.5,
+        "exit": 0.5,
+        "stop": 4.0,
+        "max_hold": 60,
+        "z_window": 60,
+        "target_vol": null,
+        "freeze_beta": false,
+        "slots": 20,
+        "max_dividend_yield": 0.1,
+        "event_lead": 1,
+        "event_blackout": null
+      },
+      "summary": {
+        "n_days": 1006,
+        "mean_daily_bps": 0.43113609090258065,
+        "ann_return_pct": 1.0864629490745032,
+        "ann_vol_pct": 4.741270876421944,
+        "sharpe": 0.22915015349100143,
+        "sortino": 0.32448232255495685,
+        "max_drawdown_pct": -6.413234947540436,
+        "drawdown_duration_days": 450,
+        "calmar": 0.16940950362206467,
+        "hit_rate": 0.5079840319361277,
+        "profit_factor": 1.0413819586812845,
+        "turnover_per_year": 27.74795920496447
+      },
+      "sharpe_ci95": [
+        -0.6715581394900164,
+        1.2350589622574213
+      ],
+      "sharpe_by_fold": {
+        "0": 0.13309530520290125,
+        "1": 0.8526537255135984,
+        "2": -0.6028629861755547,
+        "3": 0.3750975996967663
+      },
+      "n_trades": 520,
+      "stop_share": 0.03653846153846154,
+      "placebo": {
+        "n_draws": 300,
+        "sharpe_median": 0.3669599602395003,
+        "sharpe_5_95": [
+          -0.32766784580043073,
+          1.2006318269707055
+        ],
+        "screened_percentile": 0.37333333333333335,
+        "mean_daily_bps_median": 0.5855519549608674,
+        "screened_minus_placebo_mean_bps": -0.16360253179689946,
+        "share_of_draws_with_positive_sharpe": 0.7966666666666666
+      }
+    },
+    "static_in2": {
+      "config": {
+        "hedge_method": "static",
+        "hedge_window": null,
+        "kalman_delta": 1e-05,
+        "entry": 2.0,
+        "exit": 0.5,
+        "stop": 4.0,
+        "max_hold": 60,
+        "z_window": 60,
+        "target_vol": null,
+        "freeze_beta": false,
+        "slots": 20,
+        "max_dividend_yield": 0.1,
+        "event_lead": 1,
+        "event_blackout": null
+      },
+      "summary": {
+        "n_days": 1006,
+        "mean_daily_bps": -0.26166572794483284,
+        "ann_return_pct": -0.6593976344209787,
+        "ann_vol_pct": 4.203284436982277,
+        "sharpe": -0.1568767577609831,
+        "sortino": -0.2151387715599078,
+        "max_drawdown_pct": -8.221375714818057,
+        "drawdown_duration_days": 456,
+        "calmar": -0.08020526701297599,
+        "hit_rate": 0.5040160642570282,
+        "profit_factor": 0.9727435250254345,
+        "turnover_per_year": 19.334022061809144
+      },
+      "sharpe_ci95": [
+        -1.1044120521062941,
+        0.803183966051274
+      ],
+      "sharpe_by_fold": {
+        "0": -0.4956672137116612,
+        "1": 0.6804368693817736,
+        "2": -1.5149218596503577,
+        "3": 0.5427994882867114
+      },
+      "n_trades": 359,
+      "stop_share": 0.036211699164345405,
+      "placebo": {
+        "n_draws": 300,
+        "sharpe_median": 0.3311140618893361,
+        "sharpe_5_95": [
+          -0.3428937820364284,
+          1.1163197250075254
+        ],
+        "screened_percentile": 0.11,
+        "mean_daily_bps_median": 0.4426702348342633,
+        "screened_minus_placebo_mean_bps": -0.7346452895345997,
+        "share_of_draws_with_positive_sharpe": 0.7933333333333333
+      }
+    },
+    "static_in2.5": {
+      "config": {
+        "hedge_method": "static",
+        "hedge_window": null,
+        "kalman_delta": 1e-05,
+        "entry": 2.5,
+        "exit": 0.5,
+        "stop": 4.0,
+        "max_hold": 60,
+        "z_window": 60,
+        "target_vol": null,
+        "freeze_beta": false,
+        "slots": 20,
+        "max_dividend_yield": 0.1,
+        "event_lead": 1,
+        "event_blackout": null
+      },
+      "summary": {
+        "n_days": 1006,
+        "mean_daily_bps": -0.46170517414169243,
+        "ann_return_pct": -1.163497038837065,
+        "ann_vol_pct": 3.6109404281528166,
+        "sharpe": -0.32221440978804905,
+        "sortino": -0.42794215355463006,
+        "max_drawdown_pct": -9.020441245760324,
+        "drawdown_duration_days": 501,
+        "calmar": -0.1289844927911833,
+        "hit_rate": 0.5046343975283213,
+        "profit_factor": 0.9426549208355782,
+        "turnover_per_year": 12.668728686173083
+      },
+      "sharpe_ci95": [
+        -1.2888945933439158,
+        0.6927957976313085
+      ],
+      "sharpe_by_fold": {
+        "0": -0.368829588906383,
+        "1": 0.5112237275385276,
+        "2": -2.064854039789409,
+        "3": 0.5424644446470186
+      },
+      "n_trades": 233,
+      "stop_share": 0.04291845493562232,
+      "placebo": {
+        "n_draws": 300,
+        "sharpe_median": 0.20680968583509807,
+        "sharpe_5_95": [
+          -0.4584702645332633,
+          0.9894683464584787
+        ],
+        "screened_percentile": 0.10666666666666667,
+        "mean_daily_bps_median": 0.22535535002671192,
+        "screened_minus_placebo_mean_bps": -0.6908451742509476,
+        "share_of_draws_with_positive_sharpe": 0.7033333333333334
+      }
+    },
+    "expanding_in1.5": {
+      "config": {
+        "hedge_method": "expanding",
+        "hedge_window": null,
+        "kalman_delta": 1e-05,
+        "entry": 1.5,
+        "exit": 0.5,
+        "stop": 4.0,
+        "max_hold": 60,
+        "z_window": 60,
+        "target_vol": null,
+        "freeze_beta": false,
+        "slots": 20,
+        "max_dividend_yield": 0.1,
+        "event_lead": 1,
+        "event_blackout": null
+      },
+      "summary": {
+        "n_days": 1006,
+        "mean_daily_bps": 0.5597399619761584,
+        "ann_return_pct": 1.4105447041799193,
+        "ann_vol_pct": 4.628779275636644,
+        "sharpe": 0.30473362849774527,
+        "sortino": 0.4300291993539566,
+        "max_drawdown_pct": -5.804922476347563,
+        "drawdown_duration_days": 450,
+        "calmar": 0.24299113552803708,
+        "hit_rate": 0.5089820359281437,
+        "profit_factor": 1.0544290312445255,
+        "turnover_per_year": 27.873237172548034
+      },
+      "sharpe_ci95": [
+        -0.5892637624088234,
+        1.2592981708211188
+      ],
+      "sharpe_by_fold": {
+        "0": 0.13548432652640682,
+        "1": 0.8447313958030478,
+        "2": -0.2653124611498802,
+        "3": 0.37215785473233
+      },
+      "n_trades": 527,
+      "stop_share": 0.03415559772296015,
+      "placebo": {
+        "n_draws": 300,
+        "sharpe_median": 0.327935233458315,
+        "sharpe_5_95": [
+          -0.3684842677134149,
+          1.1169111741224043
+        ],
+        "screened_percentile": 0.4866666666666667,
+        "mean_daily_bps_median": 0.4933200559713735,
+        "screened_minus_placebo_mean_bps": 0.01652183083381623,
+        "share_of_draws_with_positive_sharpe": 0.7833333333333333
+      }
+    },
+    "expanding_in2": {
+      "config": {
+        "hedge_method": "expanding",
+        "hedge_window": null,
+        "kalman_delta": 1e-05,
+        "entry": 2.0,
+        "exit": 0.5,
+        "stop": 4.0,
+        "max_hold": 60,
+        "z_window": 60,
+        "target_vol": null,
+        "freeze_beta": false,
+        "slots": 20,
+        "max_dividend_yield": 0.1,
+        "event_lead": 1,
+        "event_blackout": null
+      },
+      "summary": {
+        "n_days": 1006,
+        "mean_daily_bps": 0.021120315307918292,
+        "ann_return_pct": 0.0532231945759541,
+        "ann_vol_pct": 4.149952349621722,
+        "sharpe": 0.012825013419926501,
+        "sortino": 0.01771044287975416,
+        "max_drawdown_pct": -7.015785069044211,
+        "drawdown_duration_days": 450,
+        "calmar": 0.007586206540276028,
+        "hit_rate": 0.5190763052208835,
+        "profit_factor": 1.002245086109808,
+        "turnover_per_year": 20.031899550841757
+      },
+      "sharpe_ci95": [
+        -0.9303609251141922,
+        0.984174953305613
+      ],
+      "sharpe_by_fold": {
+        "0": -0.283024729382595,
+        "1": 0.6548496072883959,
+        "2": -1.2106753265597572,
+        "3": 0.7237494852898645
+      },
+      "n_trades": 374,
+      "stop_share": 0.03208556149732621,
+      "placebo": {
+        "n_draws": 300,
+        "sharpe_median": 0.28755527177130136,
+        "sharpe_5_95": [
+          -0.38016284820140084,
+          1.0485531545035316
+        ],
+        "screened_percentile": 0.23333333333333334,
+        "mean_daily_bps_median": 0.3912998624326686,
+        "screened_minus_placebo_mean_bps": -0.40131126172580756,
+        "share_of_draws_with_positive_sharpe": 0.77
+      }
+    },
+    "expanding_in2.5": {
+      "config": {
+        "hedge_method": "expanding",
+        "hedge_window": null,
+        "kalman_delta": 1e-05,
+        "entry": 2.5,
+        "exit": 0.5,
+        "stop": 4.0,
+        "max_hold": 60,
+        "z_window": 60,
+        "target_vol": null,
+        "freeze_beta": false,
+        "slots": 20,
+        "max_dividend_yield": 0.1,
+        "event_lead": 1,
+        "event_blackout": null
+      },
+      "summary": {
+        "n_days": 1006,
+        "mean_daily_bps": -0.4208482287503989,
+        "ann_return_pct": -1.0605375364510052,
+        "ann_vol_pct": 3.58480487608554,
+        "sharpe": -0.2958424720759331,
+        "sortino": -0.39878010140088305,
+        "max_drawdown_pct": -9.462131028343334,
+        "drawdown_duration_days": 450,
+        "calmar": -0.11208231351629128,
+        "hit_rate": 0.505664263645726,
+        "profit_factor": 0.9472996032809288,
+        "turnover_per_year": 12.750940779027795
+      },
+      "sharpe_ci95": [
+        -1.293836987133703,
+        0.7594119573719567
+      ],
+      "sharpe_by_fold": {
+        "0": -0.29203343789071146,
+        "1": 0.7177226165819336,
+        "2": -2.0024437954545187,
+        "3": 0.15398245284020698
+      },
+      "n_trades": 236,
+      "stop_share": 0.038135593220338986,
+      "placebo": {
+        "n_draws": 300,
+        "sharpe_median": 0.21134263706902778,
+        "sharpe_5_95": [
+          -0.48180818545389426,
+          0.9929602665329382
+        ],
+        "screened_percentile": 0.11666666666666667,
+        "mean_daily_bps_median": 0.22716255528586995,
+        "screened_minus_placebo_mean_bps": -0.658153669445187,
+        "share_of_draws_with_positive_sharpe": 0.6866666666666666
+      }
+    },
+    "kalman1e-05_in1.5": {
+      "config": {
+        "hedge_method": "kalman",
+        "hedge_window": null,
+        "kalman_delta": 1e-05,
+        "entry": 1.5,
+        "exit": 0.5,
+        "stop": 4.0,
+        "max_hold": 60,
+        "z_window": 60,
+        "target_vol": null,
+        "freeze_beta": false,
+        "slots": 20,
+        "max_dividend_yield": 0.1,
+        "event_lead": 1,
+        "event_blackout": null
+      },
+      "summary": {
+        "n_days": 1006,
+        "mean_daily_bps": -0.44499009476911683,
+        "ann_return_pct": -1.1213750388181742,
+        "ann_vol_pct": 4.425895799395471,
+        "sharpe": -0.25336679615714,
+        "sortino": -0.3516762958548022,
+        "max_drawdown_pct": -7.505805470398319,
+        "drawdown_duration_days": 960,
+        "calmar": -0.14940102607784012,
+        "hit_rate": 0.48502994011976047,
+        "profit_factor": 0.955815323041591,
+        "turnover_per_year": 23.64072335998807
+      },
+      "sharpe_ci95": [
+        -1.021287176541038,
+        0.5574638198972507
+      ],
+      "sharpe_by_fold": {
+        "0": 0.12651335155734175,
+        "1": -0.46000705387988033,
+        "2": -0.6990427583366005,
+        "3": -0.11676908436876214
+      },
+      "n_trades": 514,
+      "stop_share": 0.03696498054474708,
+      "placebo": {
+        "n_draws": 300,
+        "sharpe_median": 0.2950083831870853,
+        "sharpe_5_95": [
+          -0.3820490874107638,
+          1.0626279752002865
+        ],
+        "screened_percentile": 0.10333333333333333,
+        "mean_daily_bps_median": 0.42500925285577096,
+        "screened_minus_placebo_mean_bps": -0.8960468964131637,
+        "share_of_draws_with_positive_sharpe": 0.79
+      }
+    },
+    "kalman1e-05_in2": {
+      "config": {
+        "hedge_method": "kalman",
+        "hedge_window": null,
+        "kalman_delta": 1e-05,
+        "entry": 2.0,
+        "exit": 0.5,
+        "stop": 4.0,
+        "max_hold": 60,
+        "z_window": 60,
+        "target_vol": null,
+        "freeze_beta": false,
+        "slots": 20,
+        "max_dividend_yield": 0.1,
+        "event_lead": 1,
+        "event_blackout": null
+      },
+      "summary": {
+        "n_days": 1006,
+        "mean_daily_bps": -0.1722784397118636,
+        "ann_return_pct": -0.43414166807389626,
+        "ann_vol_pct": 4.0112646032648,
+        "sharpe": -0.10823062326044136,
+        "sortino": -0.15127396038482543,
+        "max_drawdown_pct": -7.182306741074351,
+        "drawdown_duration_days": 973,
+        "calmar": -0.06044599370716323,
+        "hit_rate": 0.4924924924924925,
+        "profit_factor": 0.9807822015286003,
+        "turnover_per_year": 17.1732671124269
+      },
+      "sharpe_ci95": [
+        -0.9695885310269136,
+        0.7386219721082632
+      ],
+      "sharpe_by_fold": {
+        "0": -0.37902983839052506,
+        "1": -0.19899708452783335,
+        "2": -0.5620556359399573,
+        "3": 0.6630224359232854
+      },
+      "n_trades": 367,
+      "stop_share": 0.04087193460490463,
+      "placebo": {
+        "n_draws": 300,
+        "sharpe_median": 0.26666310245232594,
+        "sharpe_5_95": [
+          -0.40426703749856074,
+          1.0431972067631108
+        ],
+        "screened_percentile": 0.17333333333333334,
+        "mean_daily_bps_median": 0.33388926057007207,
+        "screened_minus_placebo_mean_bps": -0.5098016344885106,
+        "share_of_draws_with_positive_sharpe": 0.7533333333333333
+      }
+    },
+    "kalman1e-05_in2.5": {
+      "config": {
+        "hedge_method": "kalman",
+        "hedge_window": null,
+        "kalman_delta": 1e-05,
+        "entry": 2.5,
+        "exit": 0.5,
+        "stop": 4.0,
+        "max_hold": 60,
+        "z_window": 60,
+        "target_vol": null,
+        "freeze_beta": false,
+        "slots": 20,
+        "max_dividend_yield": 0.1,
+        "event_lead": 1,
+        "event_blackout": null
+      },
+      "summary": {
+        "n_days": 1006,
+        "mean_daily_bps": -0.23586632071994576,
+        "ann_return_pct": -0.5943831282142633,
+        "ann_vol_pct": 3.374555665473547,
+        "sharpe": -0.17613670869194398,
+        "sortino": -0.24636736519847885,
+        "max_drawdown_pct": -6.8419377368860275,
+        "drawdown_duration_days": 486,
+        "calmar": -0.08687350734132594,
+        "hit_rate": 0.4909456740442656,
+        "profit_factor": 0.967737995328855,
+        "turnover_per_year": 11.377409420710313
+      },
+      "sharpe_ci95": [
+        -1.0850990405057603,
+        0.6919826767040367
+      ],
+      "sharpe_by_fold": {
+        "0": -0.24141383481025463,
+        "1": 0.24928258053225624,
+        "2": -1.3267090757096802,
+        "3": 0.41823498000507303
+      },
+      "n_trades": 240,
+      "stop_share": 0.04583333333333333,
+      "placebo": {
+        "n_draws": 300,
+        "sharpe_median": 0.3028516051579542,
+        "sharpe_5_95": [
+          -0.45337059158337134,
+          1.085263916009477
+        ],
+        "screened_percentile": 0.12666666666666668,
+        "mean_daily_bps_median": 0.3127182210778687,
+        "screened_minus_placebo_mean_bps": -0.5384001684923093,
+        "share_of_draws_with_positive_sharpe": 0.7533333333333333
+      }
+    }
+  },
+  "phases_evaluated": [
+    "research"
+  ],
+  "note": "gross of costs; validation and holdout untouched"
+}

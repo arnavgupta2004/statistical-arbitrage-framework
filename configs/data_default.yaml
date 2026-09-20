@@ -30,3 +30,13 @@ validation:
 
 alignment:
   min_coverage: 0.95
+
+# Chronological split, fixed before any result beyond 2018 was seen. The final holdout is sealed in code:
+# research reads that reach it raise HoldoutViolation unless it is unlocked (once, recorded in the ledger).
+split:
+  data_start: 2011-01-03      # earliest date with a reliable point-in-time universe
+  research_end: 2018-12-31    # research / training: configuration search
+  validation_start: 2019-01-01
+  validation_end: 2021-12-31  # validation: pre-selected finalists scored once
+  holdout_start: 2022-01-01   # final holdout: sealed until the final evaluation
+  ledger_path: experiments/holdout_ledger.jsonl

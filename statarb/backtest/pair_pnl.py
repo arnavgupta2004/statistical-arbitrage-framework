@@ -39,9 +39,20 @@ def freeze_at_entry(beta: np.ndarray, position: np.ndarray) -> np.ndarray:
 
 
 def pair_returns(
-    position, beta: pd.Series, notional, ry: pd.Series, rx: pd.Series, freeze_beta: bool = False
+    position,
+    beta: pd.Series,
+    notional,
+    ry: pd.Series,
+    rx: pd.Series,
+    freeze_beta: bool = False,
+    on_missing_return: str = "raise",
 ) -> pd.DataFrame:
-    """Daily gross return on pair capital, turnover and exposure.  All inputs share ``ry.index``."""
+    """Daily gross return on pair capital, turnover and exposure.  All inputs share ``ry.index``.
+
+    A return missing while a position is held (a delisting, a data gap) raises by default; with
+    ``on_missing_return="zero"`` it is treated as 0 and counted in the ``missing`` column, which is
+    what a walk-forward run needs (a name acquired mid-block is closed at its last price).
+    """
     idx = ry.index
     pos = np.asarray(position, dtype=float)
     b = beta.reindex(idx).to_numpy(dtype=float)
@@ -53,7 +64,8 @@ def pair_returns(
     r_y, r_x = ry.to_numpy(dtype=float), rx.to_numpy(dtype=float)
     held_y, held_x = np.roll(w_y, 1), np.roll(w_x, 1)
     held_y[0] = held_x[0] = 0.0
-    if np.any(np.isnan(r_y[held_y != 0]) | np.isnan(r_x[held_x != 0])):
+    missing = (np.isnan(r_y) & (held_y != 0)) | (np.isnan(r_x) & (held_x != 0))
+    if missing.any() and on_missing_return == "raise":
         raise ValueError(
             "a return is missing while a position is held; gaps must flatten the position"
         )
@@ -61,7 +73,14 @@ def pair_returns(
     pnl = held_y * ry0 + held_x * rx0
     trade = np.abs(w_y - held_y * (1 + ry0)) + np.abs(w_x - held_x * (1 + rx0))
     return pd.DataFrame(
-        {"pnl": pnl, "trade": trade, "gross": np.abs(w_y) + np.abs(w_x), "w_y": w_y, "w_x": w_x},
+        {
+            "pnl": pnl,
+            "trade": trade,
+            "gross": np.abs(w_y) + np.abs(w_x),
+            "w_y": w_y,
+            "w_x": w_x,
+            "missing": missing,
+        },
         index=idx,
     )
 
@@ -77,11 +96,19 @@ def run_pair(
     train_end,
     target_vol: float | None = None,
     freeze_beta: bool = False,
+    blackout=None,
+    flatten_at_end: bool = False,
+    on_missing_return: str = "raise",
 ) -> dict:
     """The whole single-pair chain, in one place: hedge ratio -> z-score -> positions -> gross P&L.
 
     ``ly``/``lx`` are log prices, ``ry``/``rx`` simple total returns, all on one index.  Nothing is
     traded until the first bar after ``train_end``.  Returns the pieces so callers can inspect them.
+
+    ``blackout`` (boolean array) sets the z-score to NaN on flagged bars: any open position is
+    flattened and nothing is entered (used around corporate-action events).  ``flatten_at_end``
+    closes any open position at the last bar's close, so blocks of a walk-forward are independent
+    and the exit trade is counted in the turnover.
     """
     from statarb.models.hedge_ratio import hedge_path
     from statarb.portfolio.construction import entry_notional, spread_returns
@@ -91,10 +118,22 @@ def run_pair(
     path = hedge_path(ly, lx, hedge, train_end)
     beta = path["beta"]
     zdf = spread_zscore(ly, lx, beta, z_window)
+    if blackout is not None:
+        zdf["z"] = zdf["z"].where(~np.asarray(blackout, dtype=bool))
     start = int((ly.index <= pd.Timestamp(train_end)).sum())
     res = generate_positions(zdf["z"].to_numpy(), params, trade_start=start)
+    if flatten_at_end and res.position[-1] != 0:
+        res.position[-1], res.exit_reason[-1] = 0, 5
     notional = entry_notional(res.position, spread_returns(ry, rx, beta), target_vol)
-    out = pair_returns(res.position, beta, notional, ry, rx, freeze_beta=freeze_beta)
+    out = pair_returns(
+        res.position,
+        beta,
+        notional,
+        ry,
+        rx,
+        freeze_beta=freeze_beta,
+        on_missing_return=on_missing_return,
+    )
     return {
         "returns": out,
         "z": zdf["z"],

@@ -1,0 +1,638 @@
+{
+  "experiment": "stage4_hedge_ratio_synthetic",
+  "label": "pre-specified",
+  "seed": 20260921,
+  "git_commit": "a44c5e3",
+  "n": 1750,
+  "n_train": 1250,
+  "sims": 200,
+  "params": {
+    "entry": 2.0,
+    "exit": 0.5,
+    "stop": 4.0,
+    "max_hold": 60
+  },
+  "z_window": 60,
+  "table": [
+    {
+      "regime": "R1_constant",
+      "method": "static",
+      "beta_rmse": 0.017203670133948645,
+      "beta_rmse_se": 0.0009809036110463446,
+      "sharpe": 1.9163116736094628,
+      "sharpe_se": 0.035693872249634266,
+      "mean_pnl_bps": 7.139121998797325,
+      "mean_pnl_bps_se": 0.12591384386919932,
+      "turnover_per_year": 21.822441629559226,
+      "turnover_per_year_se": 0.2517509116207865,
+      "n_trades": 11.405,
+      "n_trades_se": 0.13820411312411116,
+      "stop_share": 0.0012698412698412698,
+      "stop_share_se": 0.0007473111141813042
+    },
+    {
+      "regime": "R1_constant",
+      "method": "expanding",
+      "beta_rmse": 0.015253516895879922,
+      "beta_rmse_se": 0.0007974291290002399,
+      "sharpe": 1.9046140256684967,
+      "sharpe_se": 0.03558712200586073,
+      "mean_pnl_bps": 7.100878334260062,
+      "mean_pnl_bps_se": 0.12644859237130812,
+      "turnover_per_year": 21.774652553609528,
+      "turnover_per_year_se": 0.25042129212749503,
+      "n_trades": 11.385,
+      "n_trades_se": 0.1372152144456907,
+      "stop_share": 0.0012698412698412698,
+      "stop_share_se": 0.0007473111141813042
+    },
+    {
+      "regime": "R1_constant",
+      "method": "rolling60",
+      "beta_rmse": 0.26654984293883516,
+      "beta_rmse_se": 0.0036230036710794317,
+      "sharpe": 1.6354627391892853,
+      "sharpe_se": 0.039726614928478815,
+      "mean_pnl_bps": 6.345848333909748,
+      "mean_pnl_bps_se": 0.14777181708632967,
+      "turnover_per_year": 27.1121203348274,
+      "turnover_per_year_se": 0.3057408534867452,
+      "n_trades": 13.775,
+      "n_trades_se": 0.15537885293597226,
+      "stop_share": 0.003104728604728605,
+      "stop_share_se": 0.0010897407016770186
+    },
+    {
+      "regime": "R1_constant",
+      "method": "rolling120",
+      "beta_rmse": 0.17274356345878833,
+      "beta_rmse_se": 0.0034130096742475287,
+      "sharpe": 1.737883304599759,
+      "sharpe_se": 0.03968992440719655,
+      "mean_pnl_bps": 6.763016415587657,
+      "mean_pnl_bps_se": 0.15081323007798328,
+      "turnover_per_year": 23.665683643465744,
+      "turnover_per_year_se": 0.29755977941170886,
+      "n_trades": 12.23,
+      "n_trades_se": 0.15798829547639814,
+      "stop_share": 0.0020833333333333333,
+      "stop_share_se": 0.0009298203509175618
+    },
+    {
+      "regime": "R1_constant",
+      "method": "rolling250",
+      "beta_rmse": 0.09253502232220821,
+      "beta_rmse_se": 0.002415556020530536,
+      "sharpe": 1.8529679105673682,
+      "sharpe_se": 0.03894896572049236,
+      "mean_pnl_bps": 6.969636871724394,
+      "mean_pnl_bps_se": 0.13783179116383246,
+      "turnover_per_year": 22.185398804760958,
+      "turnover_per_year_se": 0.26511311729300685,
+      "n_trades": 11.58,
+      "n_trades_se": 0.14237045597197592,
+      "stop_share": 0.0027940115440115436,
+      "stop_share_se": 0.0011397948859343452
+    },
+    {
+      "regime": "R1_constant",
+      "method": "kalman1e-06",
+      "beta_rmse": 0.03451283864309783,
+      "beta_rmse_se": 0.0012700929363250704,
+      "sharpe": 1.8845691898667953,
+      "sharpe_se": 0.03685203806117279,
+      "mean_pnl_bps": 7.005266767845324,
+      "mean_pnl_bps_se": 0.13003782906604272,
+      "turnover_per_year": 21.84662254448083,
+      "turnover_per_year_se": 0.2643144386346391,
+      "n_trades": 11.42,
+      "n_trades_se": 0.1427229807922717,
+      "stop_share": 0.001246031746031746,
+      "stop_share_se": 0.0007363778875234434
+    },
+    {
+      "regime": "R1_constant",
+      "method": "kalman1e-05",
+      "beta_rmse": 0.046548230591865455,
+      "beta_rmse_se": 0.0014882766269337607,
+      "sharpe": 1.8857967019767035,
+      "sharpe_se": 0.036490275531343895,
+      "mean_pnl_bps": 6.998834263541171,
+      "mean_pnl_bps_se": 0.12845001265243952,
+      "turnover_per_year": 21.780481015712912,
+      "turnover_per_year_se": 0.2554010291466116,
+      "n_trades": 11.38,
+      "n_trades_se": 0.13737671494487422,
+      "stop_share": 0.0008571428571428571,
+      "stop_share_se": 0.0006129896676811342
+    },
+    {
+      "regime": "R1_constant",
+      "method": "kalman0.0001",
+      "beta_rmse": 0.0500216016897701,
+      "beta_rmse_se": 0.001351617159478963,
+      "sharpe": 1.9055199917109866,
+      "sharpe_se": 0.0361869163921771,
+      "mean_pnl_bps": 7.079139834282221,
+      "mean_pnl_bps_se": 0.12913300940394237,
+      "turnover_per_year": 21.533059136877856,
+      "turnover_per_year_se": 0.2512664924354881,
+      "n_trades": 11.265,
+      "n_trades_se": 0.13533459373459,
+      "stop_share": 0.001388888888888889,
+      "stop_share_se": 0.0008145091469367156
+    },
+    {
+      "regime": "R2_drifting",
+      "method": "static",
+      "beta_rmse": 0.26453463065286,
+      "beta_rmse_se": 0.016144302365257154,
+      "sharpe": 0.7568083616400475,
+      "sharpe_se": 0.04875458052610384,
+      "mean_pnl_bps": 4.302387637209501,
+      "mean_pnl_bps_se": 0.27894497348704606,
+      "turnover_per_year": 20.405614865501693,
+      "turnover_per_year_se": 0.3540964763893822,
+      "n_trades": 10.22,
+      "n_trades_se": 0.13131725364752203,
+      "stop_share": 0.005911616161616162,
+      "stop_share_se": 0.0016761513767401398
+    },
+    {
+      "regime": "R2_drifting",
+      "method": "expanding",
+      "beta_rmse": 0.273260487029132,
+      "beta_rmse_se": 0.014799919228746362,
+      "sharpe": 0.7609529716405194,
+      "sharpe_se": 0.04915131469609304,
+      "mean_pnl_bps": 4.353498949930157,
+      "mean_pnl_bps_se": 0.28178897401340175,
+      "turnover_per_year": 20.514178243959346,
+      "turnover_per_year_se": 0.37374406058333065,
+      "n_trades": 10.235,
+      "n_trades_se": 0.13318244183851843,
+      "stop_share": 0.005002525252525253,
+      "stop_share_se": 0.0015633434772638476
+    },
+    {
+      "regime": "R2_drifting",
+      "method": "rolling60",
+      "beta_rmse": 0.4572753792740839,
+      "beta_rmse_se": 0.00689463855557202,
+      "sharpe": 0.8032541819252361,
+      "sharpe_se": 0.044170459586255484,
+      "mean_pnl_bps": 4.468961301670587,
+      "mean_pnl_bps_se": 0.25238590170930425,
+      "turnover_per_year": 28.022958485439666,
+      "turnover_per_year_se": 0.3195169986057829,
+      "n_trades": 13.12,
+      "n_trades_se": 0.1472631391788319,
+      "stop_share": 0.004760854341736695,
+      "stop_share_se": 0.001366254636590576
+    },
+    {
+      "regime": "R2_drifting",
+      "method": "rolling120",
+      "beta_rmse": 0.40849796006971245,
+      "beta_rmse_se": 0.008227378960358186,
+      "sharpe": 0.7318682720371293,
+      "sharpe_se": 0.04740450394567276,
+      "mean_pnl_bps": 4.197271912030833,
+      "mean_pnl_bps_se": 0.2786963003446866,
+      "turnover_per_year": 23.70510701737175,
+      "turnover_per_year_se": 0.29810323227242574,
+      "n_trades": 11.4,
+      "n_trades_se": 0.13166883996255693,
+      "stop_share": 0.0059800893550893556,
+      "stop_share_se": 0.0017045647971235753
+    },
+    {
+      "regime": "R2_drifting",
+      "method": "rolling250",
+      "beta_rmse": 0.35132028891122963,
+      "beta_rmse_se": 0.009733248414723155,
+      "sharpe": 0.7583169843239338,
+      "sharpe_se": 0.04299914515511901,
+      "mean_pnl_bps": 4.392442818960051,
+      "mean_pnl_bps_se": 0.24996920398256312,
+      "turnover_per_year": 21.49255258700924,
+      "turnover_per_year_se": 0.321936940881115,
+      "n_trades": 10.535,
+      "n_trades_se": 0.1227567558447503,
+      "stop_share": 0.005512140637140638,
+      "stop_share_se": 0.0016364716442291518
+    },
+    {
+      "regime": "R2_drifting",
+      "method": "kalman1e-06",
+      "beta_rmse": 0.0869306174799014,
+      "beta_rmse_se": 0.003588808228222729,
+      "sharpe": 0.872754158557148,
+      "sharpe_se": 0.04414302226175375,
+      "mean_pnl_bps": 4.7706168725047515,
+      "mean_pnl_bps_se": 0.23450796431596826,
+      "turnover_per_year": 20.81056374412053,
+      "turnover_per_year_se": 0.24629563124649573,
+      "n_trades": 10.495,
+      "n_trades_se": 0.12216586056438673,
+      "stop_share": 0.004238150738150738,
+      "stop_share_se": 0.0013948392674180898
+    },
+    {
+      "regime": "R2_drifting",
+      "method": "kalman1e-05",
+      "beta_rmse": 0.078836569088999,
+      "beta_rmse_se": 0.0026421952105239585,
+      "sharpe": 0.8768927788864338,
+      "sharpe_se": 0.043725193123651994,
+      "mean_pnl_bps": 4.7807368245170245,
+      "mean_pnl_bps_se": 0.23246856784376874,
+      "turnover_per_year": 20.72348861107917,
+      "turnover_per_year_se": 0.24152610401392569,
+      "n_trades": 10.455,
+      "n_trades_se": 0.12477064385439067,
+      "stop_share": 0.004381313131313131,
+      "stop_share_se": 0.001435198829971056
+    },
+    {
+      "regime": "R2_drifting",
+      "method": "kalman0.0001",
+      "beta_rmse": 0.07165430955590024,
+      "beta_rmse_se": 0.0019482618023007549,
+      "sharpe": 0.8851865109206172,
+      "sharpe_se": 0.043924431191101974,
+      "mean_pnl_bps": 4.817562202622133,
+      "mean_pnl_bps_se": 0.23365316846507247,
+      "turnover_per_year": 20.699508552360413,
+      "turnover_per_year_se": 0.22912827237448422,
+      "n_trades": 10.4,
+      "n_trades_se": 0.12134091680242184,
+      "stop_share": 0.0043694638694638695,
+      "stop_share_se": 0.0014471511829746262
+    },
+    {
+      "regime": "R3_break",
+      "method": "static",
+      "beta_rmse": 0.1772700862180811,
+      "beta_rmse_se": 0.0011564777145953882,
+      "sharpe": 1.1510959834531302,
+      "sharpe_se": 0.04983133195888935,
+      "mean_pnl_bps": 8.235833159731078,
+      "mean_pnl_bps_se": 1.4338584503098188,
+      "turnover_per_year": 22.167221938205607,
+      "turnover_per_year_se": 0.2715076942693645,
+      "n_trades": 11.23,
+      "n_trades_se": 0.14278458315213743,
+      "stop_share": 0.012689629814629814,
+      "stop_share_se": 0.002421641314760642
+    },
+    {
+      "regime": "R3_break",
+      "method": "expanding",
+      "beta_rmse": 0.2707424939891237,
+      "beta_rmse_se": 0.012419324775954203,
+      "sharpe": 0.992912339507427,
+      "sharpe_se": 0.05148878320815531,
+      "mean_pnl_bps": 7.548923806977942,
+      "mean_pnl_bps_se": 1.432699705861737,
+      "turnover_per_year": 23.03581081869515,
+      "turnover_per_year_se": 0.30569401311030386,
+      "n_trades": 10.815,
+      "n_trades_se": 0.13600131169926116,
+      "stop_share": 0.011983752358752358,
+      "stop_share_se": 0.002483171841226253
+    },
+    {
+      "regime": "R3_break",
+      "method": "rolling60",
+      "beta_rmse": 2.116099170017122,
+      "beta_rmse_se": 0.053800604823317964,
+      "sharpe": 0.5732336815246303,
+      "sharpe_se": 0.056501222088346466,
+      "mean_pnl_bps": 8.569821706692473,
+      "mean_pnl_bps_se": 1.5933559388317764,
+      "turnover_per_year": 37.08554341658174,
+      "turnover_per_year_se": 0.5296929567784731,
+      "n_trades": 13.42,
+      "n_trades_se": 0.17441359036070714,
+      "stop_share": 0.010777967130908306,
+      "stop_share_se": 0.0019692407327323814
+    },
+    {
+      "regime": "R3_break",
+      "method": "rolling120",
+      "beta_rmse": 2.088627542577849,
+      "beta_rmse_se": 0.05228691892832577,
+      "sharpe": 0.47603404660306287,
+      "sharpe_se": 0.05461167022203414,
+      "mean_pnl_bps": 8.17135665897944,
+      "mean_pnl_bps_se": 1.5962533950650977,
+      "turnover_per_year": 35.01010551223661,
+      "turnover_per_year_se": 0.5368133384486732,
+      "n_trades": 11.885,
+      "n_trades_se": 0.14109719021095754,
+      "stop_share": 0.00979170829170829,
+      "stop_share_se": 0.0020020168173895013
+    },
+    {
+      "regime": "R3_break",
+      "method": "rolling250",
+      "beta_rmse": 1.9969347705544174,
+      "beta_rmse_se": 0.05130348439408212,
+      "sharpe": 0.3100387811485457,
+      "sharpe_se": 0.053981270909288115,
+      "mean_pnl_bps": 6.062154236157701,
+      "mean_pnl_bps_se": 1.5910351470208588,
+      "turnover_per_year": 33.41085704961438,
+      "turnover_per_year_se": 0.6240025582480282,
+      "n_trades": 10.665,
+      "n_trades_se": 0.1345525807442006,
+      "stop_share": 0.010899531024531024,
+      "stop_share_se": 0.002294073412218632
+    },
+    {
+      "regime": "R3_break",
+      "method": "kalman1e-06",
+      "beta_rmse": 0.31790571355178904,
+      "beta_rmse_se": 0.012381361154176401,
+      "sharpe": 1.0224934913239638,
+      "sharpe_se": 0.05124341793829765,
+      "mean_pnl_bps": 7.6521183246036255,
+      "mean_pnl_bps_se": 1.4325312928511267,
+      "turnover_per_year": 23.52782396759933,
+      "turnover_per_year_se": 0.3169541825748412,
+      "n_trades": 10.78,
+      "n_trades_se": 0.1387597613027059,
+      "stop_share": 0.011470293595293595,
+      "stop_share_se": 0.0024493489522233814
+    },
+    {
+      "regime": "R3_break",
+      "method": "kalman1e-05",
+      "beta_rmse": 0.28599413776851074,
+      "beta_rmse_se": 0.012303190214945393,
+      "sharpe": 1.0561218996671393,
+      "sharpe_se": 0.05257385849698581,
+      "mean_pnl_bps": 7.548880105029337,
+      "mean_pnl_bps_se": 1.4274995922671505,
+      "turnover_per_year": 23.51177193648646,
+      "turnover_per_year_se": 0.28437234688195273,
+      "n_trades": 10.86,
+      "n_trades_se": 0.1281958300970486,
+      "stop_share": 0.011417894605394606,
+      "stop_share_se": 0.0024013704789776413
+    },
+    {
+      "regime": "R3_break",
+      "method": "kalman0.0001",
+      "beta_rmse": 0.2378281714698371,
+      "beta_rmse_se": 0.009998982608307692,
+      "sharpe": 1.116512593760615,
+      "sharpe_se": 0.05050949774033933,
+      "mean_pnl_bps": 8.139804979676699,
+      "mean_pnl_bps_se": 1.3840072820082663,
+      "turnover_per_year": 23.179007137076333,
+      "turnover_per_year_se": 0.2681151221885737,
+      "n_trades": 10.8,
+      "n_trades_se": 0.1258139329670733,
+      "stop_share": 0.00991860223110223,
+      "stop_share_se": 0.0021048317212653002
+    }
+  ],
+  "paired_vs_static": [
+    {
+      "regime": "R1_constant",
+      "method": "expanding",
+      "d_sharpe": -0.011697647940966107,
+      "d_sharpe_se": 0.0072844675955421635,
+      "d_beta_rmse": -0.0019501532380687236,
+      "d_beta_rmse_se": 0.0002913701080674163
+    },
+    {
+      "regime": "R1_constant",
+      "method": "rolling60",
+      "d_sharpe": -0.28084893442017717,
+      "d_sharpe_se": 0.03425518856799134,
+      "d_beta_rmse": 0.24934617280488652,
+      "d_beta_rmse_se": 0.0021006428793569156
+    },
+    {
+      "regime": "R1_constant",
+      "method": "rolling120",
+      "d_sharpe": -0.1784283690097039,
+      "d_sharpe_se": 0.030756880038964672,
+      "d_beta_rmse": 0.1555398933248397,
+      "d_beta_rmse_se": 0.001993163123742795
+    },
+    {
+      "regime": "R1_constant",
+      "method": "rolling250",
+      "d_sharpe": -0.06334376304209445,
+      "d_sharpe_se": 0.02677711545068235,
+      "d_beta_rmse": 0.07533135218825956,
+      "d_beta_rmse_se": 0.0014512673062767173
+    },
+    {
+      "regime": "R1_constant",
+      "method": "kalman1e-06",
+      "d_sharpe": -0.03174248374266742,
+      "d_sharpe_se": 0.015351222825731342,
+      "d_beta_rmse": 0.017309168509149188,
+      "d_beta_rmse_se": 0.0007433230761392529
+    },
+    {
+      "regime": "R1_constant",
+      "method": "kalman1e-05",
+      "d_sharpe": -0.03051497163275936,
+      "d_sharpe_se": 0.0179740995810067,
+      "d_beta_rmse": 0.02934456045791682,
+      "d_beta_rmse_se": 0.0008680297558174927
+    },
+    {
+      "regime": "R1_constant",
+      "method": "kalman0.0001",
+      "d_sharpe": -0.010791681898476117,
+      "d_sharpe_se": 0.021016728573449835,
+      "d_beta_rmse": 0.03281793155582146,
+      "d_beta_rmse_se": 0.0008339542378544498
+    },
+    {
+      "regime": "R2_drifting",
+      "method": "expanding",
+      "d_sharpe": 0.004144610000471946,
+      "d_sharpe_se": 0.018070694688449195,
+      "d_beta_rmse": 0.008725856376272068,
+      "d_beta_rmse_se": 0.004244876316521786
+    },
+    {
+      "regime": "R2_drifting",
+      "method": "rolling60",
+      "d_sharpe": 0.04644582028518886,
+      "d_sharpe_se": 0.049927072440835406,
+      "d_beta_rmse": 0.1927407486212239,
+      "d_beta_rmse_se": 0.010354824858989437
+    },
+    {
+      "regime": "R2_drifting",
+      "method": "rolling120",
+      "d_sharpe": -0.02494008960291789,
+      "d_sharpe_se": 0.04656446304412078,
+      "d_beta_rmse": 0.14396332941685244,
+      "d_beta_rmse_se": 0.01094194256602376
+    },
+    {
+      "regime": "R2_drifting",
+      "method": "rolling250",
+      "d_sharpe": 0.0015086226838864137,
+      "d_sharpe_se": 0.04246699333496618,
+      "d_beta_rmse": 0.08678565825836966,
+      "d_beta_rmse_se": 0.011123583789951147
+    },
+    {
+      "regime": "R2_drifting",
+      "method": "kalman1e-06",
+      "d_sharpe": 0.1159457969171006,
+      "d_sharpe_se": 0.037256271980241944,
+      "d_beta_rmse": -0.1776040131729586,
+      "d_beta_rmse_se": 0.009257792935633832
+    },
+    {
+      "regime": "R2_drifting",
+      "method": "kalman1e-05",
+      "d_sharpe": 0.12008441724638635,
+      "d_sharpe_se": 0.03818753759601385,
+      "d_beta_rmse": -0.18569806156386096,
+      "d_beta_rmse_se": 0.009384230549522084
+    },
+    {
+      "regime": "R2_drifting",
+      "method": "kalman0.0001",
+      "d_sharpe": 0.1283781492805697,
+      "d_sharpe_se": 0.03787220927551381,
+      "d_beta_rmse": -0.19288032109695974,
+      "d_beta_rmse_se": 0.00936595952977606
+    },
+    {
+      "regime": "R3_break",
+      "method": "expanding",
+      "d_sharpe": -0.15818364394570344,
+      "d_sharpe_se": 0.029648708162191152,
+      "d_beta_rmse": 0.09347240777104261,
+      "d_beta_rmse_se": 0.007204249646457767
+    },
+    {
+      "regime": "R3_break",
+      "method": "rolling60",
+      "d_sharpe": -0.5778623019285001,
+      "d_sharpe_se": 0.06653311011159521,
+      "d_beta_rmse": 1.9388290837990412,
+      "d_beta_rmse_se": 0.03115219732718246
+    },
+    {
+      "regime": "R3_break",
+      "method": "rolling120",
+      "d_sharpe": -0.6750619368500673,
+      "d_sharpe_se": 0.06193984111756163,
+      "d_beta_rmse": 1.9113574563597684,
+      "d_beta_rmse_se": 0.03026479932605212
+    },
+    {
+      "regime": "R3_break",
+      "method": "rolling250",
+      "d_sharpe": -0.8410572023045847,
+      "d_sharpe_se": 0.05842001354436678,
+      "d_beta_rmse": 1.8196646843363362,
+      "d_beta_rmse_se": 0.02965588566819988
+    },
+    {
+      "regime": "R3_break",
+      "method": "kalman1e-06",
+      "d_sharpe": -0.1286024921291666,
+      "d_sharpe_se": 0.036818481197295715,
+      "d_beta_rmse": 0.1406356273337079,
+      "d_beta_rmse_se": 0.007274840729516924
+    },
+    {
+      "regime": "R3_break",
+      "method": "kalman1e-05",
+      "d_sharpe": -0.09497408378599095,
+      "d_sharpe_se": 0.03927943701759289,
+      "d_beta_rmse": 0.1087240515504296,
+      "d_beta_rmse_se": 0.007202852951090224
+    },
+    {
+      "regime": "R3_break",
+      "method": "kalman0.0001",
+      "d_sharpe": -0.03458338969251526,
+      "d_sharpe_se": 0.03655508472380333,
+      "d_beta_rmse": 0.06055808525175599,
+      "d_beta_rmse_se": 0.0059043192440752165
+    }
+  ],
+  "ranks": {
+    "static": {
+      "sharpe_rank_by_regime": [
+        1,
+        7,
+        1
+      ],
+      "worst_rank": 7
+    },
+    "expanding": {
+      "sharpe_rank_by_regime": [
+        3,
+        5,
+        5
+      ],
+      "worst_rank": 5
+    },
+    "rolling60": {
+      "sharpe_rank_by_regime": [
+        8,
+        4,
+        6
+      ],
+      "worst_rank": 8
+    },
+    "rolling120": {
+      "sharpe_rank_by_regime": [
+        7,
+        8,
+        7
+      ],
+      "worst_rank": 8
+    },
+    "rolling250": {
+      "sharpe_rank_by_regime": [
+        6,
+        6,
+        8
+      ],
+      "worst_rank": 8
+    },
+    "kalman1e-06": {
+      "sharpe_rank_by_regime": [
+        5,
+        3,
+        4
+      ],
+      "worst_rank": 5
+    },
+    "kalman1e-05": {
+      "sharpe_rank_by_regime": [
+        4,
+        2,
+        3
+      ],
+      "worst_rank": 4
+    },
+    "kalman0.0001": {
+      "sharpe_rank_by_regime": [
+        2,
+        1,
+        2
+      ],
+      "worst_rank": 2
+    }
+  }
+}

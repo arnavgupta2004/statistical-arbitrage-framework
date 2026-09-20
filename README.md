@@ -15,8 +15,8 @@ the goal and is not reported as a finding.
 |---|---|---|
 | 1 | Data pipeline, corporate actions, validation, point-in-time universe, leakage tooling | **done** |
 | 2 | Statistical toolkit: ADF, Engle–Granger, Johansen, OU, half-life | **done** |
-| 3 | Pair discovery on training data only | **done** (this commit) |
-| 4 | Pair strategy: hedge ratios, spread, z-score, entry/exit/stop | not started |
+| 3 | Pair discovery on training data only | **done** |
+| 4 | Pair strategy: hedge ratios, spread, z-score, entry/exit/stop | **done** (this commit) |
 | 5 | Walk-forward backtest, train/validation/holdout | not started |
 | 6 | Transaction costs: spread, commissions, impact | not started |
 | 7 | PCA statistical arbitrage | not started |
@@ -47,13 +47,16 @@ statarb/
     pipeline.py        the facade research code reads through
   selection/           adf, cointegration (Engle-Granger), johansen, hurst (exploratory only),
                        correlation, clustering, screening (pair discovery + empirical null)
-  models/              ou (OU fit, half-life, simulation), rolling (causal rolling statistics)
+  models/              ou, rolling, hedge_ratio (static/expanding/rolling), kalman
+  signals/             zscore (closed-form, time-varying hedge), pairs (entry/exit/stop state machine)
+  portfolio/           construction (leg weights, volatility targeting)
+  backtest/            pair_pnl (gross single-pair accounting; the Stage 5 engine builds on it)
+  statistics/          bootstrap (stationary block bootstrap)
 tests/                 pytest + hypothesis
 experiments/           runnable experiments and their JSON results (registry: Stage 8+)
 ```
 
-Later stages add `signals/`, `portfolio/`, `backtest/`, `statistics/`, `research/` beside `data/`
-inside `statarb/`.
+Later stages extend `portfolio/`, `backtest/`, `statistics/` and add `research/` inside `statarb/`.
 
 ## 1. Data
 
@@ -520,7 +523,169 @@ no training-time filter could have removed it: a live strategy needs stop-losses
 * Half-life bounds, `k`, `α` and the 20-pair cap are researcher degrees of freedom; they were fixed before
   the run and any change now counts as a new trial (Stage 9's sensitivity analysis must be registered).
 
-## 6. Statistical-arbitrage methodology *(Stages 4–9: specification only)*
+## 6. Pair strategy and hedge ratios (Stage 4)
+
+`statarb/models/{hedge_ratio,kalman}.py`, `statarb/signals/{zscore,pairs}.py`,
+`statarb/portfolio/construction.py`, `statarb/backtest/pair_pnl.py`, `statarb/statistics/bootstrap.py`;
+experiments `stage4_hedge_ratio_synthetic.py` and `stage4_real_pairs.py`.
+
+### 6.1 Design
+
+* **Hedge ratio** (`ly = α + β lx`, dividend-adjusted log prices), four causal estimators: `static` (OLS
+  on the training window only, then frozen), `expanding`, `rolling` (trailing window) and a random-walk
+  `Kalman` filter (a stretch goal, compared rather than assumed better). At index `t` each uses data
+  `≤ t` only.
+* **Z-score in closed form.** With hedge ratio `b` the windowed spread has mean `m_y − b m_x` and
+  variance `v_y − 2b c_xy + b² v_x`, so `z_t` follows from trailing moments and the intercept cancels.
+  The *current* `b` is applied to the whole window: a spread stitched from each day's own `β_s` jumps by
+  `Δβ · lx` (with `lx ≈ 4`) whenever `β` updates; a test asserts that a 0.05 update moves the stitched
+  spread's z-score by more than 4 units and this construction's by less than 1.5. Every hedge method shares this
+  one construction, so comparisons isolate the hedge ratio.
+* **State machine.** Enter when `entry < |z| < stop` (never beyond the stop: that is a break, not a
+  bargain); exit on reversion (`u ≤ exit`), stop-loss, `max_hold` bars, or missing data; after a stop or
+  time exit the same direction is blocked until `|z| ≤ exit` again, so a stretched spread cannot churn;
+  no same-bar reversal; nothing before `train_end`. Defaults 2.0 / 0.5 / 4.0 / 60, fixed a priori.
+* **Sizing and P&L.** Legs at constant dollar weights `(+N, −βN)`; optional volatility targeting frozen
+  at entry. A signal at the close of `t` earns the return of bar `t + 1` (one-bar lag). **Turnover is
+  drift-aware**: constant dollar weights must be traded back to target as prices move, so `trade_t`
+  counts entries, exits, hedge changes *and* that rebalancing; Stage 6 will charge costs on it.
+  Everything here is **gross and frictionless**.
+
+### 6.2 Validation
+
+Tests (392 in total). The Kalman filter matches statsmodels' state-space filter to 1e-12 (states,
+innovations, innovation variances) and, as the state noise → 0, reproduces expanding OLS (an analytic
+check); its standardised innovations are calibrated (mean ≈ 0, sd ≈ 1) when the model is right. The
+z-score equals a from-scratch window computation for static and time-varying `β`. The state machine is
+checked on hand-worked sequences and by a property test of its invariants (positions in {−1, 0, 1},
+entries only inside `(entry, stop)`, no trade longer than `max_hold`, no re-entry after a stop/time exit
+before the spread neutralises). P&L, the one-bar lag and turnover are checked by hand. **Look-ahead:** the
+whole chain (prices → hedge ratio → z-score → positions → P&L) is run through the Stage-1 detectors for
+five hedge methods (scramble or drop everything after `t`; nothing earlier moves). A mutation sweep
+injected 25 bugs (a same-bar return, a centred window, a hedge ratio or Kalman prior fitted on all data,
+a stop-loss that never fires, wrong leg sign, a volatility estimate one bar ahead, …) and **all 25 are
+caught**.
+
+### 6.3 Which hedge-ratio estimator? A simulator with a known answer
+
+On real prices the true hedge ratio is unobserved, so `experiments/stage4_hedge_ratio_synthetic.py` uses
+one where it is known (spread OU with half-life 8.7 days; static fitted on 1,250 training days, 500 test
+days; 200 simulations per regime; fixed before running). **R1** constant β = 0.8; **R2** β drifting as a
+random walk (step sd 0.002); **R3** β jumping 0.8 → 1.05 mid-test. Metrics are gross and unit-sized;
+Sharpe entries show the *paired* difference from static (± its standard error over the shared
+simulations).
+
+RMSE of the estimated β over the test period:
+
+| Method | R1 constant | R2 drifting | R3 break | R3b mild break (post-hoc) |
+|---|---|---|---|---|
+| static | 0.017 | 0.265 | 0.177 | 0.040 |
+| expanding | 0.015 | 0.273 | 0.271 | 0.053 |
+| rolling 60 | 0.267 | 0.457 | 2.116 | 0.489 |
+| rolling 120 | 0.173 | 0.408 | 2.089 | 0.451 |
+| rolling 250 | 0.093 | 0.351 | 1.997 | 0.413 |
+| Kalman δ=1e-6 | 0.035 | 0.087 | 0.318 | 0.075 |
+| Kalman δ=1e-5 | 0.047 | 0.079 | 0.286 | 0.075 |
+| Kalman δ=1e-4 | 0.050 | 0.072 | 0.238 | 0.068 |
+
+Gross annualised Sharpe (paired difference from static ± s.e.):
+
+| Method | R1 constant | R2 drifting | R3 break | R3b mild break (post-hoc) |
+|---|---|---|---|---|
+| static | 1.92 | 0.76 | 1.15 | 1.31 |
+| expanding | 1.90 (-0.01 ± 0.01) | 0.76 (+0.00 ± 0.02) | 0.99 (-0.16 ± 0.03) | 1.30 (-0.01 ± 0.02) |
+| rolling 60 | 1.64 (-0.28 ± 0.03) | 0.80 (+0.05 ± 0.05) | 0.57 (-0.58 ± 0.07) | 1.10 (-0.21 ± 0.05) |
+| rolling 120 | 1.74 (-0.18 ± 0.03) | 0.73 (-0.02 ± 0.05) | 0.48 (-0.68 ± 0.06) | 1.10 (-0.21 ± 0.04) |
+| rolling 250 | 1.85 (-0.06 ± 0.03) | 0.76 (+0.00 ± 0.04) | 0.31 (-0.84 ± 0.06) | 0.94 (-0.37 ± 0.04) |
+| Kalman δ=1e-6 | 1.88 (-0.03 ± 0.02) | 0.87 (+0.12 ± 0.04) | 1.02 (-0.13 ± 0.04) | 1.29 (-0.02 ± 0.03) |
+| Kalman δ=1e-5 | 1.89 (-0.03 ± 0.02) | 0.88 (+0.12 ± 0.04) | 1.06 (-0.09 ± 0.04) | 1.34 (+0.03 ± 0.03) |
+| Kalman δ=1e-4 | 1.91 (-0.01 ± 0.02) | 0.89 (+0.13 ± 0.04) | 1.12 (-0.03 ± 0.04) | 1.32 (+0.01 ± 0.03) |
+
+Turnover per year (units of pair capital):
+
+| Method | R1 | R2 | R3 | R3b |
+|---|---|---|---|---|
+| static | 21.8 | 20.4 | 22.2 | 21.3 |
+| expanding | 21.8 | 20.5 | 23.0 | 21.4 |
+| rolling 60 | 27.1 | 28.0 | 37.1 | 27.6 |
+| rolling 120 | 23.7 | 23.7 | 35.0 | 23.9 |
+| rolling 250 | 22.2 | 21.5 | 33.4 | 22.2 |
+| Kalman δ=1e-6 | 21.8 | 20.8 | 23.5 | 21.7 |
+| Kalman δ=1e-5 | 21.8 | 20.7 | 23.5 | 21.9 |
+| Kalman δ=1e-4 | 21.5 | 20.7 | 23.2 | 21.4 |
+
+Against the hypotheses written down beforehand:
+
+* **HS1 (constant β: static/expanding best): supported.** They estimate β best (0.017 / 0.015) and short
+  rolling windows lose 0.28 Sharpe (rolling 60) to estimation noise and 24 % more turnover.
+* **HS2 (drift: rolling and Kalman follow it): only the Kalman filter does.** It cuts the β error by
+  about 3.5× (0.07–0.09 vs 0.27) and gains **+0.12 to +0.13 Sharpe** (≈ 3 s.e.). Rolling OLS is *worse than
+  static* at every window (0.35–0.46 vs 0.27): 60–250 days of highly autocorrelated spread residuals are
+  too little to pin β down, so the window's noise exceeds the drift it tries to follow.
+* **HS3 (after a break rolling/Kalman recover, static does not): refuted as stated.** The pre-specified
+  break moves the spread by ≈ 1.0, about 33 stationary standard deviations, which is far larger than a
+  realistic break and wrecks any OLS window that contains it (β error ≈ 2, Sharpe −0.6 to −0.8 vs static).
+  A **post-hoc** milder break (R3b, ≈ 7 sd, labelled as added after seeing R3) gives the sober version:
+  static and Kalman are statistically indistinguishable (paired Δ Sharpe −0.02 to +0.03 ± 0.03), and every
+  rolling window is significantly worse (−0.21 to −0.37 ± 0.04).
+* **HS4 (no method wins everywhere): partly refuted.** Kalman with δ = 1e-4 ranks 2nd, 1st, 2nd; static
+  ranks 1st, 7th, 1st. Kalman δ = 1e-4 is the most robust in this world, but the best δ sits at the edge
+  of the pre-specified grid, and the simulator is *exactly the state-space model the filter assumes*: a
+  favourable test, not evidence about real prices.
+* **HS5 (β accuracy does not imply Sharpe): supported.** In R2 rolling 60 has a worse β error than static
+  (0.457 vs 0.265) yet a slightly higher Sharpe (+0.05 ± 0.05); accuracy and profit decouple, and
+  turnover is what separates the methods (Kalman ≈ static; rolling 60 +24 % in R1, +67 % in R3).
+
+### 6.4 The frozen Stage 3 pairs in 2016 (a descriptive look, gross)
+
+`experiments/stage4_real_pairs.py`: the 19 selected pairs (DHR/HSIC dropped, see below) and, as a
+baseline, the 1,192 non-significant candidates of the same screen, traded over the 252 sessions
+of 2016 with the training hedge ratio, default rules, no costs. Variants were fixed in advance and all
+are reported. Legs with a non-ordinary distribution in the window (DHR, GEN, JCI, VMRK; §1.8) are
+dropped: vendor total returns around a spin-off are not trustworthy.
+
+| Variant | Selected (19 pairs) Sharpe [95 % CI] | Baseline (1,192 pairs) Sharpe [95 % CI] | Random 19-pair subsets of the baseline: median (5–95 %) | Selected's percentile | Turnover / pair | Baseline median β drift |
+|---|---|---|---|---|---|---|
+| static, z 30 | +1.16 [-0.73, +3.02] | +1.67 [+0.26, +3.37] | +0.81 (-0.50, +2.10) | 69% | 30.6 | 0.0% |
+| static, z 60 | +1.19 [-0.66, +2.94] | +1.67 [+0.20, +3.34] | +0.83 (-0.50, +2.06) | 69% | 19.2 | 0.0% |
+| static, z 120 | +0.51 [-1.65, +2.54] | +1.25 [-0.29, +2.76] | +0.61 (-0.74, +1.98) | 46% | 11.3 | 0.0% |
+| expanding | +0.96 [-0.89, +2.68] | +1.77 [+0.27, +3.40] | +0.87 (-0.41, +2.13) | 54% | 18.6 | 4.6% |
+| rolling 60 | +0.47 [-1.49, +2.25] | +0.50 [-1.23, +2.47] | +0.24 (-1.21, +1.72) | 60% | 24.6 | 66.3% |
+| rolling 120 | +0.46 [-1.15, +2.04] | +0.51 [-1.05, +2.40] | +0.30 (-1.06, +1.66) | 58% | 20.6 | 54.5% |
+| rolling 250 | -0.71 [-2.87, +1.17] | +0.51 [-1.02, +2.31] | +0.34 (-0.86, +1.55) | 7% | 17.1 | 46.5% |
+| Kalman δ=1e-5 | -0.34 [-2.10, +1.28] | +1.64 [-0.01, +3.56] | +0.85 (-0.40, +2.10) | 6% | 16.2 | 7.2% |
+
+* **Selection adds nothing detectable.** The naive comparison (selected 1.19 vs baseline 1.67, static) is
+  unfair: the baseline holds 1,192 pairs and diversification alone raises its Sharpe. The size-matched
+  comparison (added *after* seeing the first run, labelled post-hoc) puts the selected group at the
+  46th–69th percentile of random 19-pair baseline subsets for the static and expanding variants (nowhere near
+  the 95th), and at the 6th–7th percentile for Kalman and rolling 250.
+* **The strategy earned a gross return with no selection at all.** Trading z-score reversion on
+  sector-correlated pairs, chosen without any cointegration evidence, gives a gross Sharpe of
+  +1.67 [+0.20, +3.34] over 1,192 pairs (mean 1.22 bp/day per unit
+  notional, 3.1 % over the year, 18 units of turnover per pair). That is
+  not evidence of alpha: it is one year, gross of costs, on a survivor-tilted universe with today's sector
+  labels, and it is what Stage 6's costs and Stage 5's walk-forward exist to test. It does say the
+  cointegration filter is not what drives a positive gross number.
+* **Hedge-ratio behaviour matches the simulator.** The static and expanding hedges barely move (median
+  drift 0 % / 4.6 %); rolling windows wander (47–66 % of β), lose Sharpe against static and add turnover.
+  The Kalman filter, best in the simulator, is no better than static on the baseline (1.64 vs 1.67) and
+  worse on the selected pairs (−0.34 vs +1.19): the simulator is not the world.
+* **Uncertainty is large.** The selected group's intervals span roughly −0.7 to +2.9 (static): with 19
+  pairs and one year nothing in this table separates from zero, from each other, or from random subsets.
+
+### 6.5 Limits of Stage 4
+
+* Frictionless and gross: turnover of ≈ 18 units per pair-year makes Stage 6's costs decisive.
+* One year, one strategy configuration, one δ (1e-5) on real data; the z-window sensitivity is reported
+  (static: 30 → 1.16, 60 → 1.19, 120 → 0.51) but not used to choose.
+* The 2016 window was already used in Stage 3's out-of-sample look; no parameter has been tuned on it, but
+  it is no longer fresh, and Stage 5's train/validation/holdout split must treat it as research data.
+* The simulator favours the Kalman filter by construction; real hedge ratios are not random walks.
+* Stops fired on 5–10 % of trades in the 60- and 120-day-window variants (0.7 % with a 30-day window);
+  the DHR/HSIC spin-off blow-up shows the stop and an event mask matter.
+
+## 7. Statistical-arbitrage methodology *(Stages 5–9: specification only)*
 
 Hypotheses to be tested, each with its data, method, assumptions, uncertainty, failure cases and
 limitations recorded when run:
@@ -537,7 +702,7 @@ limitations recorded when run:
 The train / validation / final-holdout split, the walk-forward scheme, the cost model, the
 multiple-testing framework and the experiment registry will be documented here as each is built.
 
-## 7. Limitations so far
+## 8. Limitations so far
 
 * The reconstructed S&P 500 membership is trustworthy only from 2011-01-01 (§2.1); earlier dates are
   not used for any claim, and even later dates inherit the change log's residual gaps.
@@ -555,6 +720,9 @@ multiple-testing framework and the experiment registry will be documented here a
   samples and depends on `det_order`; ADF/Engle–Granger assume homoskedastic errors and read a structural
   break as a unit root. None of these are corrected for yet beyond what §4 states.
 * (Stage 2) Critical-value tables come from statsmodels; a defect there would propagate.
+* (Stage 4) All P&L so far is gross of costs and frictionless, on one year of data for the real-pair look;
+  the hedge-ratio comparison rests on a simulator that favours the Kalman filter; nothing has been
+  evaluated on a holdout.
 * (Stage 3) The screen was run on one window with one configuration; the empirical null uses independent
   circular shifts (a small share of pairs keep aligned volatility regimes) and has no factor structure
   (checked only on synthetic data); candidate generation depends on `k` and on today's sector labels.

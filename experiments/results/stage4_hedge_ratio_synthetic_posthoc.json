@@ -1,0 +1,254 @@
+{
+  "experiment": "stage4_hedge_ratio_synthetic_posthoc",
+  "label": "POST-HOC regime, added after seeing the pre-specified run",
+  "seed": 20260921,
+  "git_commit": "a44c5e3",
+  "n": 1750,
+  "n_train": 1250,
+  "sims": 200,
+  "params": {
+    "entry": 2.0,
+    "exit": 0.5,
+    "stop": 4.0,
+    "max_hold": 60
+  },
+  "z_window": 60,
+  "table": [
+    {
+      "regime": "R3b_mild_break",
+      "method": "static",
+      "beta_rmse": 0.03981945573835365,
+      "beta_rmse_se": 0.0011064537821961083,
+      "sharpe": 1.3093644806422882,
+      "sharpe_se": 0.045921827311870105,
+      "mean_pnl_bps": 6.051779467522028,
+      "mean_pnl_bps_se": 0.21293054096673028,
+      "turnover_per_year": 21.293861652670245,
+      "turnover_per_year_se": 0.25994358516443067,
+      "n_trades": 10.98,
+      "n_trades_se": 0.14070175878297722,
+      "stop_share": 0.016831982559923735,
+      "stop_share_se": 0.002668158647389331
+    },
+    {
+      "regime": "R3b_mild_break",
+      "method": "expanding",
+      "beta_rmse": 0.05253808208526511,
+      "beta_rmse_se": 0.002481584108297217,
+      "sharpe": 1.2973777306229712,
+      "sharpe_se": 0.045370614051126856,
+      "mean_pnl_bps": 5.967312793274022,
+      "mean_pnl_bps_se": 0.21299385224317885,
+      "turnover_per_year": 21.400977249691003,
+      "turnover_per_year_se": 0.2557420737216821,
+      "n_trades": 10.9,
+      "n_trades_se": 0.13543156405621834,
+      "stop_share": 0.015895493395493395,
+      "stop_share_se": 0.002677912208853325
+    },
+    {
+      "regime": "R3b_mild_break",
+      "method": "rolling60",
+      "beta_rmse": 0.48871769588662417,
+      "beta_rmse_se": 0.010223514619936577,
+      "sharpe": 1.1006889704386997,
+      "sharpe_se": 0.05153984541473389,
+      "mean_pnl_bps": 5.568784894688871,
+      "mean_pnl_bps_se": 0.26203616302647764,
+      "turnover_per_year": 27.586670405162387,
+      "turnover_per_year_se": 0.33105619172521256,
+      "n_trades": 13.205,
+      "n_trades_se": 0.15808170077717096,
+      "stop_share": 0.011408211886153064,
+      "stop_share_se": 0.0019503773075978186
+    },
+    {
+      "regime": "R3b_mild_break",
+      "method": "rolling120",
+      "beta_rmse": 0.45066962992898724,
+      "beta_rmse_se": 0.011549516522284335,
+      "sharpe": 1.101043805338545,
+      "sharpe_se": 0.04598839233716306,
+      "mean_pnl_bps": 5.694669826324465,
+      "mean_pnl_bps_se": 0.24402354986807995,
+      "turnover_per_year": 23.945688238717498,
+      "turnover_per_year_se": 0.3101373473839518,
+      "n_trades": 11.605,
+      "n_trades_se": 0.13907401955280094,
+      "stop_share": 0.013654354632295808,
+      "stop_share_se": 0.002362545537854463
+    },
+    {
+      "regime": "R3b_mild_break",
+      "method": "rolling250",
+      "beta_rmse": 0.4125673873769871,
+      "beta_rmse_se": 0.010695566995727676,
+      "sharpe": 0.9371937425133376,
+      "sharpe_se": 0.045605080864295953,
+      "mean_pnl_bps": 5.170157942929962,
+      "mean_pnl_bps_se": 0.25858416677656204,
+      "turnover_per_year": 22.189056080759602,
+      "turnover_per_year_se": 0.3026473340176814,
+      "n_trades": 10.83,
+      "n_trades_se": 0.13149889656949587,
+      "stop_share": 0.019958680208680205,
+      "stop_share_se": 0.0029329463906291407
+    },
+    {
+      "regime": "R3b_mild_break",
+      "method": "kalman1e-06",
+      "beta_rmse": 0.07483569594801426,
+      "beta_rmse_se": 0.002839651090090244,
+      "sharpe": 1.2873771954362234,
+      "sharpe_se": 0.045957195079137064,
+      "mean_pnl_bps": 6.007968241789889,
+      "mean_pnl_bps_se": 0.21689977463913374,
+      "turnover_per_year": 21.68799217887987,
+      "turnover_per_year_se": 0.2531304051118091,
+      "n_trades": 11.005,
+      "n_trades_se": 0.1323345653483233,
+      "stop_share": 0.015736853424353426,
+      "stop_share_se": 0.0026283166899342394
+    },
+    {
+      "regime": "R3b_mild_break",
+      "method": "kalman1e-05",
+      "beta_rmse": 0.07548796823039,
+      "beta_rmse_se": 0.002619984450455606,
+      "sharpe": 1.3370651071060342,
+      "sharpe_se": 0.04613983030573099,
+      "mean_pnl_bps": 6.131185262442771,
+      "mean_pnl_bps_se": 0.20360439761701227,
+      "turnover_per_year": 21.93789604329934,
+      "turnover_per_year_se": 0.26015477576476415,
+      "n_trades": 11.14,
+      "n_trades_se": 0.13873803085682795,
+      "stop_share": 0.014868478743478743,
+      "stop_share_se": 0.002563385886176218
+    },
+    {
+      "regime": "R3b_mild_break",
+      "method": "kalman0.0001",
+      "beta_rmse": 0.0683523520687661,
+      "beta_rmse_se": 0.00204209667816491,
+      "sharpe": 1.3222906684515623,
+      "sharpe_se": 0.04617315175080876,
+      "mean_pnl_bps": 5.988080833633109,
+      "mean_pnl_bps_se": 0.20651347871692827,
+      "turnover_per_year": 21.413163997466228,
+      "turnover_per_year_se": 0.24256963010051283,
+      "n_trades": 10.9,
+      "n_trades_se": 0.1301332907707869,
+      "stop_share": 0.01611066711066711,
+      "stop_share_se": 0.0027269661444663013
+    }
+  ],
+  "paired_vs_static": [
+    {
+      "regime": "R3b_mild_break",
+      "method": "expanding",
+      "d_sharpe": -0.011986750019317064,
+      "d_sharpe_se": 0.017010679130931673,
+      "d_beta_rmse": 0.012718626346911469,
+      "d_beta_rmse_se": 0.0022676799421597915
+    },
+    {
+      "regime": "R3b_mild_break",
+      "method": "rolling60",
+      "d_sharpe": -0.20867551020358838,
+      "d_sharpe_se": 0.04770810654129758,
+      "d_beta_rmse": 0.44889824014827057,
+      "d_beta_rmse_se": 0.010298144564520348
+    },
+    {
+      "regime": "R3b_mild_break",
+      "method": "rolling120",
+      "d_sharpe": -0.2083206753037432,
+      "d_sharpe_se": 0.04382713665657418,
+      "d_beta_rmse": 0.4108501741906336,
+      "d_beta_rmse_se": 0.01168015576719775
+    },
+    {
+      "regime": "R3b_mild_break",
+      "method": "rolling250",
+      "d_sharpe": -0.3721707381289505,
+      "d_sharpe_se": 0.03541572335247811,
+      "d_beta_rmse": 0.37274793163863346,
+      "d_beta_rmse_se": 0.01082992419956394
+    },
+    {
+      "regime": "R3b_mild_break",
+      "method": "kalman1e-06",
+      "d_sharpe": -0.021987285206064543,
+      "d_sharpe_se": 0.02594614683310176,
+      "d_beta_rmse": 0.0350162402096606,
+      "d_beta_rmse_se": 0.003039189084434211
+    },
+    {
+      "regime": "R3b_mild_break",
+      "method": "kalman1e-05",
+      "d_sharpe": 0.027700626463746218,
+      "d_sharpe_se": 0.02913305545832089,
+      "d_beta_rmse": 0.03566851249203634,
+      "d_beta_rmse_se": 0.0028261787672960847
+    },
+    {
+      "regime": "R3b_mild_break",
+      "method": "kalman0.0001",
+      "d_sharpe": 0.012926187809274445,
+      "d_sharpe_se": 0.02790578797894707,
+      "d_beta_rmse": 0.02853289633041244,
+      "d_beta_rmse_se": 0.0023283648756155027
+    }
+  ],
+  "ranks": {
+    "static": {
+      "sharpe_rank_by_regime": [
+        3
+      ],
+      "worst_rank": 3
+    },
+    "expanding": {
+      "sharpe_rank_by_regime": [
+        4
+      ],
+      "worst_rank": 4
+    },
+    "rolling60": {
+      "sharpe_rank_by_regime": [
+        7
+      ],
+      "worst_rank": 7
+    },
+    "rolling120": {
+      "sharpe_rank_by_regime": [
+        6
+      ],
+      "worst_rank": 6
+    },
+    "rolling250": {
+      "sharpe_rank_by_regime": [
+        8
+      ],
+      "worst_rank": 8
+    },
+    "kalman1e-06": {
+      "sharpe_rank_by_regime": [
+        5
+      ],
+      "worst_rank": 5
+    },
+    "kalman1e-05": {
+      "sharpe_rank_by_regime": [
+        1
+      ],
+      "worst_rank": 1
+    },
+    "kalman0.0001": {
+      "sharpe_rank_by_regime": [
+        2
+      ],
+      "worst_rank": 2
+    }
+  }
+}

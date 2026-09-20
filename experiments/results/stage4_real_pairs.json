@@ -1,0 +1,384 @@
+{
+  "experiment": "stage4_real_pairs",
+  "git_commit": "a44c5e3",
+  "data_fingerprint": "07d3aa14cdacd9c9",
+  "train_end": "2015-12-31",
+  "oos_window": [
+    "2016-01-04",
+    "2016-12-30"
+  ],
+  "params": {
+    "entry": 2.0,
+    "exit": 0.5,
+    "stop": 4.0,
+    "max_hold": 60
+  },
+  "screen_seed": 20260920,
+  "legs_dropped_for_distributions": [
+    "DHR",
+    "GEN",
+    "JCI",
+    "VMRK"
+  ],
+  "results": {
+    "selected": {
+      "static_z30": {
+        "n_pairs": 19,
+        "n_dropped": 1,
+        "sharpe": 1.162686052440927,
+        "sharpe_ci95": [
+          -0.7265426817039404,
+          3.0171940485842375
+        ],
+        "mean_daily_bps": 1.7795095888132744,
+        "total_return_pct_per_unit": 4.484364163809451,
+        "trades_per_pair": 8.052631578947368,
+        "stop_share": 0.006535947712418301,
+        "win_rate": 0.6797385620915033,
+        "turnover_per_pair": 30.639847765471856,
+        "hedge_ratio_drift_rel_median": 0.0,
+        "pairs_with_no_trade": 0
+      },
+      "static_z60": {
+        "n_pairs": 19,
+        "n_dropped": 1,
+        "sharpe": 1.1919130654490022,
+        "sharpe_ci95": [
+          -0.6646721805861503,
+          2.9371781545181914
+        ],
+        "mean_daily_bps": 1.692468114927707,
+        "total_return_pct_per_unit": 4.265019649617821,
+        "trades_per_pair": 4.947368421052632,
+        "stop_share": 0.06382978723404255,
+        "win_rate": 0.6914893617021277,
+        "turnover_per_pair": 19.204458171178302,
+        "hedge_ratio_drift_rel_median": 0.0,
+        "pairs_with_no_trade": 0
+      },
+      "static_z120": {
+        "n_pairs": 19,
+        "n_dropped": 1,
+        "sharpe": 0.5067761162109682,
+        "sharpe_ci95": [
+          -1.6545248694467434,
+          2.5401075908484687
+        ],
+        "mean_daily_bps": 0.6877654977393683,
+        "total_return_pct_per_unit": 1.7331690543032081,
+        "trades_per_pair": 2.8421052631578947,
+        "stop_share": 0.07407407407407407,
+        "win_rate": 0.5740740740740741,
+        "turnover_per_pair": 11.306855188293747,
+        "hedge_ratio_drift_rel_median": 0.0,
+        "pairs_with_no_trade": 0
+      },
+      "expanding_z60": {
+        "n_pairs": 19,
+        "n_dropped": 1,
+        "sharpe": 0.959035872167767,
+        "sharpe_ci95": [
+          -0.8913319772351475,
+          2.6753792778150145
+        ],
+        "mean_daily_bps": 1.3325266506590454,
+        "total_return_pct_per_unit": 3.3579671596607947,
+        "trades_per_pair": 4.7894736842105265,
+        "stop_share": 0.07692307692307693,
+        "win_rate": 0.6703296703296703,
+        "turnover_per_pair": 18.630287603796607,
+        "hedge_ratio_drift_rel_median": 0.014173964570955053,
+        "pairs_with_no_trade": 0
+      },
+      "rolling60_z60": {
+        "n_pairs": 19,
+        "n_dropped": 1,
+        "sharpe": 0.4682503795812437,
+        "sharpe_ci95": [
+          -1.494285876964878,
+          2.24661979646302
+        ],
+        "mean_daily_bps": 0.7493221328084008,
+        "total_return_pct_per_unit": 1.88829177467717,
+        "trades_per_pair": 6.315789473684211,
+        "stop_share": 0.05,
+        "win_rate": 0.6333333333333333,
+        "turnover_per_pair": 24.648834310519305,
+        "hedge_ratio_drift_rel_median": 0.5109677132280223,
+        "pairs_with_no_trade": 0
+      },
+      "rolling120_z60": {
+        "n_pairs": 19,
+        "n_dropped": 1,
+        "sharpe": 0.4576682251887599,
+        "sharpe_ci95": [
+          -1.1505391847795012,
+          2.038604388399923
+        ],
+        "mean_daily_bps": 0.7548506695643182,
+        "total_return_pct_per_unit": 1.9022236873020821,
+        "trades_per_pair": 5.473684210526316,
+        "stop_share": 0.09615384615384616,
+        "win_rate": 0.6153846153846154,
+        "turnover_per_pair": 20.626475049996706,
+        "hedge_ratio_drift_rel_median": 0.42478382189803376,
+        "pairs_with_no_trade": 0
+      },
+      "rolling250_z60": {
+        "n_pairs": 19,
+        "n_dropped": 1,
+        "sharpe": -0.7087129115003226,
+        "sharpe_ci95": [
+          -2.8693463962453243,
+          1.1660795211529111
+        ],
+        "mean_daily_bps": -1.1430527950742113,
+        "total_return_pct_per_unit": -2.8804930435870126,
+        "trades_per_pair": 4.894736842105263,
+        "stop_share": 0.0967741935483871,
+        "win_rate": 0.5591397849462365,
+        "turnover_per_pair": 17.136547570823396,
+        "hedge_ratio_drift_rel_median": 0.3642248627123986,
+        "pairs_with_no_trade": 0
+      },
+      "kalman1e-05_z60": {
+        "n_pairs": 19,
+        "n_dropped": 1,
+        "sharpe": -0.3365701162463525,
+        "sharpe_ci95": [
+          -2.098410529911196,
+          1.275481870773638
+        ],
+        "mean_daily_bps": -0.4846899450477373,
+        "total_return_pct_per_unit": -1.221418661520298,
+        "trades_per_pair": 4.631578947368421,
+        "stop_share": 0.07954545454545454,
+        "win_rate": 0.6363636363636364,
+        "turnover_per_pair": 16.215743324022444,
+        "hedge_ratio_drift_rel_median": 0.059574477838991745,
+        "pairs_with_no_trade": 0
+      }
+    },
+    "baseline_non_significant": {
+      "static_z30": {
+        "n_pairs": 1192,
+        "n_dropped": 24,
+        "sharpe": 1.670257851098364,
+        "sharpe_ci95": [
+          0.2639932639660834,
+          3.3698021675918537
+        ],
+        "mean_daily_bps": 1.2637712670754948,
+        "total_return_pct_per_unit": 3.184703593030247,
+        "trades_per_pair": 7.76761744966443,
+        "stop_share": 0.010584296360298088,
+        "win_rate": 0.6740468733124527,
+        "turnover_per_pair": 28.668931594138943,
+        "hedge_ratio_drift_rel_median": 0.0,
+        "pairs_with_no_trade": 0
+      },
+      "static_z60": {
+        "n_pairs": 1192,
+        "n_dropped": 24,
+        "sharpe": 1.6747538401669129,
+        "sharpe_ci95": [
+          0.20027785226927522,
+          3.3369845753282394
+        ],
+        "mean_daily_bps": 1.2226413507115543,
+        "total_return_pct_per_unit": 3.0810562037931164,
+        "trades_per_pair": 4.802852348993288,
+        "stop_share": 0.047685589519650656,
+        "win_rate": 0.6682969432314411,
+        "turnover_per_pair": 18.041867497384533,
+        "hedge_ratio_drift_rel_median": 0.0,
+        "pairs_with_no_trade": 0
+      },
+      "static_z120": {
+        "n_pairs": 1192,
+        "n_dropped": 24,
+        "sharpe": 1.2460631427519184,
+        "sharpe_ci95": [
+          -0.2893884746306997,
+          2.761207233608221
+        ],
+        "mean_daily_bps": 0.8233997015715597,
+        "total_return_pct_per_unit": 2.0749672479603305,
+        "trades_per_pair": 2.708053691275168,
+        "stop_share": 0.06505576208178439,
+        "win_rate": 0.6425030978934325,
+        "turnover_per_pair": 10.351529765552543,
+        "hedge_ratio_drift_rel_median": 0.0,
+        "pairs_with_no_trade": 2
+      },
+      "expanding_z60": {
+        "n_pairs": 1192,
+        "n_dropped": 24,
+        "sharpe": 1.772650206603798,
+        "sharpe_ci95": [
+          0.27191793062051944,
+          3.3998476309695436
+        ],
+        "mean_daily_bps": 1.2959269165397052,
+        "total_return_pct_per_unit": 3.2657358296800574,
+        "trades_per_pair": 4.826342281879195,
+        "stop_share": 0.04675821310620546,
+        "win_rate": 0.6718233964887884,
+        "turnover_per_pair": 17.831578400935083,
+        "hedge_ratio_drift_rel_median": 0.045562886636839356,
+        "pairs_with_no_trade": 0
+      },
+      "rolling60_z60": {
+        "n_pairs": 1192,
+        "n_dropped": 24,
+        "sharpe": 0.5007475005918635,
+        "sharpe_ci95": [
+          -1.2321861596061547,
+          2.470237189879908
+        ],
+        "mean_daily_bps": 0.32273075088803993,
+        "total_return_pct_per_unit": 0.8132814922378606,
+        "trades_per_pair": 6.391778523489933,
+        "stop_share": 0.049612810080063,
+        "win_rate": 0.6450977818611366,
+        "turnover_per_pair": 25.701237568985594,
+        "hedge_ratio_drift_rel_median": 0.6629555024261011,
+        "pairs_with_no_trade": 0
+      },
+      "rolling120_z60": {
+        "n_pairs": 1192,
+        "n_dropped": 24,
+        "sharpe": 0.5079081206043603,
+        "sharpe_ci95": [
+          -1.0519445756612826,
+          2.4048494637639513
+        ],
+        "mean_daily_bps": 0.461175763196671,
+        "total_return_pct_per_unit": 1.162162923255611,
+        "trades_per_pair": 5.24748322147651,
+        "stop_share": 0.05195843325339728,
+        "win_rate": 0.6486011191047162,
+        "turnover_per_pair": 19.853895158960707,
+        "hedge_ratio_drift_rel_median": 0.544953100808873,
+        "pairs_with_no_trade": 0
+      },
+      "rolling250_z60": {
+        "n_pairs": 1192,
+        "n_dropped": 24,
+        "sharpe": 0.5133520782355238,
+        "sharpe_ci95": [
+          -1.0242100723738339,
+          2.3139522159307595
+        ],
+        "mean_daily_bps": 0.6215108235647854,
+        "total_return_pct_per_unit": 1.5662072753832592,
+        "trades_per_pair": 4.8624161073825505,
+        "stop_share": 0.04899930986887509,
+        "win_rate": 0.6606280193236715,
+        "turnover_per_pair": 17.456440097772393,
+        "hedge_ratio_drift_rel_median": 0.4646158094446316,
+        "pairs_with_no_trade": 0
+      },
+      "kalman1e-05_z60": {
+        "n_pairs": 1192,
+        "n_dropped": 24,
+        "sharpe": 1.636565439513003,
+        "sharpe_ci95": [
+          -0.007693383705492429,
+          3.5613416050445994
+        ],
+        "mean_daily_bps": 1.1774555224893346,
+        "total_return_pct_per_unit": 2.9671879166731236,
+        "trades_per_pair": 4.842281879194631,
+        "stop_share": 0.04781704781704782,
+        "win_rate": 0.6836451836451837,
+        "turnover_per_pair": 16.44487099010776,
+        "hedge_ratio_drift_rel_median": 0.07173645328884716,
+        "pairs_with_no_trade": 0
+      }
+    },
+    "size_matched_post_hoc": {
+      "static_z30": {
+        "k": 19,
+        "selected_sharpe": 1.162686052440927,
+        "random_subset_median": 0.8092029862186311,
+        "random_subset_5_95": [
+          -0.5020478089355865,
+          2.100154603461975
+        ],
+        "selected_percentile": 0.6864
+      },
+      "static_z60": {
+        "k": 19,
+        "selected_sharpe": 1.1919130654490022,
+        "random_subset_median": 0.8284489480157406,
+        "random_subset_5_95": [
+          -0.4956338261067721,
+          2.0551523816136226
+        ],
+        "selected_percentile": 0.6856
+      },
+      "static_z120": {
+        "k": 19,
+        "selected_sharpe": 0.5067761162109682,
+        "random_subset_median": 0.6078638416836771,
+        "random_subset_5_95": [
+          -0.7439146361784088,
+          1.9758641850814351
+        ],
+        "selected_percentile": 0.4556
+      },
+      "expanding_z60": {
+        "k": 19,
+        "selected_sharpe": 0.959035872167767,
+        "random_subset_median": 0.8720450760575085,
+        "random_subset_5_95": [
+          -0.4085915495297531,
+          2.129795715074742
+        ],
+        "selected_percentile": 0.5446
+      },
+      "rolling60_z60": {
+        "k": 19,
+        "selected_sharpe": 0.4682503795812437,
+        "random_subset_median": 0.2357277056261972,
+        "random_subset_5_95": [
+          -1.2108862760856296,
+          1.7237904478018728
+        ],
+        "selected_percentile": 0.6014
+      },
+      "rolling120_z60": {
+        "k": 19,
+        "selected_sharpe": 0.4576682251887599,
+        "random_subset_median": 0.2994343256520391,
+        "random_subset_5_95": [
+          -1.0621383397826967,
+          1.6626538802897395
+        ],
+        "selected_percentile": 0.577
+      },
+      "rolling250_z60": {
+        "k": 19,
+        "selected_sharpe": -0.7087129115003226,
+        "random_subset_median": 0.33631451553714414,
+        "random_subset_5_95": [
+          -0.858147586128495,
+          1.5522856767428954
+        ],
+        "selected_percentile": 0.0728
+      },
+      "kalman1e-05_z60": {
+        "k": 19,
+        "selected_sharpe": -0.3365701162463525,
+        "random_subset_median": 0.8533969536713513,
+        "random_subset_5_95": [
+          -0.40339884785305513,
+          2.1011460953963943
+        ],
+        "selected_percentile": 0.0622
+      }
+    }
+  },
+  "note": "descriptive, gross of costs, pre-specified variants all reported"
+}

@@ -18,8 +18,8 @@ the goal and is not reported as a finding.
 | 3 | Pair discovery on training data only | **done** |
 | 4 | Pair strategy: hedge ratios, spread, z-score, entry/exit/stop | **done** |
 | 5 | Walk-forward backtest, train/validation/holdout | **done** |
-| 6 | Transaction costs: spread, commissions, impact | **done** (this commit) |
-| 7 | PCA statistical arbitrage | not started |
+| 6 | Transaction costs: spread, commissions, impact | **done** |
+| 7 | PCA statistical arbitrage | **done** (this commit) |
 | 8 | Multiple-testing correction, deflated Sharpe, reality check | not started |
 | 9 | Robustness: sensitivity, regimes, structural breaks, capacity | not started |
 | 10 | Final research report | not started |
@@ -47,11 +47,12 @@ statarb/
     pipeline.py        the facade research code reads through
   selection/           adf, cointegration (Engle-Granger), johansen, hurst (exploratory only),
                        correlation, clustering, screening (pair discovery + empirical null)
-  models/              ou, rolling, hedge_ratio (static/expanding/rolling), kalman
-  signals/             zscore (closed-form, time-varying hedge), pairs (entry/exit/stop state machine)
-  portfolio/           construction (leg weights, volatility targeting)
+  models/              ou, rolling, hedge_ratio (static/expanding/rolling), kalman, pca
+  signals/             zscore (closed-form, time-varying hedge), pairs (entry/exit/stop state machine),
+                       residuals (rolling PCA residual scores, position state machine)
+  portfolio/           construction (leg weights, volatility targeting), neutral (sizing, dollar/factor-neutral projection)
   backtest/            pair_pnl (single-pair accounting), walkforward (folds, engine), metrics,
-                       costs (spread, commission, impact, borrow; Corwin-Schultz)
+                       costs (spread, commission, impact, borrow; Corwin-Schultz), pca_walkforward (PCA book engine, placebo)
   research/            registry (append-only trial log)
   statistics/          bootstrap (stationary block bootstrap)
   data/holdout.py      sealed-holdout guard and ledger
@@ -687,6 +688,15 @@ dropped: vendor total returns around a spin-off are not trustworthy.
 * The simulator favours the Kalman filter by construction; real hedge ratios are not random walks.
 * Stops fired on 5–10 % of trades in the 60- and 120-day-window variants (0.7 % with a 30-day window);
   the DHR/HSIC spin-off blow-up shows the stop and an event mask matter.
+* **Correction (found in Stage 7).** The state machine kept the re-entry block for one direction only, so a forced
+  (stop / time) exit in the *opposite* direction overwrote an earlier block and let the first direction re-enter before
+  `|z| ≤ exit` had been seen, contradicting the rule above. A property test found it on a five-bar example
+  (`z = [3, 1, −3, −1, 3]`, `max_hold = 1`); blocks are now kept per direction, with a regression test that fails on
+  the old code. **It changed no reported result**: the old and corrected engines were run side by side on every pair
+  and configuration of Stages 4–6 (43,983 runs for the nine Stage 5 configurations over all selected and placebo-pool
+  pairs of the four folds, plus 9,688 for Stage 4's eight 2016 variants) with **0 differing positions or exit reasons**,
+  and Stage 4's regenerated results file is identical to the committed one. Reaching the bug needs the z-score to jump
+  past both entry thresholds without a single bar inside the exit band.
 
 ## 7. Walk-forward backtesting and the sealed holdout (Stage 5)
 
@@ -985,7 +995,232 @@ untouched.** That is the honest outcome of this stage, not a failure to be tuned
   the registry's count of real-data strategy trials stays at 18); the sensitivity grid is explanatory and no
   configuration was chosen from it.
 
-## 9. Statistical-arbitrage methodology *(Stages 7–9: specification only)*
+## 9. PCA statistical arbitrage (Stage 7)
+
+`statarb/models/pca.py`, `statarb/signals/residuals.py`, `statarb/portfolio/neutral.py`,
+`statarb/backtest/pca_walkforward.py`; experiments `stage7_pca.py` and `stage7_placebo_checks.py`. This is a
+second, independent strategy family — trade the *residual* of each stock against a statistical factor model
+(Avellaneda & Lee, 2010) instead of a cointegrated partner — held to the **same standard as the pairs**: the same
+point-in-time universe and eligibility, the same four walk-forward research blocks (test years 2015–2018, rolling
+four-year training window), the same Stage 6 cost model at the same $100 M, a placebo, and a pre-specified
+finalist rule. Validation (2019–2021) and the holdout (2022+) are untouched. Every number below is generated from
+`experiments/results/stage7_pca.json` and `stage7_placebo_checks.json`.
+
+### 9.1 The model
+
+* **Factors.** Daily total returns of the fold's eligible names (308–361 across the four folds) are
+  standardised and eigen-decomposed (`numpy.linalg.eigh` on the correlation matrix; checked against
+  scikit-learn). The PCA is **refitted every 21 sessions on the trailing 504 sessions, using only rows before the
+  first day it scores**; nothing is fitted on the block it trades. Each fold's `k` first components are the
+  factors; the first 8–11 eigenvalues exceed the Marchenko–Pastur noise edge, and `k = 5` /
+  `k = 15` explain 41–53 % / 52–61 % of variance.
+  The grid brackets the MP count from both sides.
+* **Residuals.** Each day, every stock's returns over the last 60 days are regressed (no intercept) on the factor
+  returns; the residual of the *scored day* is out of sample (betas fitted through the day before). Factor returns
+  are recomputed with the current fit's weights, so betas never straddle a rotated factor definition.
+* **Two signals**, both "positive = rich": `sscore` — Avellaneda–Lee: the cumulative residual is an OU process,
+  `s = (X_t − m)/σ_eq`, names with mean-reversion slower than ~30 days (`κ ≤ 8.4`) get no score
+  (24–29 % of stock-days); `reversal` — the standardised sum of the last five
+  residuals (short-horizon liquidity reversal). Both use fixed literature-style constants; nothing was tuned.
+* **Positions.** Enter at `|score| > 1.25`, exit inside `0.5`, stop at 4, 60-day time stop (stops and time stops block
+  re-entry until the score returns inside the band; NaN flattens). Each name is 2 % of capital at median residual
+  volatility, scaled by inverse residual volatility (capped at 2.5×). The book is then projected to be **exactly
+  dollar- and factor-neutral** (the smallest change in weights with `Σw = 0` and `B'w = 0`; the hedge is spread over the
+  whole tradable universe and re-traded daily, and is charged). Gross floats with the number of open names (≈ 2.1–2.5× capital
+  on average, about 85–94 signal names), and every position is flat at each block's end.
+* **Timing and events** are as in the pair engine: a position set at the close of `d` earns bar `d + 1`; a name is flat
+  from the day before a non-ordinary distribution's ex-date, and its event-bar return is missing.
+* **Grid (6 registered trials):** signal ∈ {s-score, reversal} × `k` ∈ {5, 10, 15}. **Control:** `reversal` with
+  `k = 0` (raw return, dollar-neutral only) — a diagnostic that cannot be selected.
+
+### 9.2 Validation
+
+Built and tested before the grid was run (the last item was found afterwards):
+
+* PCA: eigenvalues and eigenvectors against a correlation-matrix `eigh` and scikit-learn; the decomposition
+  identities (`Z = FV' + ε`, `F'ε = 0`, `var(F) = λ`); recovery of a planted three-factor structure
+  (Marchenko–Pastur counts exactly three; the fitted space contains the planted loadings); standardisation with the
+  *fitted* mean and scale, never the new data's.
+* **Causality**, with the leakage detectors of §1.7 applied to the scores, the residual volatilities, the betas and
+  the out-of-sample residuals (truncation and future-perturbation), including a negative control; betas and
+  volatilities do not move when the scored day's return is perturbed (also on the first day of a refit segment, where
+  a fit that peeked at that day would move them); an end-to-end test rebuilds the store with everything after a date
+  replaced by noise and finds P&L, costs and turnover before it unchanged.
+* The OU score against `statsmodels` OLS and its closed forms; the reversal score against a direct computation; the
+  residual-volatility estimator is unbiased (a `1/(w − k)` divisor, checked against the known idiosyncratic σ); the state
+  machine (thresholds, stops, time stops, NaN, prefix property, column independence).
+* Neutrality to 1e-12 for the fitted factors and dollars (also for `k = 0`); the batch cost model **reproduces the pair
+  cost model** component by component on a two-name book; drift-aware turnover and the one-bar delay by hand.
+* **Mutation sweep:** 45 single-bug mutants, 43 of them applicable to the final code (two mutated clauses were deleted as
+  redundant); 42 are killed and one survives as an *equivalent* mutant (projecting an all-zero book gives zero either
+  way). The first sweep left seven survivors: four were real test gaps (a fresh entry beyond the stop; the event mask; the
+  direction of the placebo relabelling, which my test had re-implemented instead of calling; NaN handling with no
+  exit band), two were redundant clauses (now deleted), one equivalent.
+* **A bug found by reading the results, not by a test.** In the first run the no-factor control had a net exposure of
+  6.5× capital: the projection returned the weights unchanged when there were no factors, contradicting the
+  specification, and a test asserted the wrong behaviour. Fixed (the control is now dollar-neutral), the test replaced,
+  a regression mutant added, and the experiment re-run in full. The grid (`k ≥ 5`) was unaffected and its results are
+  identical; the registry keeps both control runs and the first is void.
+* **A second, older bug surfaced by the full test run** (a property test on the Stage 4 pair state machine failed
+  on a rare example): see the correction in §6.5. It changed no Stage 3–6 result.
+
+### 9.3 The placebo, and what it can and cannot say
+
+The null for a cross-sectional signal is a **label permutation**: each score path is kept exactly (its persistence,
+its NaN pattern, its turnover) but attached to another stock — the same permutation of the names for every day of
+the block — and sizing, neutralisation and costs then run on the stock that actually holds the position. 200 draws per
+fold, shared across configurations. It severs the link between a signal and *that stock's* returns and nothing else.
+
+* **Calibration under a true null** (`stage7_placebo_checks.py`, synthetic returns with a random-walk residual, 40
+  seeds × 60 draws): mean rank of the real book 0.56; ranks below the 5 % / above the 95 % point in
+  5 % / 10 % of seeds; rank histogram over
+  quintiles [6, 8, 7, 6, 13]; the placebo's dispersion is 0.92 of the real
+  book's. Acceptable, with a mild excess in the upper tail (slightly anti-conservative). *The pass thresholds in that
+  script were written after I had seen a first run of the same calibration, so they are generous by construction and
+  are a consistency check, not an independent test.*
+* **Real-data comparability** (`pca_reversal_k5`, research folds): the placebo book turns over 0.91× as much as the
+  real book, holds 0.93× the gross exposure and pays 0.91× the impact
+  (each cost component within 0.91–0.93×):
+  selecting on a standardised score favours names whose volatility estimate is low, and sizing then loads up on
+  them, which a relabelled book cannot copy. The real book's **daily P&L volatility is 1.7× the
+  placebo's** (positions sit in names that have just moved, and volatility clusters).
+* **Consequence.** The *gross* percentile is the meaningful test of a signal. The *net-Sharpe* percentile is **not**
+  interpretable here: when net returns are dominated by costs, Sharpe is scaled by volatility and the higher-volatility
+  real book looks less negative than the placebo (the JSON's net percentiles of 94–100 % would be read as skill by
+  mistake). The finalist rule therefore rests on `net Sharpe > 0`, which decides it on its own.
+
+### 9.4 Result: the research phase, net of costs (2015–2018)
+
+| Configuration | Gross Sharpe (95 % CI) | Gross Sharpe percentile in placebo | Net Sharpe | Turnover / yr | Signal names held | Gross P&L, bps/yr | Cost, bps/yr |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
+| s-score, k = 5 | +0.89 [-0.05, +1.83] | 96.5 | -3.18 | 195× | 85 | 380 | 1741 |
+| s-score, k = 10 | +0.53 [-0.41, +1.39] | 84.0 | -4.82 | 235× | 86 | 204 | 2056 |
+| s-score, k = 15 | +0.26 [-0.67, +1.13] | 71.0 | -6.18 | 280× | 87 | 96 | 2427 |
+| reversal, k = 5 | +1.13 [+0.07, +2.17] | 99.5 | -3.54 | 307× | 93 | 684 | 2800 |
+| reversal, k = 10 | +0.75 [-0.28, +1.78] | 93.5 | -5.09 | 333× | 93 | 386 | 2987 |
+| reversal, k = 15 | +0.76 [-0.30, +1.79] | 94.0 | -5.82 | 361× | 94 | 369 | 3189 |
+| reversal, k = 0 (control) | -0.22 [-1.10, +0.68] | 46.5 | -2.69 | 312× | 94 | -228 | 2593 |
+
+*Gross* and *net* Sharpe, annualised on 252 days over the four stitched blocks (n = 1006 days); intervals from the stationary
+block bootstrap; "percentile" is the share of 200 placebo books with a lower gross Sharpe. The control is dollar-neutral
+only; the six configurations are exactly neutral to their `k` factors (largest |net exposure| ≈ 3e-12).
+
+Per-block gross Sharpe (one row per configuration; each block is one calendar year):
+
+| Configuration | 2015 | 2016 | 2017 | 2018 |
+| --- | ---: | ---: | ---: | ---: |
+| s-score, k = 5 | +2.65 | +0.45 | +0.01 | +0.76 |
+| s-score, k = 10 | +1.33 | +0.95 | +0.21 | -0.12 |
+| s-score, k = 15 | +0.84 | +1.02 | -0.33 | -0.43 |
+| reversal, k = 5 | +1.28 | +0.06 | +1.44 | +1.80 |
+| reversal, k = 10 | +1.13 | +0.31 | +0.19 | +1.38 |
+| reversal, k = 15 | +0.38 | +0.56 | +0.32 | +1.54 |
+| reversal, k = 0 (control) | -0.52 | -0.06 | -0.46 | -0.03 |
+
+Where the money goes (bps of capital per year, central cost model at $100 M):
+
+| Configuration | Gross | Spread | Commission | Impact | Borrow | Total cost | Net if impact = 0 | Break-even cost multiple |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
+| s-score, k = 5 | 380 | 330 | 147 | 1211 | 53 | 1741 | -150 | 0.22 |
+| s-score, k = 10 | 204 | 395 | 176 | 1431 | 54 | 2056 | -421 | 0.10 |
+| s-score, k = 15 | 96 | 471 | 210 | 1691 | 55 | 2427 | -640 | 0.04 |
+| reversal, k = 5 | 684 | 516 | 230 | 1992 | 62 | 2800 | -124 | 0.24 |
+| reversal, k = 10 | 386 | 559 | 249 | 2116 | 62 | 2987 | -484 | 0.13 |
+| reversal, k = 15 | 369 | 606 | 270 | 2250 | 63 | 3189 | -569 | 0.12 |
+| reversal, k = 0 (control) | -228 | 525 | 234 | 1777 | 57 | 2593 | -1044 | 0.00 |
+
+Sensitivity of the **net** Sharpe (descriptive; nothing was chosen from it):
+
+| Configuration | $10 M | $100 M (central) | $1 B |
+| --- | ---: | ---: | ---: |
+| s-score, k = 5 | -1.25 | -3.18 | -9.01 |
+| s-score, k = 10 | -2.28 | -4.82 | -12.29 |
+| s-score, k = 15 | -3.13 | -6.18 | -14.71 |
+| reversal, k = 5 | -1.26 | -3.54 | -10.64 |
+| reversal, k = 10 | -2.26 | -5.09 | -13.54 |
+| reversal, k = 15 | -2.65 | -5.82 | -15.01 |
+| reversal, k = 0 (control) | -1.54 | -2.69 | -6.21 |
+
+| Configuration | costs × 0 (= gross) | × 0.25 | × 0.5 | × 1 (central) | × 2 |
+| --- | ---: | ---: | ---: | ---: | ---: |
+| s-score, k = 5 | +0.89 | -0.13 | -1.15 | -3.18 | -7.15 |
+| s-score, k = 10 | +0.53 | -0.81 | -2.15 | -4.82 | -9.97 |
+| s-score, k = 15 | +0.26 | -1.36 | -2.98 | -6.18 | -12.18 |
+| reversal, k = 5 | +1.13 | -0.03 | -1.19 | -3.54 | -8.22 |
+| reversal, k = 10 | +0.75 | -0.71 | -2.17 | -5.09 | -10.78 |
+| reversal, k = 15 | +0.76 | -0.88 | -2.53 | -5.82 | -12.12 |
+| reversal, k = 0 (control) | -0.22 | -0.84 | -1.46 | -2.69 | -5.10 |
+
+Exposures and overlap with the pair strategy (descriptive; gross P&L):
+
+| Configuration | Market beta (vs equal-weight universe) | Correlation with equal-weight universe | Correlation with the mean Stage 5 pair P&L (gross) |
+| --- | ---: | ---: | ---: |
+| s-score, k = 5 | +0.027 | +0.08 | +0.15 |
+| s-score, k = 10 | +0.026 | +0.09 | +0.09 |
+| s-score, k = 15 | +0.027 | +0.09 | +0.07 |
+| reversal, k = 5 | +0.054 | +0.12 | +0.08 |
+| reversal, k = 10 | +0.041 | +0.11 | +0.08 |
+| reversal, k = 15 | +0.046 | +0.13 | +0.08 |
+
+For comparison, the pair strategy on the same blocks (Stages 5–6, nine configurations): gross Sharpe -0.32 to +0.30,
+net -1.01 to -0.58, at a turnover of 11–28× capital a year. The PCA books have more gross signal and
+roughly 7–32× the turnover.
+
+### 9.5 Hypotheses and the finalist rule
+
+* **H7a — residual reversal is real gross (reversal configs above the 95th placebo percentile): partly.** `k = 5`
+  is at the 99.5th percentile (Sharpe +1.13, the only interval that excludes zero,
+  [+0.07, +2.17]); `k = 10` and `k = 15` are at the 93.5th and
+  94.0th, just short of the pre-specified line. The s-score with `k = 5` reaches the 96.5th; with
+  `k = 10, 15` it does not. Gross Sharpe falls as factors are added (s-score +0.89 → +0.53 → +0.26;
+  reversal +1.13 → +0.75 → +0.76). The best of six correlated configurations looks better than a typical one by construction, and its Sharpe varies by block (+1.28, +0.06, +1.44, +1.80 for
+  reversal `k = 5`): this is **not** corrected for having looked at six — Stage 8.
+* **H7b — every configuration is net negative at $100 M: confirmed**, net Sharpe -6.18 to -3.18.
+  Turnover is 195–361× capital a year (≈ 85–94 signal names at a time)
+  against gross of 96–684 bps a year; costs are 1741–3189 bps, about
+  70 % of it market impact. On 19–32 % of days some trade exceeds 10 % of the name's ADV (flagged, not cured).
+  Costs would have to fall to 0.04–0.24 of the central model for break-even.
+* **H7c — the factor model adds something: confirmed, decisively.** The dollar-neutral raw-return control has gross Sharpe
+  -0.22 (46th percentile): nothing. The signal lives in the *residual after
+  removing the common factors*, not in short-term reversal of raw returns.
+* **H7d — capacity: not the constraint.** Even at $10 M the best net Sharpe is -1.25; and with market impact set to
+  zero every configuration still loses (net -640 to -124 bps a year): spread, commission and borrow
+  alone exceed the gross. The strategy is not too big; it trades too much for what each trade earns. (At a quarter of all costs the best net Sharpe is
+  -0.03.)
+
+**Finalist rule** (identical to Stage 6: net Sharpe > 0 *and* ≥ the median of its own net placebo; the best qualifier
+advances): **no configuration qualifies. No finalist advances; validation and the holdout remain untouched.**
+
+### 9.6 What this does and does not show
+
+* A statistical factor model's residuals **do** carry a short-horizon reversal that the raw returns do not, on these
+  blocks, before costs — a Sharpe of about 1 at best, with an interval of about ±1. It is
+  the strongest gross result in the project so far, and costs are 4–25 times as large as it.
+* It does **not** show that no profitable implementation exists: a lower-turnover variant, better execution (passive
+  fills earning the spread rather than paying it), or a different number of factors could differ.
+  None of those was tried, on purpose: they would be new trials selected after seeing this result.
+* Diversification: the gross P&L is nearly uncorrelated with the pair strategy (+0.07 to +0.15) and has
+  |market beta| ≤ 0.05. Neither matters while the net is negative.
+
+### 9.7 Limits of Stage 7
+
+* **Survivorship probably works in the strategy's favour here.** The universe is names with data; reversal buys recent
+  losers, and a loser that was later delisted is exactly a name this data does not contain. The gross result is likely biased
+  *upward*, by an amount that cannot be measured with this data.
+* **Execution is at the same close that generates the signal.** Short-horizon reversal partly reflects the bid–ask
+  bounce; the model charges a half-spread, but a signal computed from the closing print and filled at it is optimistic.
+* **Leverage is free of financing** on the long side (gross ≈ 2.1–2.5× capital; only borrow on shorts is charged); no
+  hard-to-borrow names; no taxes.
+* **The refit schedule differs from the pairs'** (monthly PCA refit on the trailing data, against a screen frozen for a
+  year); both use only data before the decision, but the families are not perfectly like for like.
+* Four blocks; the intervals are about ±1 Sharpe. The six configurations are all registered trials (the registry's count of
+  real-data strategy trials is now 24 distinct, in 30 runs — six are the re-run after the control fix); the control is a diagnostic.
+* The placebo preserves score paths, not the link between a score and the stock's own volatility estimate (§9.3); the
+  s-score does not correct the OU coefficient for small-sample bias, and cross-sectional demeaning of its mean is not used.
+* The hedge trades the whole tradable universe daily; a real implementation would trade a few eigenportfolio proxies
+  and would not reproduce this turnover exactly.
+
+## 10. Statistical-arbitrage methodology *(Stages 8–9: specification only)*
 
 Hypotheses to be tested, each with its data, method, assumptions, uncertainty, failure cases and
 limitations recorded when run:
@@ -993,7 +1228,7 @@ limitations recorded when run:
 * **A** cointegrated pairs show economically meaningful out-of-sample mean reversion;
 * **B** cointegration relationships and hedge ratios are stable through time;
 * **C** performance is robust to entry/exit thresholds and look-back windows;
-* **D** residuals of a common-factor (PCA) model mean-revert exploitably;
+* **D** residuals of a common-factor (PCA) model mean-revert exploitably *(tested in §9)*;
 * **E** how much apparent performance survives realistic costs;
 * **F** how much survives correction for the number of hypotheses tested;
 * **G** whether behaviour differs across market regimes;
@@ -1002,7 +1237,7 @@ limitations recorded when run:
 The train / validation / final-holdout split, the walk-forward scheme, the cost model, the
 multiple-testing framework and the experiment registry will be documented here as each is built.
 
-## 10. Limitations so far
+## 11. Limitations so far
 
 * The reconstructed S&P 500 membership is trustworthy only from 2011-01-01 (§2.1); earlier dates are
   not used for any claim, and even later dates inherit the change log's residual gaps.
@@ -1020,6 +1255,10 @@ multiple-testing framework and the experiment registry will be documented here a
   samples and depends on `det_order`; ADF/Engle–Granger assume homoskedastic errors and read a structural
   break as a unit root. None of these are corrected for yet beyond what §4 states.
 * (Stage 2) Critical-value tables come from statsmodels; a defect there would propagate.
+* (Stage 7) The PCA family's gross result is on four research blocks with a Sharpe interval of about ±1, before any
+  correction for six registered configurations; the universe is survivor-tilted in the direction that flatters
+  reversal; execution is at the signal's own close; the placebo does not preserve the score–volatility link and its
+  net-Sharpe percentile is not interpretable (§9.3, §9.7).
 * (Stage 6) The cost model is a documented model, not measured execution (no quotes; impact coefficient
   and market-on-close fills are assumptions); costs were evaluated on the four research folds only.
 * (Stage 5) Four research-phase test blocks with 20-pair portfolios (Sharpe intervals of about ±1);

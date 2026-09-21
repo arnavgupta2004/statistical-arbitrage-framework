@@ -200,3 +200,45 @@ def breakeven_multiple(gross_mean: float, cost_mean: float) -> float:
     if gross_mean <= 0:
         return 0.0
     return float(gross_mean / cost_mean) if cost_mean > 0 else float("inf")
+
+
+class BookCostModel:
+    """The same cost components for a (D, N) weight book; weights are fractions of *total* capital.
+
+    ``trade`` and ``held`` are (D, N) arrays in capital units (``held`` is the weight carried
+    through each bar, used for borrow); ``adv``, ``sigma`` and ``half_spread`` are the matching
+    causal arrays from ``MarketData``.  Returns per-day components summed over names, in capital
+    units -- directly comparable to the pair portfolio's return on capital.
+    """
+
+    def __init__(self, cfg: CostConfig):
+        self.cfg = cfg
+
+    def __call__(
+        self,
+        trade: np.ndarray,
+        held: np.ndarray,
+        adv: np.ndarray,
+        sigma: np.ndarray,
+        half_spread: np.ndarray,
+    ) -> dict[str, np.ndarray]:
+        traded = trade > 0
+        if np.any(traded & ~(np.isfinite(adv) & np.isfinite(sigma) & np.isfinite(half_spread))):
+            raise ValueError("a trade occurs where ADV, volatility or spread is undefined")
+        with np.errstate(invalid="ignore", divide="ignore"):
+            part = np.where(traded, trade * self.cfg.capital / adv, 0.0)
+        spread = trade * np.nan_to_num(half_spread) * self.cfg.spread_mult
+        impact = trade * self.cfg.impact_y * np.nan_to_num(sigma) * np.sqrt(np.nan_to_num(part))
+        commission = trade * (self.cfg.commission_bps + self.cfg.regulatory_bps) / 1e4
+        borrow = np.where(held < 0, -held, 0.0) * self.cfg.borrow_bps_per_year / 1e4 / 252.0
+        out = {
+            "cost_spread": spread.sum(1),
+            "cost_commission": commission.sum(1),
+            "cost_impact": impact.sum(1),
+            "cost_borrow": borrow.sum(1),
+            "participation": part.max(1),
+        }
+        out["cost"] = (
+            out["cost_spread"] + out["cost_commission"] + out["cost_impact"] + out["cost_borrow"]
+        )
+        return out

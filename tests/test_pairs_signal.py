@@ -175,3 +175,27 @@ def test_trades_table_by_hand_including_pnl_and_an_open_trade():
         2
     ] == pytest.approx(pnl.iloc[11])
     assert trades_table(idx, generate_positions(np.zeros(12), P)).empty
+
+
+def test_a_block_survives_a_forced_exit_in_the_opposite_direction():
+    """Regression (found by the property test): the short blocked by its time stop must stay blocked
+    when a long is entered and time-stopped in between, until |z| <= exit has actually occurred."""
+    p = PairParams(entry=2.0, exit=0.5, stop=4.1, max_hold=1)
+    z = [
+        3.0,
+        1.0,
+        -3.0,
+        -1.0,
+        3.0,
+    ]  # short, time exit | long, time exit | short again: still blocked
+    r = generate_positions(np.array(z), p, 0)
+    assert r.position.tolist() == [-1, 0, 1, 0, 0]
+    assert r.exit_reason.tolist() == [0, 3, 0, 3, 0]
+    # once |z| <= exit has been seen both directions are free again
+    r2 = generate_positions(np.array(z[:4] + [0.2, 3.0]), p, 0)
+    assert r2.position.tolist() == [-1, 0, 1, 0, 0, -1]
+    # a stop block on the short and a time block on the long are kept independently
+    z3 = np.array([3.0, 5.0, -3.0, -1.0, -2.5, 3.0, 0.2, 3.0])
+    r3 = generate_positions(z3, PairParams(2.0, 0.5, 4.1, 1), 0)
+    assert r3.position.tolist() == [-1, 0, 1, 0, 0, 0, 0, -1]
+    assert r3.exit_reason.tolist() == [0, 2, 0, 3, 0, 0, 0, 0]

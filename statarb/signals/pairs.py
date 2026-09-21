@@ -59,7 +59,8 @@ def generate_positions(z, params: PairParams, trade_start: int = 0) -> PositionR
     pos = np.zeros(n, dtype=int)
     reason = np.zeros(n, dtype=int)
     entry_z = np.full(n, np.nan)
-    state, held, blocked = 0, 0, 0
+    state, held = 0, 0
+    blocked = {-1: False, 1: False}  # directions barred after a stop / time exit
     for t in range(n):
         zt = zv[t]
         if t < trade_start:
@@ -69,23 +70,27 @@ def generate_positions(z, params: PairParams, trade_start: int = 0) -> PositionR
                 reason[t], state = 4, 0
             pos[t] = state
             continue
-        if blocked != 0 and abs(zt) <= params.exit:
-            blocked = 0
+        if abs(zt) <= params.exit:
+            blocked = {-1: False, 1: False}
         if state == 0:
             if params.entry < abs(zt) < params.stop:
                 direction = -1 if zt > 0 else 1
-                if direction != blocked:
+                if not blocked[direction]:
                     state, held = direction, 0
                     entry_z[t] = zt
         else:
             held += 1
             u = -state * zt
             if u >= params.stop:
-                reason[t], blocked, state = 2, state, 0
+                reason[t] = 2
+                blocked[state] = True
+                state = 0
             elif u <= params.exit:
                 reason[t], state = 1, 0
             elif held >= params.max_hold:
-                reason[t], blocked, state = 3, state, 0
+                reason[t] = 3
+                blocked[state] = True
+                state = 0
         pos[t] = state
     return PositionResult(pos, reason, entry_z)
 

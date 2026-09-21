@@ -1,0 +1,62 @@
+{
+  "experiment": "stage7_placebo_checks",
+  "A_null_calibration": {
+    "phi": 1.0,
+    "n_seeds": 40,
+    "n_draws": 60,
+    "mean_rank": 0.5591666666666667,
+    "share_rank_below_5pct": 0.05,
+    "share_rank_above_95pct": 0.1,
+    "rank_histogram_quintiles": [
+      6,
+      8,
+      7,
+      6,
+      13
+    ],
+    "placebo_sd_over_real_sd": 0.9164769755697116,
+    "mean_real_pnl": 0.0025549955227863116
+  },
+  "B_real_data_symmetry_pca_reversal_k5": {
+    "cost_borrow": {
+      "real": 0.006151011388016558,
+      "placebo": 0.00570880680172947,
+      "placebo_over_real": 0.9281086380121821
+    },
+    "cost_commission": {
+      "real": 0.022955534933702205,
+      "placebo": 0.020791265899783626,
+      "placebo_over_real": 0.9057190764593726
+    },
+    "cost_impact": {
+      "real": 0.19880651195207436,
+      "placebo": 0.18090161134486396,
+      "placebo_over_real": 0.9099380577054405
+    },
+    "cost_spread": {
+      "real": 0.05151853795547931,
+      "placebo": 0.046767374882656504,
+      "placebo_over_real": 0.9077776027547868
+    },
+    "gross_exposure": {
+      "real": 2.4656202772486018,
+      "placebo": 2.2883422731989747,
+      "placebo_over_real": 0.9281000380774559
+    },
+    "std_daily_net": {
+      "real": 0.003697377903995789,
+      "placebo": 0.0022186926212290395,
+      "placebo_over_real": 0.6000719101045308
+    },
+    "std_daily_pnl": {
+      "real": 0.0037407476530116573,
+      "placebo": 0.002183562581151928,
+      "placebo_over_real": 0.5837235717822218
+    },
+    "turnover": {
+      "real": 306.0737991160294,
+      "placebo": 277.2168786637817,
+      "placebo_over_real": 0.9057190764593726
+    }
+  }
+}

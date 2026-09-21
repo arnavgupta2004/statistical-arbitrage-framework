@@ -26,7 +26,9 @@ dev = [
     "pytest>=8",
     "hypothesis>=6.100",
     "ruff>=0.5",
+    "matplotlib>=3.8",
 ]
+plots = ["matplotlib>=3.8"]
 
 [tool.hatch.build.targets.wheel]
 packages = ["statarb"]

@@ -117,3 +117,16 @@ def by_year(returns: pd.Series) -> pd.DataFrame:
             }
         )
     return pd.DataFrame(rows)
+
+
+def rolling_sharpe(returns: pd.Series, window: int = 126, periods: int = PERIODS) -> pd.Series:
+    """Annualised Sharpe over the trailing ``window`` days (causal: row ``t`` uses ``<= t``)."""
+    roll = returns.rolling(window)
+    with np.errstate(invalid="ignore", divide="ignore"):
+        out = roll.mean() / roll.std(ddof=1) * np.sqrt(periods)
+    return out.where(np.isfinite(out))
+
+
+def rolling_volatility(returns: pd.Series, window: int = 63, periods: int = PERIODS) -> pd.Series:
+    """Annualised volatility over the trailing ``window`` days (causal)."""
+    return returns.rolling(window).std(ddof=1) * np.sqrt(periods)

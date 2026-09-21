@@ -139,3 +139,20 @@ def test_registry_validation_and_an_empty_registry(tmp_path):
         reg.register(**rec(kind="guess"))
     with pytest.raises(ValueError, match="phases"):
         reg.register(**rec(phases=["training"]))
+
+
+def test_rolling_sharpe_and_volatility_are_causal_and_match_a_direct_computation():
+    from statarb.backtest.metrics import rolling_sharpe, rolling_volatility, sharpe
+
+    rng = np.random.default_rng(0)
+    r = pd.Series(rng.normal(0.0004, 0.01, 400), index=pd.bdate_range("2020-01-01", periods=400))
+    rs, rv = rolling_sharpe(r, 100), rolling_volatility(r, 50)
+    assert rs.iloc[:99].isna().all() and rv.iloc[:49].isna().all()
+    for t in (99, 250, 399):
+        assert rs.iloc[t] == pytest.approx(sharpe(r.iloc[t - 99 : t + 1].to_numpy()))
+        assert rv.iloc[t] == pytest.approx(r.iloc[t - 49 : t + 1].std(ddof=1) * np.sqrt(252))
+    p = r.copy()
+    p.iloc[300:] *= 5.0  # the future changes...
+    assert rolling_sharpe(p, 100).iloc[:300].equals(rs.iloc[:300])  # ...the past does not
+    flat = rolling_sharpe(pd.Series(np.zeros(200)), 50)
+    assert flat.isna().all()  # a flat window has no Sharpe

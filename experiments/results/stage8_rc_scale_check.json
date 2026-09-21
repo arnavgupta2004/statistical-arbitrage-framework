@@ -1,0 +1,60 @@
+{
+  "experiment": "stage8_rc_scale_check",
+  "seed": 20260924,
+  "git_commit": "26b092e",
+  "families": {
+    "all_15": {
+      "reality_check_p": 0.027394521095780843,
+      "reality_check_p_equal_volatility": 0.07438512297540492,
+      "spa_consistent_p": 0.11497700459908018,
+      "spa_consistent_p_equal_volatility": 0.11497700459908018,
+      "vol_pct_min_median_max": [
+        3.3745556654734923,
+        4.203284436982219,
+        6.048505746573375
+      ],
+      "best_strategy_vol_pct": 6.048505746573375
+    },
+    "pca_6": {
+      "reality_check_p": 0.02519496100779844,
+      "reality_check_p_equal_volatility": 0.046390721855628876,
+      "spa_consistent_p": 0.0665866826634673,
+      "spa_consistent_p_equal_volatility": 0.0665866826634673,
+      "vol_pct_min_median_max": [
+        3.754522782100348,
+        4.566533416771945,
+        6.048505746573375
+      ],
+      "best_strategy_vol_pct": 6.048505746573375
+    },
+    "pairs_9": {
+      "reality_check_p": 0.44311137772445514,
+      "reality_check_p_equal_volatility": 0.4839032193561288,
+      "spa_consistent_p": 0.49190161967606477,
+      "spa_consistent_p_equal_volatility": 0.49190161967606477,
+      "vol_pct_min_median_max": [
+        3.3745556654734923,
+        4.149952349621663,
+        4.741270876421889
+      ],
+      "best_strategy_vol_pct": 4.628779275636587
+    }
+  },
+  "annual_vol_pct": {
+    "expanding_in1.5": 4.628779275636587,
+    "expanding_in2": 4.149952349621663,
+    "expanding_in2.5": 3.5848048760854843,
+    "kalman1e-05_in1.5": 4.425895799395415,
+    "kalman1e-05_in2": 4.011264603264743,
+    "kalman1e-05_in2.5": 3.3745556654734923,
+    "static_in1.5": 4.741270876421889,
+    "static_in2": 4.203284436982219,
+    "static_in2.5": 3.6109404281527633,
+    "pca_sscore_k5": 4.279470063345578,
+    "pca_sscore_k10": 3.849553799705569,
+    "pca_sscore_k15": 3.754522782100348,
+    "pca_reversal_k5": 6.048505746573375,
+    "pca_reversal_k10": 5.126580844408971,
+    "pca_reversal_k15": 4.853596770198311
+  }
+}

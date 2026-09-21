@@ -19,8 +19,8 @@ the goal and is not reported as a finding.
 | 4 | Pair strategy: hedge ratios, spread, z-score, entry/exit/stop | **done** |
 | 5 | Walk-forward backtest, train/validation/holdout | **done** |
 | 6 | Transaction costs: spread, commissions, impact | **done** |
-| 7 | PCA statistical arbitrage | **done** (this commit) |
-| 8 | Multiple-testing correction, deflated Sharpe, reality check | not started |
+| 7 | PCA statistical arbitrage | **done** |
+| 8 | Multiple-testing correction, deflated Sharpe, reality check | **done** (this commit) |
 | 9 | Robustness: sensitivity, regimes, structural breaks, capacity | not started |
 | 10 | Final research report | not started |
 
@@ -54,10 +54,11 @@ statarb/
   backtest/            pair_pnl (single-pair accounting), walkforward (folds, engine), metrics,
                        costs (spread, commission, impact, borrow; Corwin-Schultz), pca_walkforward (PCA book engine, placebo)
   research/            registry (append-only trial log)
-  statistics/          bootstrap (stationary block bootstrap)
+  statistics/          bootstrap (stationary block bootstrap), sharpe (PSR, deflated Sharpe, minimum backtest
+                       length), multiple_testing (Reality Check, SPA, Romano-Wolf, BH/BY, CSCV-PBO)
   data/holdout.py      sealed-holdout guard and ledger
 tests/                 pytest + hypothesis
-experiments/           runnable experiments and their JSON results (registry: Stage 8+)
+experiments/           runnable experiments and their JSON results (registry: experiments/registry.jsonl)
 ```
 
 Later stages extend `portfolio/`, `backtest/`, `statistics/` and add `research/` inside `statarb/`.
@@ -1174,7 +1175,7 @@ roughly 7–32× the turnover.
   94.0th, just short of the pre-specified line. The s-score with `k = 5` reaches the 96.5th; with
   `k = 10, 15` it does not. Gross Sharpe falls as factors are added (s-score +0.89 → +0.53 → +0.26;
   reversal +1.13 → +0.75 → +0.76). The best of six correlated configurations looks better than a typical one by construction, and its Sharpe varies by block (+1.28, +0.06, +1.44, +1.80 for
-  reversal `k = 5`): this is **not** corrected for having looked at six — Stage 8.
+  reversal `k = 5`): this is **not** corrected for having looked at six here; §10 does that.
 * **H7b — every configuration is net negative at $100 M: confirmed**, net Sharpe -6.18 to -3.18.
   Turnover is 195–361× capital a year (≈ 85–94 signal names at a time)
   against gross of 96–684 bps a year; costs are 1741–3189 bps, about
@@ -1220,7 +1221,179 @@ advances): **no configuration qualifies. No finalist advances; validation and th
 * The hedge trades the whole tradable universe daily; a real implementation would trade a few eigenportfolio proxies
   and would not reproduce this turnover exactly.
 
-## 10. Statistical-arbitrage methodology *(Stages 8–9: specification only)*
+## 10. Multiple-testing correction (Stage 8)
+
+`statarb/statistics/sharpe.py`, `statarb/statistics/multiple_testing.py` (and a vectorised stationary bootstrap in
+`bootstrap.py`); experiment `stage8_multiple_testing.py`. The question: **of the gross performance found so far, how
+much is what a search over many strategies would produce from luck alone?** Everything is computed from series and
+screens that already exist for the research phase (2015–2018); **this stage adds no trial**, and validation (2019–2021)
+and the holdout (2022+) are untouched. Every number is generated from `experiments/results/stage8_multiple_testing.json`.
+
+### 10.1 What is counted
+
+The registry holds **24 distinct real-data strategy trials** (30 runs, six of them the Stage 7 re-run): Stage 3: 1, Stage 4: 8, Stage 5: 9, Stage 7: 6
+(the Stage 3 screen counts once although it tests ~1,300 hypotheses inside). Stage 6's re-scoring, the Stage 7 no-factor control, the
+placebos, the simulations and this stage are diagnostics and are not counted. Only **15** of the 24 have daily return series on the
+same 2015–2018 sample (1006 days: the nine Stage 5 pair configurations and the six Stage 7 PCA configurations); the joint tests use
+those, and the deflated Sharpe uses N = 24. Two things make 24 a **lower bound**: design choices made while building (the z-window, the
+`k` grid, which hedge methods to carry into Stage 5, the choice to try a PCA family after the pairs failed) were never registered; and
+the trials are correlated, which pulls the *effective* number down. The 15 gross series have a mean pairwise correlation of
+0.41; the effective number of independent trials is **9.3** by the average-correlation formula
+(Bailey & López de Prado) and **3.0** by the participation ratio of the eigenvalues. The deflation is reported at all three
+(plus N = 15).
+
+### 10.2 The tools, and how they were validated
+
+| Tool | Answers |
+|---|---|
+| Probabilistic Sharpe ratio (PSR) | is the Sharpe positive, given its sampling error *including skew and kurtosis*? |
+| Expected maximum of N luck-only Sharpes; Deflated Sharpe ratio (DSR) | is it positive *after* the best of N was picked? (`DSR = PSR` against the luck benchmark `SR0`) |
+| Minimum track record / backtest length | how much data would make a given Sharpe believable, for a given N? |
+| White's Reality Check, Hansen's SPA | can the **best of the family** be told from luck (stationary bootstrap of the dates, same dates for every strategy)? |
+| Romano–Wolf step-down; BH / BY | which **individual** strategies (or pairs) survive family-wise / false-discovery control? |
+| CSCV probability of backtest overfitting (PBO) | does the in-sample winner stay a winner out of sample? |
+
+* **Closed forms by hand and by simulation:** the PSR's non-normal standard error is checked against the simulated sampling
+  error of a skewed, fat-tailed series (within 6 %; the naive formula is off by more than three times as much); the expected
+  maximum against simulated maxima; the DSR against a null world (20 zero-skill strategies: the naive PSR of the best rejects in
+  more than 40 % of runs, the DSR in under 9 %) and a power case.
+* **BH and BY equal `statsmodels`** to 1e-12 on random p-values with ties; BH holds the FDR in simulation; the vectorised
+  bootstrap has the stationary bootstrap's law; the **size and power** of the Reality Check, SPA and Romano–Wolf are checked by Monte
+  Carlo (≈ 5 % rejection under the null; > 90 % power for an effect of about 4.8 standard errors among ten); SPA is shown to be **scale-invariant**
+  and the Reality Check **not**, and SPA to keep its power when poor strategies are added where the Reality Check loses it; the CSCV
+  agrees with a brute-force enumeration and gives ≈ 0.5 on noise, ≈ 0 for a persistent winner.
+* **Mutation sweep:** 38 single-bug mutants of the two modules and the bootstrap, 37 applicable to the final code; the first sweep left
+  12 survivors, of which eight were genuine test gaps (a benchmark of zero hid a sign error in the minimum track record; unit-variance
+  test data hid the missing studentisation; a threshold, a floor, a `+1` in the bootstrap p-value and Romano–Wolf's step-down
+  monotonicity were untested); all are now killed, one redundant line was deleted, and two equivalent mutants remain.
+* Three of my own first power thresholds were mis-sized by arithmetic (e.g. a true Sharpe of 2 with 20 trials and two years of data is
+  detected ~25 % of the time, not 60 %), which is why those tests now use effects that are detected ~99 % of the time.
+* **A property of CSCV worth knowing:** the regression slope of out-of-sample on in-sample Sharpe is *negative* even for pure noise
+  (−0.35 to −0.86 in simulation; the two halves are complementary). It is stored but carries no information here.
+
+### 10.3 The selection-luck benchmark
+
+With 4.0 years of daily data, the best of N strategies with **no** skill shows an annualised Sharpe of:
+
+| Luck-only strategies tried (N) | Expected best annual Sharpe at 4.0 years | Years of data before that falls below Sharpe 1.0 |
+| --- | ---: | ---: |
+| 1 | 0.00 | 0.0 |
+| 5 | 0.60 | 1.4 |
+| 15 | 0.89 | 3.1 |
+| 24 | 0.99 | 3.9 |
+| 50 | 1.14 | 5.2 |
+| 100 | 1.27 | 6.4 |
+
+The Sharpe estimates of the 15 trials themselves have a standard deviation of 0.48 (annualised), which gives
+`SR0` = **0.94** at N = 24 (and 0.73 at N = 9.3). The best gross strategy is at 1.13.
+
+### 10.4 Result
+
+Gross Sharpe, and what is left of it after deflation and family-wise control (all 15 series; the six PCA configurations first):
+
+| Strategy (gross) | Sharpe | PSR vs 0 | DSR, N = 24 | DSR, N = 9.3 | DSR, N = 3.0 | Romano–Wolf p | BH-adjusted p |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
+| PCA reversal, k = 5 | +1.13 | 0.988 | 0.646 | 0.786 | 0.925 | 0.115 | 0.228 |
+| PCA s-score, k = 5 | +0.89 | 0.961 | 0.454 | 0.619 | 0.828 | 0.166 | 0.228 |
+| PCA reversal, k = 15 | +0.76 | 0.935 | 0.357 | 0.521 | 0.757 | 0.321 | 0.318 |
+| PCA reversal, k = 10 | +0.75 | 0.931 | 0.353 | 0.515 | 0.750 | 0.296 | 0.318 |
+| PCA s-score, k = 10 | +0.53 | 0.855 | 0.203 | 0.341 | 0.594 | 0.414 | 0.422 |
+| PCA s-score, k = 15 | +0.26 | 0.696 | 0.084 | 0.169 | 0.378 | 0.639 | 0.595 |
+| expanding, entry 1.5 | +0.30 | 0.728 | 0.101 | 0.196 | 0.416 | 0.609 | 0.595 |
+| static, entry 1.5 | +0.23 | 0.676 | 0.077 | 0.157 | 0.358 | 0.639 | 0.595 |
+| expanding, entry 2.0 | +0.01 | 0.510 | 0.031 | 0.075 | 0.213 | 0.726 | 0.740 |
+| static, entry 2.0 | -0.16 | 0.377 | 0.014 | 0.037 | 0.128 | 0.824 | 0.740 |
+| static, entry 2.5 | -0.32 | 0.259 | 0.006 | 0.017 | 0.071 | 0.849 | 0.740 |
+| expanding, entry 2.5 | -0.30 | 0.277 | 0.006 | 0.020 | 0.078 | 0.849 | 0.740 |
+| Kalman, entry 1.5 | -0.25 | 0.306 | 0.008 | 0.024 | 0.092 | 0.849 | 0.740 |
+| Kalman, entry 2.0 | -0.11 | 0.414 | 0.018 | 0.046 | 0.150 | 0.813 | 0.740 |
+| Kalman, entry 2.5 | -0.18 | 0.363 | 0.013 | 0.035 | 0.121 | 0.824 | 0.740 |
+
+PSR is the probability that the true Sharpe is positive. Romano–Wolf and BH are computed on the bootstrap p-values of the 15-strategy family.
+Every net-of-cost Sharpe is negative, so their deflated Sharpe is 0.000 and there is nothing to deflate.
+
+**Family tests.** The null is "no strategy in the family has a positive mean return".
+
+| Family (gross) | Best | Reality Check p | SPA p: lower / consistent / upper | Romano–Wolf rejections at 5 % | BH / BY rejections at 5 % |
+| --- | ---: | ---: | ---: | ---: | ---: |
+| All 15 strategies | PCA reversal, k = 5 | 0.027 | 0.096 / 0.115 / 0.115 | 0 | 0 / 0 |
+| 9 pair configurations | expanding, entry 1.5 | 0.443 | 0.395 / 0.492 / 0.492 | 0 | 0 / 0 |
+| 6 PCA configurations | PCA reversal, k = 5 | 0.025 | 0.067 / 0.067 / 0.067 | 0 | 0 / 0 |
+
+Different block lengths (5 and 20 days instead of 10) give Reality Check p = 0.025 / 0.025 and SPA p = 0.113 / 0.105
+for all 15. Net of costs, nothing is close to rejecting:
+
+| Family (net of costs) | Reality Check p | SPA p (consistent) | Strategies with positive net Sharpe |
+| --- | ---: | ---: | ---: |
+| All 15 | 0.998 | 1.000 | 0 |
+| 9 pair configurations | 0.974 | 1.000 | 0 |
+| 6 PCA configurations | 1.000 | 1.000 | 0 |
+
+**Probability of backtest overfitting** (CSCV over the gross series):
+
+| Family (gross) | PBO, 16 blocks (12,870 splits) | PBO, 8 blocks | Mean Sharpe of the in-sample winner: in-sample → out-of-sample | Splits where the winner loses money out of sample |
+| --- | ---: | ---: | ---: | ---: |
+| All 15 | 0.218 | 0.071 | 1.28 → 0.60 | 16 % |
+| 9 pair configurations | 0.263 | 0.257 | 0.35 → 0.04 | 47 % |
+| 6 PCA configurations | 0.491 | 0.500 | 1.26 → 0.72 | 10 % |
+
+**False discovery on the pair screens.** The calibrated p-values (§5) of every candidate pair, with Benjamini–Hochberg and Benjamini–Yekutieli:
+
+| Screen | Candidates | Calibrated p ≤ 0.05 | Expected if all null | Smallest p (floor) | BH at q = 0.05 / 0.10 / 0.20 | BY at q = 0.05 / 0.10 / 0.20 | Storey π₀ (λ = 0.3 / 0.5 / 0.7) |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
+| Stage 3 window (train 2011–2015) | 1259 | 43 | 63 | 8.3e-04 (1.0e-04) | 0 / 0 / 0 | 0 / 0 / 0 | 1.00 / 0.97 / 0.97 |
+| Fold, test 2015 | 1222 | 68 | 61 | 4.9e-03 (1.1e-04) | 0 / 0 / 0 | 0 / 0 / 0 | 0.96 / 0.88 / 0.75 |
+| Fold, test 2016 | 1275 | 47 | 64 | 1.0e-04 (1.0e-04) | 0 / 0 / 1 | 0 / 0 / 0 | 1.00 / 1.00 / 1.00 |
+| Fold, test 2017 | 1345 | 52 | 67 | 9.6e-05 (9.6e-05) | 0 / 0 / 1 | 0 / 0 / 0 | 1.00 / 1.00 / 0.86 |
+| Fold, test 2018 | 1401 | 54 | 70 | 6.3e-04 (9.1e-05) | 0 / 0 / 0 | 0 / 0 / 0 | 1.00 / 1.00 / 1.00 |
+
+*Post-hoc addition, made after the first run:* with 10 null panels the smallest attainable p-value is ≈ 1e-4 while BH at q = 0.05 with ≈ 1,300
+candidates needs the first rejection at ≈ 4e-5, so "zero discoveries at 5 %" is partly forced by the null's resolution. Storey's π₀ (the estimated
+share of true nulls) does not depend on it: 0.88–1.00 at λ = 0.5.
+
+**Decision rule** (fixed before running): a positive gross result survives only if the best strategy has DSR ≥ 0.95 at N = 24 **and** the SPA
+p-value of its family is ≤ 0.05. The best, PCA reversal, k = 5, has a DSR of **0.646** and an SPA p of **0.067** (PCA family).
+**It does not survive**: the gross reversal effect is not distinguishable from selection luck at the standard the project set itself.
+
+### 10.5 Hypotheses
+
+* **H8a — no strategy has a DSR ≥ 0.95 at N = 24: confirmed.** The best is 0.646; it is still below 0.95 at N = 9.3 (0.786) and at N = 3.0
+  (0.925, the most generous count). Its PSR alone is 0.988: without any correction it would look significant (p ≈ 0.012); the
+  observed 1.13 is just above the 0.94 that the best of 24 luck-only strategies is expected to show. Believing it against zero would take
+  2.1 years of data with no selection at all, at N = 1.
+* **H8b — the Reality Check and SPA do not reject: split, and I was partly wrong.** SPA does not reject (p = 0.115 for all 15; 0.067 within the PCA family), but the
+  **Reality Check does** (0.027 and 0.025). The Reality Check is not studentised, and the best strategy is also the *most volatile* PCA book
+  (6.05 % a year, against 3.75–5.13 % for the other five), so its raw mean is credited for its own
+  volatility. A post-hoc check (`stage8_rc_scale_check.py`, added to test an explanation I had first stated wrongly: the pair books are *not* much quieter than the PCA books) rescales every
+  series to the same volatility: the Reality Check p moves from 0.027 to 0.074 (all 15) and from 0.025 to
+  0.046 (PCA family) while SPA, being scale-free, is unchanged. Scale explains most of the gap, not all of it. SPA is the pre-specified primary.
+  The honest reading is *borderline*: a p-value of about 0.03–0.12 for the best of the family, depending on the test.
+* **H8c — no strategy has a Romano–Wolf adjusted p ≤ 0.05: confirmed** (smallest 0.115, PCA reversal k = 5; BH and BY reject nothing at 5 %). No pair configuration comes near
+  (0.44 for the family).
+* **H8d — no cointegrated pairs survive FDR control at q = 0.05: confirmed** in all five screens, by BH and BY. At q = 0.20 BH finds one pair in each of the 2016 and 2017 folds and BY none.
+  π₀ of 0.88–1.00 says the p-values are consistent with almost every candidate being a null; in the Stage 3 window the calibrated discoveries (43) were *fewer* than chance (63).
+* **H8e — within the PCA family the in-sample winner is not reliably the out-of-sample winner: confirmed**, PBO 0.49 (a coin flip). Across all 15 the PBO is 0.22, but that reflects the
+  gap between the two families (PCA above pairs in every split), not skill in ranking configurations within a family.
+
+### 10.6 What this does and does not show
+
+* Stage 7's gross result was the strongest in the project (best Sharpe 1.13, single-test p ≈ 0.012). After accounting for having looked at 24 configurations it is
+  **suggestive but not established**: DSR 0.65, family-adjusted p of 0.03–0.12. Combined with §9 (costs are at least four times the gross) the conclusion for this framework is negative on both counts.
+* The pair strategy has **no** detectable gross edge at all (Reality Check p 0.44), and the calibrated pair screens find nothing beyond chance, at any FDR level tested.
+* This is **not** proof that no relationship exists: the sample is four years, the tests have limited power at this length (`min backtest length` for a Sharpe of 1 at N = 24 is 3.9 years),
+  and a real but modest effect would be missed. Failing to reject is not evidence of absence.
+
+### 10.7 Limits of Stage 8
+
+* **The trial count is a lower bound**, and the effective count is uncertain (a range of 3.0–9.3 independent trials, against 24 registered): none of the choices reaches a DSR of 0.95, but the answer
+  moves from 0.65 to 0.93 across them.
+* The joint tests use the 15 trials that share a sample; Stage 3's screen and Stage 4's 2016 variants enter only through N. The tests are on mean returns (not Sharpe ratios) and assume
+  stationary, weakly dependent returns; the block bootstrap length was fixed (10 days; 5 and 20 give the same conclusions).
+* The Reality Check and SPA answer "is the best of this family positive?", not "is this family profitable at capacity" — costs are handled in §8–9, and the net series have no positive Sharpe to test.
+* BH assumes independence or positive dependence and the pair candidates overlap (a stock appears in several pairs); BY is valid under any dependence and is reported alongside. The null's resolution limits BH at small q (§10.4).
+* The deflated Sharpe assumes the trial Sharpe estimates are roughly independent draws with the observed variance; that is an approximation for correlated strategies of two different families.
+
+## 11. Statistical-arbitrage methodology *(Stage 9: specification only)*
 
 Hypotheses to be tested, each with its data, method, assumptions, uncertainty, failure cases and
 limitations recorded when run:
@@ -1230,14 +1403,14 @@ limitations recorded when run:
 * **C** performance is robust to entry/exit thresholds and look-back windows;
 * **D** residuals of a common-factor (PCA) model mean-revert exploitably *(tested in §9)*;
 * **E** how much apparent performance survives realistic costs;
-* **F** how much survives correction for the number of hypotheses tested;
+* **F** how much survives correction for the number of hypotheses tested *(tested in §10)*;
 * **G** whether behaviour differs across market regimes;
 * **H** how much capital the strategy can deploy before impact removes the edge.
 
 The train / validation / final-holdout split, the walk-forward scheme, the cost model, the
 multiple-testing framework and the experiment registry will be documented here as each is built.
 
-## 11. Limitations so far
+## 12. Limitations so far
 
 * The reconstructed S&P 500 membership is trustworthy only from 2011-01-01 (§2.1); earlier dates are
   not used for any claim, and even later dates inherit the change log's residual gaps.
@@ -1255,6 +1428,9 @@ multiple-testing framework and the experiment registry will be documented here a
   samples and depends on `det_order`; ADF/Engle–Granger assume homoskedastic errors and read a structural
   break as a unit root. None of these are corrected for yet beyond what §4 states.
 * (Stage 2) Critical-value tables come from statsmodels; a defect there would propagate.
+* (Stage 8) The trial count (24) is a lower bound and the effective count uncertain (3–9); the joint tests use the 15 trials
+  that share a sample; the tests are on mean returns over four years, so a modest real effect would be missed; the Reality
+  Check's answer depends on the strategies' scale (§10.5); BH on the pair screens is limited by the null's resolution (§10.4).
 * (Stage 7) The PCA family's gross result is on four research blocks with a Sharpe interval of about ±1, before any
   correction for six registered configurations; the universe is survivor-tilted in the direction that flatters
   reversal; execution is at the signal's own close; the placebo does not preserve the score–volatility link and its

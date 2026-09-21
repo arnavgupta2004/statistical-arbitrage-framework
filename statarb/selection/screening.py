@@ -335,6 +335,32 @@ def screen_pairs(logp: pd.DataFrame, sectors: pd.Series, cfg: ScreenConfig) -> S
 # ---------------------------------------------------------------------------------------------
 # eligibility and the pipeline entry point
 # ---------------------------------------------------------------------------------------------
+def reselect_pairs(
+    pairs: pd.DataFrame,
+    alpha: float,
+    half_life_min: float,
+    half_life_max: float,
+    max_pairs: int,
+    require_positive_beta: bool = True,
+) -> pd.Series:
+    """Boolean mask of the pairs the a-priori rule selects under other thresholds.
+
+    Reproduces the rule in ``screen_pairs`` on an existing screen table (calibrated p <= alpha,
+    half-life in range, beta > 0, the ``max_pairs`` with the largest ``edge_bps_per_day``) so that
+    sensitivity to these thresholds can be studied without re-running the screen: the calibration
+    (the empirical p-values) is unchanged, only the selection.
+    """
+    ok = (
+        (pairs["p_calibrated"] <= alpha)
+        & pairs["half_life"].between(half_life_min, half_life_max)
+        & ((pairs["beta"] > 0) if require_positive_beta else True)
+    )
+    chosen = pairs[ok].sort_values("edge_bps_per_day", ascending=False).head(max_pairs)
+    mask = pd.Series(False, index=pairs.index)
+    mask.loc[chosen.index] = True
+    return mask
+
+
 def eligible_tickers(
     pipe: DataPipeline, train_start, train_end, cfg: ScreenConfig
 ) -> tuple[AlignedPanel, list[str], dict[str, str]]:

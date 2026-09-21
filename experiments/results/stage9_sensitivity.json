@@ -1,0 +1,1344 @@
+{
+  "experiment": "stage9_sensitivity",
+  "seed": 20260925,
+  "git_commit": "3c22789",
+  "pca": {
+    "pca_reversal_k5": {
+      "summary": {
+        "anchor": "pca_reversal_k5",
+        "anchor_gross_sharpe": 1.1314250198556535,
+        "anchor_net_sharpe": -3.5425063311409235,
+        "n_neighbours": 23,
+        "share_gross_positive": 1.0,
+        "share_gross_at_least_half_anchor": 0.9565217391304348,
+        "median_gross": 1.0380948420408191,
+        "min_gross": 0.2815703943735326,
+        "max_gross": 1.2055284071184957,
+        "rank_of_anchor_among_all": 5,
+        "share_net_positive": 0.0,
+        "best_net": -2.2427754664852424,
+        "best_net_variant": "reversal_days=10",
+        "robust_rule_passed": true
+      },
+      "variants": [
+        {
+          "anchor": "pca_reversal_k5",
+          "dimension": "anchor",
+          "value": "-",
+          "variant": "anchor=-",
+          "is_anchor_value": true,
+          "gross_sharpe": 1.1314250198556535,
+          "net_sharpe": -3.5425063311409235,
+          "turnover_per_year": 306.68229573455034,
+          "gross_bps_per_year": 684.3430734413878,
+          "cost_bps_per_year": 2799.8712624165664
+        },
+        {
+          "anchor": "pca_reversal_k5",
+          "dimension": "entry",
+          "value": 1.0,
+          "variant": "entry=1.0",
+          "is_anchor_value": false,
+          "gross_sharpe": 1.0380948420408191,
+          "net_sharpe": -4.375423594821814,
+          "turnover_per_year": 405.1248206783956,
+          "gross_bps_per_year": 729.9039281594845,
+          "cost_bps_per_year": 3775.411357012352
+        },
+        {
+          "anchor": "pca_reversal_k5",
+          "dimension": "entry",
+          "value": 1.5,
+          "variant": "entry=1.5",
+          "is_anchor_value": false,
+          "gross_sharpe": 0.9566989567540755,
+          "net_sharpe": -3.0326111534607256,
+          "turnover_per_year": 230.80098935616266,
+          "gross_bps_per_year": 498.5369221669897,
+          "cost_bps_per_year": 2060.577060341304
+        },
+        {
+          "anchor": "pca_reversal_k5",
+          "dimension": "entry",
+          "value": 2.0,
+          "variant": "entry=2.0",
+          "is_anchor_value": false,
+          "gross_sharpe": 0.6141764672945744,
+          "net_sharpe": -2.6828313656810163,
+          "turnover_per_year": 127.41956579148301,
+          "gross_bps_per_year": 202.5305381430508,
+          "cost_bps_per_year": 1084.1432222067324
+        },
+        {
+          "anchor": "pca_reversal_k5",
+          "dimension": "exit",
+          "value": 0.25,
+          "variant": "exit=0.25",
+          "is_anchor_value": false,
+          "gross_sharpe": 1.2055284071184957,
+          "net_sharpe": -3.007473506749316,
+          "turnover_per_year": 295.68851291539374,
+          "gross_bps_per_year": 780.358891925274,
+          "cost_bps_per_year": 2702.740977958448
+        },
+        {
+          "anchor": "pca_reversal_k5",
+          "dimension": "exit",
+          "value": 0.75,
+          "variant": "exit=0.75",
+          "is_anchor_value": false,
+          "gross_sharpe": 1.1972017660348468,
+          "net_sharpe": -4.0242168838225885,
+          "turnover_per_year": 319.6724180614525,
+          "gross_bps_per_year": 675.848317117975,
+          "cost_bps_per_year": 2924.1657430585133
+        },
+        {
+          "anchor": "pca_reversal_k5",
+          "dimension": "stop",
+          "value": 3.0,
+          "variant": "stop=3.0",
+          "is_anchor_value": false,
+          "gross_sharpe": 1.1319862685299011,
+          "net_sharpe": -3.841158609187662,
+          "turnover_per_year": 302.48478672588453,
+          "gross_bps_per_year": 632.3174713592463,
+          "cost_bps_per_year": 2760.941669748457
+        },
+        {
+          "anchor": "pca_reversal_k5",
+          "dimension": "stop",
+          "value": 6.0,
+          "variant": "stop=6.0",
+          "is_anchor_value": false,
+          "gross_sharpe": 1.1183776454248937,
+          "net_sharpe": -3.3984088387336575,
+          "turnover_per_year": 308.554066510436,
+          "gross_bps_per_year": 705.3935007133555,
+          "cost_bps_per_year": 2820.6279602263794
+        },
+        {
+          "anchor": "pca_reversal_k5",
+          "dimension": "max_hold",
+          "value": 20,
+          "variant": "max_hold=20",
+          "is_anchor_value": false,
+          "gross_sharpe": 1.1188826901722069,
+          "net_sharpe": -3.558038582214193,
+          "turnover_per_year": 306.6616641737456,
+          "gross_bps_per_year": 676.2136634068654,
+          "cost_bps_per_year": 2799.3509189271244
+        },
+        {
+          "anchor": "pca_reversal_k5",
+          "dimension": "name_size",
+          "value": 0.01,
+          "variant": "name_size=0.01",
+          "is_anchor_value": false,
+          "gross_sharpe": 1.1314250198556535,
+          "net_sharpe": -2.561045701203886,
+          "turnover_per_year": 153.34114786727517,
+          "gross_bps_per_year": 342.1715367206939,
+          "cost_bps_per_year": 1108.211417289934
+        },
+        {
+          "anchor": "pca_reversal_k5",
+          "dimension": "name_size",
+          "value": 0.04,
+          "variant": "name_size=0.04",
+          "is_anchor_value": false,
+          "gross_sharpe": 1.1314250198556535,
+          "net_sharpe": -4.929786283094841,
+          "turnover_per_year": 613.3645914691007,
+          "gross_bps_per_year": 1368.6861468827756,
+          "cost_bps_per_year": 7249.983884016973
+        },
+        {
+          "anchor": "pca_reversal_k5",
+          "dimension": "n_factors",
+          "value": 3,
+          "variant": "n_factors=3",
+          "is_anchor_value": false,
+          "gross_sharpe": 1.0131590665353676,
+          "net_sharpe": -2.9171902722105405,
+          "turnover_per_year": 292.9272289084895,
+          "gross_bps_per_year": 702.0740616211194,
+          "cost_bps_per_year": 2702.3418193806906
+        },
+        {
+          "anchor": "pca_reversal_k5",
+          "dimension": "n_factors",
+          "value": 8,
+          "variant": "n_factors=8",
+          "is_anchor_value": false,
+          "gross_sharpe": 0.850848658431535,
+          "net_sharpe": -4.339188877976604,
+          "turnover_per_year": 321.4680634273747,
+          "gross_bps_per_year": 477.2106740556158,
+          "cost_bps_per_year": 2898.7866081603593
+        },
+        {
+          "anchor": "pca_reversal_k5",
+          "dimension": "n_factors",
+          "value": 10,
+          "variant": "n_factors=10",
+          "is_anchor_value": false,
+          "gross_sharpe": 0.7533001177902015,
+          "net_sharpe": -5.09435356224874,
+          "turnover_per_year": 332.57135866372766,
+          "gross_bps_per_year": 386.18539539543104,
+          "cost_bps_per_year": 2986.502166253182
+        },
+        {
+          "anchor": "pca_reversal_k5",
+          "dimension": "n_factors",
+          "value": 15,
+          "variant": "n_factors=15",
+          "is_anchor_value": false,
+          "gross_sharpe": 0.7607579053134185,
+          "net_sharpe": -5.820467048537083,
+          "turnover_per_year": 360.66423727747247,
+          "gross_bps_per_year": 369.24121121320854,
+          "cost_bps_per_year": 3189.0373641610936
+        },
+        {
+          "anchor": "pca_reversal_k5",
+          "dimension": "n_factors",
+          "value": 20,
+          "variant": "n_factors=20",
+          "is_anchor_value": false,
+          "gross_sharpe": 0.2815703943735326,
+          "net_sharpe": -7.3311110624486675,
+          "turnover_per_year": 393.51895541850223,
+          "gross_bps_per_year": 127.38720118870475,
+          "cost_bps_per_year": 3438.6373914551873
+        },
+        {
+          "anchor": "pca_reversal_k5",
+          "dimension": "fit_window",
+          "value": 378,
+          "variant": "fit_window=378",
+          "is_anchor_value": false,
+          "gross_sharpe": 1.0278529549550572,
+          "net_sharpe": -3.6424434650240762,
+          "turnover_per_year": 307.24525381937866,
+          "gross_bps_per_year": 623.7472410073188,
+          "cost_bps_per_year": 2807.0542025668024
+        },
+        {
+          "anchor": "pca_reversal_k5",
+          "dimension": "fit_window",
+          "value": 756,
+          "variant": "fit_window=756",
+          "is_anchor_value": false,
+          "gross_sharpe": 0.6890232092814009,
+          "net_sharpe": -3.881932888601194,
+          "turnover_per_year": 304.8567820593777,
+          "gross_bps_per_year": 421.7418914217088,
+          "cost_bps_per_year": 2781.764205562543
+        },
+        {
+          "anchor": "pca_reversal_k5",
+          "dimension": "refit_every",
+          "value": 5,
+          "variant": "refit_every=5",
+          "is_anchor_value": false,
+          "gross_sharpe": 1.0543430301880188,
+          "net_sharpe": -3.605037672525849,
+          "turnover_per_year": 304.8201136271721,
+          "gross_bps_per_year": 635.611058036925,
+          "cost_bps_per_year": 2784.8244888268414
+        },
+        {
+          "anchor": "pca_reversal_k5",
+          "dimension": "refit_every",
+          "value": 63,
+          "variant": "refit_every=63",
+          "is_anchor_value": false,
+          "gross_sharpe": 1.0759041697843166,
+          "net_sharpe": -3.5972054232122304,
+          "turnover_per_year": 306.0646739572265,
+          "gross_bps_per_year": 647.6349314647183,
+          "cost_bps_per_year": 2785.7481202144513
+        },
+        {
+          "anchor": "pca_reversal_k5",
+          "dimension": "beta_window",
+          "value": 40,
+          "variant": "beta_window=40",
+          "is_anchor_value": false,
+          "gross_sharpe": 1.1034101288560392,
+          "net_sharpe": -3.7190641302711773,
+          "turnover_per_year": 334.42126632341063,
+          "gross_bps_per_year": 695.6508371322177,
+          "cost_bps_per_year": 3021.324385670138
+        },
+        {
+          "anchor": "pca_reversal_k5",
+          "dimension": "beta_window",
+          "value": 90,
+          "variant": "beta_window=90",
+          "is_anchor_value": false,
+          "gross_sharpe": 1.1620340063954604,
+          "net_sharpe": -3.5925293336117603,
+          "turnover_per_year": 289.72285412538866,
+          "gross_bps_per_year": 655.1138934504879,
+          "cost_bps_per_year": 2657.628446238442
+        },
+        {
+          "anchor": "pca_reversal_k5",
+          "dimension": "reversal_days",
+          "value": 3,
+          "variant": "reversal_days=3",
+          "is_anchor_value": false,
+          "gross_sharpe": 0.9168703353026436,
+          "net_sharpe": -5.372105190526004,
+          "turnover_per_year": 400.10617982896184,
+          "gross_bps_per_year": 550.4299161026534,
+          "cost_bps_per_year": 3740.663286073982
+        },
+        {
+          "anchor": "pca_reversal_k5",
+          "dimension": "reversal_days",
+          "value": 10,
+          "variant": "reversal_days=10",
+          "is_anchor_value": false,
+          "gross_sharpe": 0.8213390250747795,
+          "net_sharpe": -2.2427754664852424,
+          "turnover_per_year": 209.11481363719125,
+          "gross_bps_per_year": 498.07318275644855,
+          "cost_bps_per_year": 1850.6755977636924
+        }
+      ]
+    },
+    "pca_sscore_k10": {
+      "summary": {
+        "anchor": "pca_sscore_k10",
+        "anchor_gross_sharpe": 0.5292607657302131,
+        "anchor_net_sharpe": -4.817816284467319,
+        "n_neighbours": 23,
+        "share_gross_positive": 1.0,
+        "share_gross_at_least_half_anchor": 0.9565217391304348,
+        "median_gross": 0.5996717600223358,
+        "min_gross": 0.2562173376071897,
+        "max_gross": 0.934266224432478,
+        "rank_of_anchor_among_all": 14,
+        "share_net_positive": 0.0,
+        "best_net": -2.5737883662357945,
+        "best_net_variant": "n_factors=3",
+        "robust_rule_passed": true
+      },
+      "variants": [
+        {
+          "anchor": "pca_sscore_k10",
+          "dimension": "anchor",
+          "value": "-",
+          "variant": "anchor=-",
+          "is_anchor_value": true,
+          "gross_sharpe": 0.5292607657302131,
+          "net_sharpe": -4.817816284467319,
+          "turnover_per_year": 234.58734111757624,
+          "gross_bps_per_year": 203.74177917518517,
+          "cost_bps_per_year": 2055.904393101066
+        },
+        {
+          "anchor": "pca_sscore_k10",
+          "dimension": "entry",
+          "value": 1.0,
+          "variant": "entry=1.0",
+          "is_anchor_value": false,
+          "gross_sharpe": 0.934266224432478,
+          "net_sharpe": -5.454223827162782,
+          "turnover_per_year": 303.9969681279106,
+          "gross_bps_per_year": 402.7871771362159,
+          "cost_bps_per_year": 2740.625656785335
+        },
+        {
+          "anchor": "pca_sscore_k10",
+          "dimension": "entry",
+          "value": 1.5,
+          "variant": "entry=1.5",
+          "is_anchor_value": false,
+          "gross_sharpe": 0.4058873370048601,
+          "net_sharpe": -4.22020587500053,
+          "turnover_per_year": 184.26544805404984,
+          "gross_bps_per_year": 138.18565478635372,
+          "cost_bps_per_year": 1575.1696302717598
+        },
+        {
+          "anchor": "pca_sscore_k10",
+          "dimension": "entry",
+          "value": 2.0,
+          "variant": "entry=2.0",
+          "is_anchor_value": false,
+          "gross_sharpe": 0.9148782560366288,
+          "net_sharpe": -2.760667043592864,
+          "turnover_per_year": 116.54972536693228,
+          "gross_bps_per_year": 234.87216195455073,
+          "cost_bps_per_year": 941.942093951479
+        },
+        {
+          "anchor": "pca_sscore_k10",
+          "dimension": "exit",
+          "value": 0.25,
+          "variant": "exit=0.25",
+          "is_anchor_value": false,
+          "gross_sharpe": 0.6836271392653762,
+          "net_sharpe": -3.949081806837759,
+          "turnover_per_year": 215.53764422536668,
+          "gross_bps_per_year": 277.8963703243844,
+          "cost_bps_per_year": 1879.3826452746025
+        },
+        {
+          "anchor": "pca_sscore_k10",
+          "dimension": "exit",
+          "value": 0.75,
+          "variant": "exit=0.75",
+          "is_anchor_value": false,
+          "gross_sharpe": 0.5996717600223358,
+          "net_sharpe": -5.673673969199262,
+          "turnover_per_year": 261.9358787930889,
+          "gross_bps_per_year": 221.43483858885088,
+          "cost_bps_per_year": 2310.969793826449
+        },
+        {
+          "anchor": "pca_sscore_k10",
+          "dimension": "stop",
+          "value": 3.0,
+          "variant": "stop=3.0",
+          "is_anchor_value": false,
+          "gross_sharpe": 0.4690706428103258,
+          "net_sharpe": -5.1941817475552385,
+          "turnover_per_year": 229.36793977919967,
+          "gross_bps_per_year": 165.71155617366358,
+          "cost_bps_per_year": 2004.2886044380623
+        },
+        {
+          "anchor": "pca_sscore_k10",
+          "dimension": "stop",
+          "value": 6.0,
+          "variant": "stop=6.0",
+          "is_anchor_value": false,
+          "gross_sharpe": 0.4529571528636677,
+          "net_sharpe": -4.818485752465758,
+          "turnover_per_year": 236.91108386633744,
+          "gross_bps_per_year": 179.44827924837608,
+          "cost_bps_per_year": 2083.6244031772785
+        },
+        {
+          "anchor": "pca_sscore_k10",
+          "dimension": "max_hold",
+          "value": 20,
+          "variant": "max_hold=20",
+          "is_anchor_value": false,
+          "gross_sharpe": 0.5424023766305712,
+          "net_sharpe": -4.834111763359619,
+          "turnover_per_year": 234.13438753953042,
+          "gross_bps_per_year": 207.22636103967815,
+          "cost_bps_per_year": 2052.4885296558596
+        },
+        {
+          "anchor": "pca_sscore_k10",
+          "dimension": "name_size",
+          "value": 0.01,
+          "variant": "name_size=0.01",
+          "is_anchor_value": false,
+          "gross_sharpe": 0.5292607657302131,
+          "net_sharpe": -3.7336869459324458,
+          "turnover_per_year": 117.29367055878812,
+          "gross_bps_per_year": 101.87088958759259,
+          "cost_bps_per_year": 818.4128977067063
+        },
+        {
+          "anchor": "pca_sscore_k10",
+          "dimension": "name_size",
+          "value": 0.04,
+          "variant": "name_size=0.04",
+          "is_anchor_value": false,
+          "gross_sharpe": 0.5292607657302131,
+          "net_sharpe": -6.332477164299481,
+          "turnover_per_year": 469.1746822351525,
+          "gross_bps_per_year": 407.48355835037034,
+          "cost_bps_per_year": 5297.142059302486
+        },
+        {
+          "anchor": "pca_sscore_k10",
+          "dimension": "n_factors",
+          "value": 3,
+          "variant": "n_factors=3",
+          "is_anchor_value": false,
+          "gross_sharpe": 0.8749366169540158,
+          "net_sharpe": -2.5737883662357945,
+          "turnover_per_year": 179.21343948489914,
+          "gross_bps_per_year": 412.5034543833434,
+          "cost_bps_per_year": 1618.727007105083
+        },
+        {
+          "anchor": "pca_sscore_k10",
+          "dimension": "n_factors",
+          "value": 5,
+          "variant": "n_factors=5",
+          "is_anchor_value": false,
+          "gross_sharpe": 0.886811477449328,
+          "net_sharpe": -3.1808493356373857,
+          "turnover_per_year": 195.47522618553262,
+          "gross_bps_per_year": 379.5083169575713,
+          "cost_bps_per_year": 1740.6141961957708
+        },
+        {
+          "anchor": "pca_sscore_k10",
+          "dimension": "n_factors",
+          "value": 8,
+          "variant": "n_factors=8",
+          "is_anchor_value": false,
+          "gross_sharpe": 0.8127071511036064,
+          "net_sharpe": -3.874244406057263,
+          "turnover_per_year": 218.18152944116665,
+          "gross_bps_per_year": 333.30350951280076,
+          "cost_bps_per_year": 1919.8759857182204
+        },
+        {
+          "anchor": "pca_sscore_k10",
+          "dimension": "n_factors",
+          "value": 15,
+          "variant": "n_factors=15",
+          "is_anchor_value": false,
+          "gross_sharpe": 0.2562173376071897,
+          "net_sharpe": -6.178359133490245,
+          "turnover_per_year": 280.11505256139014,
+          "gross_bps_per_year": 96.19738312153041,
+          "cost_bps_per_year": 2426.967668457219
+        },
+        {
+          "anchor": "pca_sscore_k10",
+          "dimension": "n_factors",
+          "value": 20,
+          "variant": "n_factors=20",
+          "is_anchor_value": false,
+          "gross_sharpe": 0.48428544007258256,
+          "net_sharpe": -7.306119550275311,
+          "turnover_per_year": 336.7366097746374,
+          "gross_bps_per_year": 181.88741007950526,
+          "cost_bps_per_year": 2912.9140083432267
+        },
+        {
+          "anchor": "pca_sscore_k10",
+          "dimension": "fit_window",
+          "value": 378,
+          "variant": "fit_window=378",
+          "is_anchor_value": false,
+          "gross_sharpe": 0.4429584478777944,
+          "net_sharpe": -4.750355363258313,
+          "turnover_per_year": 233.49185001775854,
+          "gross_bps_per_year": 174.5397219437869,
+          "cost_bps_per_year": 2049.791769635985
+        },
+        {
+          "anchor": "pca_sscore_k10",
+          "dimension": "fit_window",
+          "value": 756,
+          "variant": "fit_window=756",
+          "is_anchor_value": false,
+          "gross_sharpe": 0.3569977729714921,
+          "net_sharpe": -4.955394741846193,
+          "turnover_per_year": 236.83592192948544,
+          "gross_bps_per_year": 139.7943828503913,
+          "cost_bps_per_year": 2072.6700009025485
+        },
+        {
+          "anchor": "pca_sscore_k10",
+          "dimension": "refit_every",
+          "value": 5,
+          "variant": "refit_every=5",
+          "is_anchor_value": false,
+          "gross_sharpe": 0.6882639409591247,
+          "net_sharpe": -4.810817581586604,
+          "turnover_per_year": 235.54959165413007,
+          "gross_bps_per_year": 258.91626588557165,
+          "cost_bps_per_year": 2069.244049636358
+        },
+        {
+          "anchor": "pca_sscore_k10",
+          "dimension": "refit_every",
+          "value": 63,
+          "variant": "refit_every=63",
+          "is_anchor_value": false,
+          "gross_sharpe": 0.8726607425748244,
+          "net_sharpe": -4.420852354188543,
+          "turnover_per_year": 237.58891757009198,
+          "gross_bps_per_year": 342.3563220839193,
+          "cost_bps_per_year": 2075.655864627957
+        },
+        {
+          "anchor": "pca_sscore_k10",
+          "dimension": "beta_window",
+          "value": 40,
+          "variant": "beta_window=40",
+          "is_anchor_value": false,
+          "gross_sharpe": 0.8529010841467608,
+          "net_sharpe": -6.817785611284062,
+          "turnover_per_year": 392.8107121010344,
+          "gross_bps_per_year": 395.10298035735616,
+          "cost_bps_per_year": 3543.158051210988
+        },
+        {
+          "anchor": "pca_sscore_k10",
+          "dimension": "beta_window",
+          "value": 90,
+          "variant": "beta_window=90",
+          "is_anchor_value": false,
+          "gross_sharpe": 0.6411776550616121,
+          "net_sharpe": -3.431386865458376,
+          "turnover_per_year": 152.03943667926558,
+          "gross_bps_per_year": 202.6435296397619,
+          "cost_bps_per_year": 1285.7781249598859
+        },
+        {
+          "anchor": "pca_sscore_k10",
+          "dimension": "kappa_min",
+          "value": 4.2,
+          "variant": "kappa_min=4.2",
+          "is_anchor_value": false,
+          "gross_sharpe": 0.2877314013076043,
+          "net_sharpe": -5.274101532239121,
+          "turnover_per_year": 264.0491835399338,
+          "gross_bps_per_year": 120.21451133499471,
+          "cost_bps_per_year": 2332.9141821379103
+        },
+        {
+          "anchor": "pca_sscore_k10",
+          "dimension": "kappa_min",
+          "value": 16.8,
+          "variant": "kappa_min=16.8",
+          "is_anchor_value": false,
+          "gross_sharpe": 0.7157277193045175,
+          "net_sharpe": -5.16383329842336,
+          "turnover_per_year": 217.90763037292479,
+          "gross_bps_per_year": 231.4440105418966,
+          "cost_bps_per_year": 1893.293957858729
+        }
+      ]
+    },
+    "two_way_entry_by_k_reversal": [
+      {
+        "entry": 1.0,
+        "n_factors": 3,
+        "gross_sharpe": 0.9162060834454816,
+        "net_sharpe": -3.6976715185734994,
+        "turnover_per_year": 386.06642967950506,
+        "gross_bps_per_year": 726.3293086963768,
+        "cost_bps_per_year": 3624.490166789837
+      },
+      {
+        "entry": 1.25,
+        "n_factors": 3,
+        "gross_sharpe": 1.0131590665353676,
+        "net_sharpe": -2.9171902722105405,
+        "turnover_per_year": 292.9272289084895,
+        "gross_bps_per_year": 702.0740616211194,
+        "cost_bps_per_year": 2702.3418193806906
+      },
+      {
+        "entry": 1.5,
+        "n_factors": 3,
+        "gross_sharpe": 0.9699217407888809,
+        "net_sharpe": -2.5314342620546326,
+        "turnover_per_year": 220.27824027517462,
+        "gross_bps_per_year": 556.4806705035603,
+        "cost_bps_per_year": 1994.3061042029897
+      },
+      {
+        "entry": 2.0,
+        "n_factors": 3,
+        "gross_sharpe": 0.9231559576422029,
+        "net_sharpe": -1.9171086206999646,
+        "turnover_per_year": 122.11837731884746,
+        "gross_bps_per_year": 347.50320329471907,
+        "cost_bps_per_year": 1064.728458746291
+      },
+      {
+        "entry": 1.0,
+        "n_factors": 5,
+        "gross_sharpe": 1.0380948420408191,
+        "net_sharpe": -4.375423594821814,
+        "turnover_per_year": 405.1248206783956,
+        "gross_bps_per_year": 729.9039281594845,
+        "cost_bps_per_year": 3775.411357012352
+      },
+      {
+        "entry": 1.25,
+        "n_factors": 5,
+        "gross_sharpe": 1.1314250198556535,
+        "net_sharpe": -3.5425063311409235,
+        "turnover_per_year": 306.68229573455034,
+        "gross_bps_per_year": 684.3430734413878,
+        "cost_bps_per_year": 2799.8712624165664
+      },
+      {
+        "entry": 1.5,
+        "n_factors": 5,
+        "gross_sharpe": 0.9566989567540755,
+        "net_sharpe": -3.0326111534607256,
+        "turnover_per_year": 230.80098935616266,
+        "gross_bps_per_year": 498.5369221669897,
+        "cost_bps_per_year": 2060.577060341304
+      },
+      {
+        "entry": 2.0,
+        "n_factors": 5,
+        "gross_sharpe": 0.6141764672945744,
+        "net_sharpe": -2.6828313656810163,
+        "turnover_per_year": 127.41956579148301,
+        "gross_bps_per_year": 202.5305381430508,
+        "cost_bps_per_year": 1084.1432222067324
+      },
+      {
+        "entry": 1.0,
+        "n_factors": 8,
+        "gross_sharpe": 0.7167252936013294,
+        "net_sharpe": -5.452345402030209,
+        "turnover_per_year": 427.30987686667345,
+        "gross_bps_per_year": 462.08169828821934,
+        "cost_bps_per_year": 3952.762162925216
+      },
+      {
+        "entry": 1.25,
+        "n_factors": 8,
+        "gross_sharpe": 0.850848658431535,
+        "net_sharpe": -4.339188877976604,
+        "turnover_per_year": 321.4680634273747,
+        "gross_bps_per_year": 477.2106740556158,
+        "cost_bps_per_year": 2898.7866081603593
+      },
+      {
+        "entry": 1.5,
+        "n_factors": 8,
+        "gross_sharpe": 0.627243877844296,
+        "net_sharpe": -3.9177437245909337,
+        "turnover_per_year": 242.8456863890643,
+        "gross_bps_per_year": 295.51936466939196,
+        "cost_bps_per_year": 2134.5591632050528
+      },
+      {
+        "entry": 2.0,
+        "n_factors": 8,
+        "gross_sharpe": 0.4891527301212849,
+        "net_sharpe": -2.979756338012625,
+        "turnover_per_year": 134.6979848166007,
+        "gross_bps_per_year": 157.96973409824855,
+        "cost_bps_per_year": 1122.4015914493555
+      },
+      {
+        "entry": 1.0,
+        "n_factors": 10,
+        "gross_sharpe": 0.7845996610133339,
+        "net_sharpe": -6.0196589374334355,
+        "turnover_per_year": 441.95487753316394,
+        "gross_bps_per_year": 473.12994512723714,
+        "cost_bps_per_year": 4068.127725517267
+      },
+      {
+        "entry": 1.25,
+        "n_factors": 10,
+        "gross_sharpe": 0.7533001177902015,
+        "net_sharpe": -5.09435356224874,
+        "turnover_per_year": 332.57135866372766,
+        "gross_bps_per_year": 386.18539539543104,
+        "cost_bps_per_year": 2986.502166253182
+      },
+      {
+        "entry": 1.5,
+        "n_factors": 10,
+        "gross_sharpe": 0.7012148451030918,
+        "net_sharpe": -4.421829206711193,
+        "turnover_per_year": 250.8273975584607,
+        "gross_bps_per_year": 300.7065527069257,
+        "cost_bps_per_year": 2190.8281820818424
+      },
+      {
+        "entry": 2.0,
+        "n_factors": 10,
+        "gross_sharpe": 0.43825722625825353,
+        "net_sharpe": -3.5015115889018356,
+        "turnover_per_year": 138.31901484797598,
+        "gross_bps_per_year": 126.36092041365741,
+        "cost_bps_per_year": 1139.1788575476178
+      },
+      {
+        "entry": 1.0,
+        "n_factors": 15,
+        "gross_sharpe": 0.5492370357036175,
+        "net_sharpe": -7.118873600224625,
+        "turnover_per_year": 472.70997816767147,
+        "gross_bps_per_year": 308.7998390934861,
+        "cost_bps_per_year": 4286.833869738335
+      },
+      {
+        "entry": 1.25,
+        "n_factors": 15,
+        "gross_sharpe": 0.7607579053134185,
+        "net_sharpe": -5.820467048537083,
+        "turnover_per_year": 360.66423727747247,
+        "gross_bps_per_year": 369.24121121320854,
+        "cost_bps_per_year": 3189.0373641610936
+      },
+      {
+        "entry": 1.5,
+        "n_factors": 15,
+        "gross_sharpe": 0.39798923010203957,
+        "net_sharpe": -5.268270850813985,
+        "turnover_per_year": 271.18444363791167,
+        "gross_bps_per_year": 163.2796723467359,
+        "cost_bps_per_year": 2327.151127932449
+      },
+      {
+        "entry": 2.0,
+        "n_factors": 15,
+        "gross_sharpe": 0.5968834209768556,
+        "net_sharpe": -3.705423390105976,
+        "turnover_per_year": 147.5055199604935,
+        "gross_bps_per_year": 163.84232590574206,
+        "cost_bps_per_year": 1180.3376496513226
+      }
+    ]
+  },
+  "pairs": {
+    "central": {
+      "gross_sharpe": -0.1568767577609831,
+      "net_sharpe": -0.8442456489585867,
+      "turnover_per_year": 19.334022061809144,
+      "gross_bps_per_year": -65.93976344209787,
+      "cost_bps_per_year": 286.81646047626987,
+      "n_trades": 359
+    },
+    "variants": [
+      {
+        "dimension": "hedge",
+        "value": "static",
+        "variant": "hedge=static",
+        "gross_sharpe": -0.1568767577609831,
+        "net_sharpe": -0.8442456489585867,
+        "turnover_per_year": 19.334022061809144,
+        "gross_bps_per_year": -65.93976344209787,
+        "cost_bps_per_year": 286.81646047626987,
+        "n_trades": 359
+      },
+      {
+        "dimension": "hedge",
+        "value": "expanding",
+        "variant": "hedge=expanding",
+        "gross_sharpe": 0.012825013419926501,
+        "net_sharpe": -0.708184969893947,
+        "turnover_per_year": 20.031899550841757,
+        "gross_bps_per_year": 5.32231945759541,
+        "cost_bps_per_year": 297.3390651255198,
+        "n_trades": 374
+      },
+      {
+        "dimension": "hedge",
+        "value": "kalman",
+        "variant": "hedge=kalman",
+        "gross_sharpe": -0.10823062326044136,
+        "net_sharpe": -0.7073433064777266,
+        "turnover_per_year": 17.1732671124269,
+        "gross_bps_per_year": -43.41416680738963,
+        "cost_bps_per_year": 238.7191269931883,
+        "n_trades": 367
+      },
+      {
+        "dimension": "hedge",
+        "value": "rolling",
+        "variant": "hedge=rolling",
+        "gross_sharpe": -0.08046201959838353,
+        "net_sharpe": -0.6715642265369506,
+        "turnover_per_year": 18.312914985224307,
+        "gross_bps_per_year": -35.67606547246757,
+        "cost_bps_per_year": 261.18575605413554,
+        "n_trades": 374
+      },
+      {
+        "dimension": "entry",
+        "value": 1.0,
+        "variant": "entry=1.0",
+        "gross_sharpe": 0.4666384779887463,
+        "net_sharpe": -0.7390929809325615,
+        "turnover_per_year": 40.22466819964376,
+        "gross_bps_per_year": 231.52004002866872,
+        "cost_bps_per_year": 594.8938751044369,
+        "n_trades": 771
+      },
+      {
+        "dimension": "entry",
+        "value": 1.5,
+        "variant": "entry=1.5",
+        "gross_sharpe": 0.22915015349100143,
+        "net_sharpe": -0.6372742140819032,
+        "turnover_per_year": 27.74795920496447,
+        "gross_bps_per_year": 108.64629490745034,
+        "cost_bps_per_year": 407.8711151766648,
+        "n_trades": 520
+      },
+      {
+        "dimension": "entry",
+        "value": 2.0,
+        "variant": "entry=2.0",
+        "gross_sharpe": -0.1568767577609831,
+        "net_sharpe": -0.8442456489585867,
+        "turnover_per_year": 19.334022061809144,
+        "gross_bps_per_year": -65.93976344209787,
+        "cost_bps_per_year": 286.81646047626987,
+        "n_trades": 359
+      },
+      {
+        "dimension": "entry",
+        "value": 2.5,
+        "variant": "entry=2.5",
+        "gross_sharpe": -0.32221440978804905,
+        "net_sharpe": -0.8489205653473528,
+        "turnover_per_year": 12.668728686173083,
+        "gross_bps_per_year": -116.3497038837065,
+        "cost_bps_per_year": 188.82541623969576,
+        "n_trades": 233
+      },
+      {
+        "dimension": "entry",
+        "value": 3.0,
+        "variant": "entry=3.0",
+        "gross_sharpe": -0.034306765004206194,
+        "net_sharpe": -0.44380777217705647,
+        "turnover_per_year": 7.413443342844427,
+        "gross_bps_per_year": -9.5098766471782,
+        "cost_bps_per_year": 112.90235815946424,
+        "n_trades": 136
+      },
+      {
+        "dimension": "exit",
+        "value": 0.0,
+        "variant": "exit=0.0",
+        "gross_sharpe": -0.19509061672924516,
+        "net_sharpe": -0.7539830861848742,
+        "turnover_per_year": 15.908579089723013,
+        "gross_bps_per_year": -81.80634057912826,
+        "cost_bps_per_year": 232.80537284222564,
+        "n_trades": 285
+      },
+      {
+        "dimension": "exit",
+        "value": 0.25,
+        "variant": "exit=0.25",
+        "gross_sharpe": 0.11845678695105033,
+        "net_sharpe": -0.5300689015646649,
+        "turnover_per_year": 18.80099613833529,
+        "gross_bps_per_year": 51.10784099468729,
+        "cost_bps_per_year": 278.89597406494715,
+        "n_trades": 343
+      },
+      {
+        "dimension": "exit",
+        "value": 0.5,
+        "variant": "exit=0.5",
+        "gross_sharpe": -0.1568767577609831,
+        "net_sharpe": -0.8442456489585867,
+        "turnover_per_year": 19.334022061809144,
+        "gross_bps_per_year": -65.93976344209787,
+        "cost_bps_per_year": 286.81646047626987,
+        "n_trades": 359
+      },
+      {
+        "dimension": "exit",
+        "value": 1.0,
+        "variant": "exit=1.0",
+        "gross_sharpe": 0.03570575531419314,
+        "net_sharpe": -0.8577628947208756,
+        "turnover_per_year": 21.67981755466776,
+        "gross_bps_per_year": 12.995728877749336,
+        "cost_bps_per_year": 322.1947198881909,
+        "n_trades": 417
+      },
+      {
+        "dimension": "stop",
+        "value": 3.0,
+        "variant": "stop=3.0",
+        "gross_sharpe": -0.5999987629864317,
+        "net_sharpe": -1.4354649258624623,
+        "turnover_per_year": 18.535226032012933,
+        "gross_bps_per_year": -199.96100672572422,
+        "cost_bps_per_year": 280.66568361805764,
+        "n_trades": 358
+      },
+      {
+        "dimension": "stop",
+        "value": 4.0,
+        "variant": "stop=4.0",
+        "gross_sharpe": -0.1568767577609831,
+        "net_sharpe": -0.8442456489585867,
+        "turnover_per_year": 19.334022061809144,
+        "gross_bps_per_year": -65.93976344209787,
+        "cost_bps_per_year": 286.81646047626987,
+        "n_trades": 359
+      },
+      {
+        "dimension": "stop",
+        "value": 6.0,
+        "variant": "stop=6.0",
+        "gross_sharpe": -0.3282712060851603,
+        "net_sharpe": -0.9939676183341372,
+        "turnover_per_year": 19.49173820823706,
+        "gross_bps_per_year": -142.83749161084205,
+        "cost_bps_per_year": 286.8121672764687,
+        "n_trades": 359
+      },
+      {
+        "dimension": "max_hold",
+        "value": 20,
+        "variant": "max_hold=20",
+        "gross_sharpe": -0.05406712916119503,
+        "net_sharpe": -0.890062578582172,
+        "turnover_per_year": 18.527020265534148,
+        "gross_bps_per_year": -18.08809894822763,
+        "cost_bps_per_year": 278.4644604276179,
+        "n_trades": 359
+      },
+      {
+        "dimension": "max_hold",
+        "value": 60,
+        "variant": "max_hold=60",
+        "gross_sharpe": -0.1568767577609831,
+        "net_sharpe": -0.8442456489585867,
+        "turnover_per_year": 19.334022061809144,
+        "gross_bps_per_year": -65.93976344209787,
+        "cost_bps_per_year": 286.81646047626987,
+        "n_trades": 359
+      },
+      {
+        "dimension": "max_hold",
+        "value": 120,
+        "variant": "max_hold=120",
+        "gross_sharpe": -0.23538707792575234,
+        "net_sharpe": -0.8999625745625794,
+        "turnover_per_year": 19.458446588082865,
+        "gross_bps_per_year": -103.18173490291052,
+        "cost_bps_per_year": 288.7165807059642,
+        "n_trades": 359
+      },
+      {
+        "dimension": "z_window",
+        "value": 30,
+        "variant": "z_window=30",
+        "gross_sharpe": -0.17982447332586057,
+        "net_sharpe": -1.2120331272424747,
+        "turnover_per_year": 30.982904471222277,
+        "gross_bps_per_year": -79.69029232336105,
+        "cost_bps_per_year": 451.96347481091436,
+        "n_trades": 601
+      },
+      {
+        "dimension": "z_window",
+        "value": 60,
+        "variant": "z_window=60",
+        "gross_sharpe": -0.1568767577609831,
+        "net_sharpe": -0.8442456489585867,
+        "turnover_per_year": 19.334022061809144,
+        "gross_bps_per_year": -65.93976344209787,
+        "cost_bps_per_year": 286.81646047626987,
+        "n_trades": 359
+      },
+      {
+        "dimension": "z_window",
+        "value": 120,
+        "variant": "z_window=120",
+        "gross_sharpe": -0.0538335805207384,
+        "net_sharpe": -0.5368890782496002,
+        "turnover_per_year": 11.990061699799188,
+        "gross_bps_per_year": -19.818671418431858,
+        "cost_bps_per_year": 177.01918673432237,
+        "n_trades": 209
+      },
+      {
+        "dimension": "z_window",
+        "value": 250,
+        "variant": "z_window=250",
+        "gross_sharpe": -0.10215790077566649,
+        "net_sharpe": -0.521217387242876,
+        "turnover_per_year": 8.540664349027136,
+        "gross_bps_per_year": -31.31641127825626,
+        "cost_bps_per_year": 127.88001892746263,
+        "n_trades": 147
+      },
+      {
+        "dimension": "screen_alpha",
+        "value": 0.01,
+        "variant": "screen_alpha=0.01",
+        "gross_sharpe": -0.660110012874924,
+        "net_sharpe": -1.243546588467533,
+        "turnover_per_year": 8.936639754123483,
+        "gross_bps_per_year": -136.32830381913732,
+        "cost_bps_per_year": 119.08420671725005,
+        "n_trades": 176
+      },
+      {
+        "dimension": "screen_alpha",
+        "value": 0.05,
+        "variant": "screen_alpha=0.05",
+        "gross_sharpe": -0.1568767577609831,
+        "net_sharpe": -0.8442456489585867,
+        "turnover_per_year": 19.334022061809144,
+        "gross_bps_per_year": -65.93976344209787,
+        "cost_bps_per_year": 286.81646047626987,
+        "n_trades": 359
+      },
+      {
+        "dimension": "screen_alpha",
+        "value": 0.1,
+        "variant": "screen_alpha=0.1",
+        "gross_sharpe": -0.44138160670811233,
+        "net_sharpe": -1.0393452962766427,
+        "turnover_per_year": 19.53326282278032,
+        "gross_bps_per_year": -215.3192434053997,
+        "cost_bps_per_year": 289.61593202678785,
+        "n_trades": 352
+      },
+      {
+        "dimension": "screen_alpha",
+        "value": 0.2,
+        "variant": "screen_alpha=0.2",
+        "gross_sharpe": 0.1861838736915515,
+        "net_sharpe": -0.4052856961238344,
+        "turnover_per_year": 22.34905974182786,
+        "gross_bps_per_year": 107.84319795956834,
+        "cost_bps_per_year": 341.285442104067,
+        "n_trades": 358
+      },
+      {
+        "dimension": "screen_half_life",
+        "value": "5-60",
+        "variant": "screen_half_life=5-60",
+        "gross_sharpe": -0.1568767577609831,
+        "net_sharpe": -0.8442456489585867,
+        "turnover_per_year": 19.334022061809144,
+        "gross_bps_per_year": -65.93976344209787,
+        "cost_bps_per_year": 286.81646047626987,
+        "n_trades": 359
+      },
+      {
+        "dimension": "screen_half_life",
+        "value": "2-120",
+        "variant": "screen_half_life=2-120",
+        "gross_sharpe": -0.12991607053374676,
+        "net_sharpe": -0.7993843068882108,
+        "turnover_per_year": 19.36318200350944,
+        "gross_bps_per_year": -56.193486392914544,
+        "cost_bps_per_year": 287.67049383698503,
+        "n_trades": 360
+      },
+      {
+        "dimension": "screen_half_life",
+        "value": "10-40",
+        "variant": "screen_half_life=10-40",
+        "gross_sharpe": -0.18020643486035873,
+        "net_sharpe": -0.8791171010415567,
+        "turnover_per_year": 19.201989484158606,
+        "gross_bps_per_year": -74.21976665618833,
+        "cost_bps_per_year": 285.54048627470564,
+        "n_trades": 359
+      },
+      {
+        "dimension": "portfolio_size",
+        "value": 10,
+        "variant": "portfolio_size=10",
+        "gross_sharpe": -0.3129001946966391,
+        "net_sharpe": -1.0026977183880217,
+        "turnover_per_year": 21.744466265923876,
+        "gross_bps_per_year": -207.96610965463668,
+        "cost_bps_per_year": 453.47776313122506,
+        "n_trades": 180
+      },
+      {
+        "dimension": "portfolio_size",
+        "value": 20,
+        "variant": "portfolio_size=20",
+        "gross_sharpe": -0.1568767577609831,
+        "net_sharpe": -0.8442456489585867,
+        "turnover_per_year": 19.334022061809144,
+        "gross_bps_per_year": -65.93976344209787,
+        "cost_bps_per_year": 286.81646047626987,
+        "n_trades": 359
+      },
+      {
+        "dimension": "portfolio_size",
+        "value": 40,
+        "variant": "portfolio_size=40",
+        "gross_sharpe": -0.06028535444692729,
+        "net_sharpe": -0.7875037458427192,
+        "turnover_per_year": 18.8536987999157,
+        "gross_bps_per_year": -17.177697844364694,
+        "cost_bps_per_year": 206.17252270276708,
+        "n_trades": 744
+      }
+    ],
+    "summary": {
+      "n_variants": 33,
+      "share_gross_positive": 0.18181818181818182,
+      "share_gross_above_0.5": 0.0,
+      "max_gross": 0.4666384779887463,
+      "min_gross": -0.660110012874924,
+      "median_gross": -0.1568767577609831,
+      "share_net_positive": 0.0,
+      "best_net": -0.4052856961238344
+    }
+  },
+  "relationship_stability": {
+    "per_fold": {
+      "2015": {
+        "selected": {
+          "n": 20,
+          "share_oos_adf_rejects_5pct": 0.0,
+          "ci95_adf": [
+            -1.3877787807814457e-17,
+            0.16113012549493322
+          ],
+          "share_reverting_slope": 1.0,
+          "median_oos_sd_ratio": 1.2062702328725479,
+          "share_sd_ratio_below_1p5": 0.65,
+          "median_oos_mean_shift_sd": 1.578293161023097,
+          "median_oos_half_life": 65.32396798253285
+        },
+        "baseline_pool": {
+          "n": 1118,
+          "share_oos_adf_rejects_5pct": 0.07155635062611806,
+          "ci95_adf": [
+            0.05786915849373756,
+            0.08817784136791847
+          ],
+          "share_reverting_slope": 0.9597495527728086,
+          "median_oos_sd_ratio": 0.7787865950501145,
+          "share_sd_ratio_below_1p5": 0.8837209302325582,
+          "median_oos_mean_shift_sd": 1.214602423519593,
+          "median_oos_half_life": 45.97640395874005
+        }
+      },
+      "2016": {
+        "selected": {
+          "n": 20,
+          "share_oos_adf_rejects_5pct": 0.1,
+          "ci95_adf": [
+            0.027865893984153206,
+            0.30103820641179335
+          ],
+          "share_reverting_slope": 1.0,
+          "median_oos_sd_ratio": 1.1913905587695865,
+          "share_sd_ratio_below_1p5": 0.6,
+          "median_oos_mean_shift_sd": 1.655200533506049,
+          "median_oos_half_life": 48.37729470370719
+        },
+        "baseline_pool": {
+          "n": 1191,
+          "share_oos_adf_rejects_5pct": 0.09991603694374475,
+          "ci95_adf": [
+            0.08414943505292435,
+            0.11825530211056243
+          ],
+          "share_reverting_slope": 0.9748110831234257,
+          "median_oos_sd_ratio": 0.8153065972149972,
+          "share_sd_ratio_below_1p5": 0.9185558354324097,
+          "median_oos_mean_shift_sd": 1.2745707689298724,
+          "median_oos_half_life": 47.73986300441152
+        }
+      },
+      "2017": {
+        "selected": {
+          "n": 20,
+          "share_oos_adf_rejects_5pct": 0.0,
+          "ci95_adf": [
+            -1.3877787807814457e-17,
+            0.16113012549493322
+          ],
+          "share_reverting_slope": 0.85,
+          "median_oos_sd_ratio": 1.2032732869102594,
+          "share_sd_ratio_below_1p5": 0.7,
+          "median_oos_mean_shift_sd": 2.1332032416703095,
+          "median_oos_half_life": 44.996337674927595
+        },
+        "baseline_pool": {
+          "n": 1238,
+          "share_oos_adf_rejects_5pct": 0.05896607431340872,
+          "ci95_adf": [
+            0.047157883215569664,
+            0.07350291603612233
+          ],
+          "share_reverting_slope": 0.9402261712439418,
+          "median_oos_sd_ratio": 0.70780829026341,
+          "share_sd_ratio_below_1p5": 0.9087237479806138,
+          "median_oos_mean_shift_sd": 1.3010615474708835,
+          "median_oos_half_life": 53.58413737349853
+        }
+      },
+      "2018": {
+        "selected": {
+          "n": 20,
+          "share_oos_adf_rejects_5pct": 0.05,
+          "ci95_adf": [
+            0.008881219432873136,
+            0.23613589351256675
+          ],
+          "share_reverting_slope": 1.0,
+          "median_oos_sd_ratio": 1.4606304876626646,
+          "share_sd_ratio_below_1p5": 0.55,
+          "median_oos_mean_shift_sd": 1.504723152906214,
+          "median_oos_half_life": 41.701051657667364
+        },
+        "baseline_pool": {
+          "n": 1260,
+          "share_oos_adf_rejects_5pct": 0.05396825396825397,
+          "ci95_adf": [
+            0.04279293829827429,
+            0.06785510493752363
+          ],
+          "share_reverting_slope": 0.946031746031746,
+          "median_oos_sd_ratio": 0.8115085282170967,
+          "share_sd_ratio_below_1p5": 0.8857142857142857,
+          "median_oos_mean_shift_sd": 1.1573171280707477,
+          "median_oos_half_life": 53.694914534690845
+        }
+      }
+    },
+    "pooled": {
+      "baseline_pool": {
+        "n_pairs": 4807,
+        "share_oos_adf_rejects_5pct": 0.07073018514666111,
+        "wilson95": [
+          0.0638201907615568,
+          0.07832574894263135
+        ],
+        "median_oos_sd_ratio": 0.7770185009293388,
+        "median_oos_mean_shift_sd": 1.233248835959836,
+        "median_oos_half_life": 50.01714028205382,
+        "share_no_reversion_ar1_ge_1": 0.04514250052007489
+      },
+      "selected": {
+        "n_pairs": 80,
+        "share_oos_adf_rejects_5pct": 0.0375,
+        "wilson95": [
+          0.012834336300788757,
+          0.10454891974394322
+        ],
+        "median_oos_sd_ratio": 1.2481309353373455,
+        "median_oos_mean_shift_sd": 1.7850479455595898,
+        "median_oos_half_life": 52.646727693575556,
+        "share_no_reversion_ar1_ge_1": 0.0375
+      },
+      "rank_correlation_train_p_vs_oos_adf_p": {
+        "spearman": 0.01598670075718769,
+        "p_value": 0.2638365426169774,
+        "n": 4887
+      }
+    }
+  },
+  "surface_as_trials": {
+    "n_configurations_evaluated": 93,
+    "best_gross_sharpe_in_surface": 1.2055284071184957,
+    "dsr_if_n_is_24_plus_surface": 0.3829980846860297,
+    "sr0_annual_if_n_is_24_plus_surface": 1.3532742540873837
+  },
+  "data_fingerprint": "07d3aa14cdacd9c9"
+}

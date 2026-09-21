@@ -20,8 +20,8 @@ the goal and is not reported as a finding.
 | 5 | Walk-forward backtest, train/validation/holdout | **done** |
 | 6 | Transaction costs: spread, commissions, impact | **done** |
 | 7 | PCA statistical arbitrage | **done** |
-| 8 | Multiple-testing correction, deflated Sharpe, reality check | **done** (this commit) |
-| 9 | Robustness: sensitivity, regimes, structural breaks, capacity | not started |
+| 8 | Multiple-testing correction, deflated Sharpe, reality check | **done** |
+| 9 | Robustness: sensitivity, regimes, structural breaks, capacity | **done** (this commit) |
 | 10 | Final research report | not started |
 
 Sections below marked *(Stage N)* are the specification for work that has not been done. They contain
@@ -52,10 +52,12 @@ statarb/
                        residuals (rolling PCA residual scores, position state machine)
   portfolio/           construction (leg weights, volatility targeting), neutral (sizing, dollar/factor-neutral projection)
   backtest/            pair_pnl (single-pair accounting), walkforward (folds, engine), metrics,
-                       costs (spread, commission, impact, borrow; Corwin-Schultz), pca_walkforward (PCA book engine, placebo)
+                       costs (spread, commission, impact, borrow; Corwin-Schultz), pca_walkforward (PCA book engine, placebo),
+                       capacity (analytic capacity from cost components)
   research/            registry (append-only trial log)
   statistics/          bootstrap (stationary block bootstrap), sharpe (PSR, deflated Sharpe, minimum backtest
-                       length), multiple_testing (Reality Check, SPA, Romano-Wolf, BH/BY, CSCV-PBO)
+                       length), multiple_testing (Reality Check, SPA, Romano-Wolf, BH/BY, CSCV-PBO),
+                       breaks (sup-F mean break, subspace overlap), regimes (causal regimes, regime Sharpe test)
   data/holdout.py      sealed-holdout guard and ledger
 tests/                 pytest + hypothesis
 experiments/           runnable experiments and their JSON results (registry: experiments/registry.jsonl)
@@ -526,7 +528,7 @@ no training-time filter could have removed it: a live strategy needs stop-losses
 * "Estimated FDR = 1" means the discoveries cannot be told apart from the null, not that all are false.
   Stage 8 applies the formal corrections to these same counts.
 * Half-life bounds, `k`, `α` and the 20-pair cap are researcher degrees of freedom; they were fixed before
-  the run and any change now counts as a new trial (Stage 9's sensitivity analysis must be registered).
+  the run and any change now counts as a new trial (Stage 9's sensitivity analysis is registered: §11).
 
 ## 6. Pair strategy and hedge ratios (Stage 4)
 
@@ -1393,24 +1395,267 @@ p-value of its family is ≤ 0.05. The best, PCA reversal, k = 5, has a DSR of *
 * BH assumes independence or positive dependence and the pair candidates overlap (a stock appears in several pairs); BY is valid under any dependence and is reported alongside. The null's resolution limits BH at small q (§10.4).
 * The deflated Sharpe assumes the trial Sharpe estimates are roughly independent draws with the observed variance; that is an approximation for correlated strategies of two different families.
 
-## 11. Statistical-arbitrage methodology *(Stage 9: specification only)*
+## 11. Robustness: sensitivity, stability, regimes and capacity (Stage 9)
+
+`statarb/statistics/breaks.py`, `statarb/statistics/regimes.py`, `statarb/backtest/capacity.py`, `reselect_pairs` in `selection/screening.py`;
+experiments `stage9_sensitivity.py`, `stage9_regimes_breaks.py`, `stage9_capacity.py` and the post-hoc `stage9_regime_followup.py`. Everything is the research
+phase (2015–2018); validation and the holdout are untouched (the ledger is still empty). Numbers are generated from `experiments/results/stage9_*.json`.
+
+**Ground rules.** Every variant evaluated on this data is a *look*. The sensitivity surfaces are therefore registered as diagnostics and reported whole; nothing
+is chosen from them, **no variant can advance** (Stages 6–7 found no qualifier and a surface cannot create one), and a variant that looked good would only be a
+hypothesis for a future, registered trial on data not yet used. If the surface *were* treated as trials (93 configurations were evaluated across the PCA and pair
+surfaces), the deflated Sharpe of its best point (1.21) would be **0.38** at N = 24 + 93 (the luck benchmark rising to 1.35), against 0.65 at N = 24 in §10.
+
+### 11.1 Validation
+
+* **Sup-F break test:** the F statistic against a brute-force loop; size ≈ 5 % under no break (i.i.d. and AR(1) data), power > 90 % for a one-standard-deviation shift, the break located
+  within a few per cent of the sample, the p-value never zero and 1 for a flat series; **subspace overlap** on its identities (1 for the same span in any basis, 0 for orthogonal, ≈ k/N for random subspaces).
+* **Regimes:** the labels pass the leakage detectors (truncation and future perturbation) and a day's own return cannot move its label; the Sharpe-difference bootstrap has ≈ 5 % size and > 90 % power.
+* **Capacity:** the analytic scaling (impact per unit of capital ∝ √capital, participation ∝ capital) **reproduces a real re-run of the PCA engine at other capitals to 1e-13**, holds for the pair cost model,
+  and, in the experiment, reproduces Stage 7's own re-runs at $10M and $1B to 1e-12. `reselect_pairs` reproduces the screen's own `selected` column on all four folds.
+* **Mutation sweep:** 31 single-bug mutants; 30 applicable to the final code (one clause, a no-op re-centring, was deleted); the first sweep left nine survivors, all real test gaps
+  (the p-value floor and tie rule, the reported break index, the trend window, the dispersion smoothing, the boundary conventions of the re-selection, break-even at exactly zero room), now all killed.
+* **Deviations and misses, in the order they happened:** the first draft of the PCA fit-window grid had 252 days; it stopped at once because 252 days is fewer than the 308–361 names (a singular correlation
+  matrix), so it became 378 before any result existed. My prior for the regime tests (H9e, below) was wrong.
+
+### 11.2 Parameter sensitivity (hypothesis C)
+
+Anchors fixed a priori: PCA reversal k = 5 (the Stage 7 result under test) and the class defaults (s-score, k = 10); pairs: the `StrategyConfig` defaults (static hedge, entry 2, exit 0.5, stop 4, max hold 60,
+z-window 60). One dimension is moved at a time (gross / net Sharpe, four folds, Stage 6 costs at $100M):
+
+| Variation (one dimension at a time) | Reversal k = 5: gross | net | s-score k = 10: gross | net |
+| --- | ---: | ---: | ---: | ---: |
+| **anchor** | +1.13 | -3.54 | +0.53 | -4.82 |
+| entry = 1.0 | +1.04 | -4.38 | +0.93 | -5.45 |
+| entry = 1.5 | +0.96 | -3.03 | +0.41 | -4.22 |
+| entry = 2.0 | +0.61 | -2.68 | +0.91 | -2.76 |
+| exit = 0.25 | +1.21 | -3.01 | +0.68 | -3.95 |
+| exit = 0.75 | +1.20 | -4.02 | +0.60 | -5.67 |
+| stop = 3.0 | +1.13 | -3.84 | +0.47 | -5.19 |
+| stop = 6.0 | +1.12 | -3.40 | +0.45 | -4.82 |
+| max_hold = 20 | +1.12 | -3.56 | +0.54 | -4.83 |
+| name_size = 0.01 | +1.13 | -2.56 | +0.53 | -3.73 |
+| name_size = 0.04 | +1.13 | -4.93 | +0.53 | -6.33 |
+| n_factors = 3 | +1.01 | -2.92 | +0.87 | -2.57 |
+| n_factors = 8 | +0.85 | -4.34 | +0.81 | -3.87 |
+| n_factors = 10 | +0.75 | -5.09 | n/a | n/a |
+| n_factors = 15 | +0.76 | -5.82 | +0.26 | -6.18 |
+| n_factors = 20 | +0.28 | -7.33 | +0.48 | -7.31 |
+| fit_window = 378 | +1.03 | -3.64 | +0.44 | -4.75 |
+| fit_window = 756 | +0.69 | -3.88 | +0.36 | -4.96 |
+| refit_every = 5 | +1.05 | -3.61 | +0.69 | -4.81 |
+| refit_every = 63 | +1.08 | -3.60 | +0.87 | -4.42 |
+| beta_window = 40 | +1.10 | -3.72 | +0.85 | -6.82 |
+| beta_window = 90 | +1.16 | -3.59 | +0.64 | -3.43 |
+| reversal_days = 3 | +0.92 | -5.37 | n/a | n/a |
+| reversal_days = 10 | +0.82 | -2.24 | n/a | n/a |
+| n_factors = 5 | n/a | n/a | +0.89 | -3.18 |
+| kappa_min = 4.2 | n/a | n/a | +0.29 | -5.27 |
+| kappa_min = 16.8 | n/a | n/a | +0.72 | -5.16 |
+
+Reading it: **rule for "robust"** (fixed before running): at least 70 % of neighbours with positive gross Sharpe and a median at least half the anchor's. Reversal k = 5: **100 %**
+positive, median +1.04 against +1.13, range +0.28 to +1.21, the anchor ranked 5 of 24: **robust**. S-score k = 10:
+100 % positive, median +0.60: **robust**. It is not an isolated peak. Two structures are visible: the gross Sharpe falls steadily as factors are added
+(k = 3 → 20: +1.01 → +0.28), and every knob that lowers turnover (entry 2.0, a 10-day horizon,
+1 % names) improves the *net* result without ever making it positive: the best net Sharpe anywhere on either surface is **-2.24**. Entry × factors, gross / net:
+
+| k \ entry | 1 | 1.25 | 1.5 | 2 |
+| --- | ---: | ---: | ---: | ---: |
+| k = 3 | +0.92 / -3.70 | +1.01 / -2.92 | +0.97 / -2.53 | +0.92 / -1.92 |
+| k = 5 | +1.04 / -4.38 | +1.13 / -3.54 | +0.96 / -3.03 | +0.61 / -2.68 |
+| k = 8 | +0.72 / -5.45 | +0.85 / -4.34 | +0.63 / -3.92 | +0.49 / -2.98 |
+| k = 10 | +0.78 / -6.02 | +0.75 / -5.09 | +0.70 / -4.42 | +0.44 / -3.50 |
+| k = 15 | +0.55 / -7.12 | +0.76 / -5.82 | +0.40 / -5.27 | +0.60 / -3.71 |
+
+**Pairs** (33 variants around the defaults: the anchor has gross -0.16 / net -0.84, turnover 19×):
+
+| Pair variation | Gross | Net | Turnover / yr |
+| --- | ---: | ---: | ---: |
+| hedge = static | -0.16 | -0.84 | 19× |
+| hedge = expanding | +0.01 | -0.71 | 20× |
+| hedge = kalman | -0.11 | -0.71 | 17× |
+| hedge = rolling | -0.08 | -0.67 | 18× |
+| entry = 1.0 | +0.47 | -0.74 | 40× |
+| entry = 1.5 | +0.23 | -0.64 | 28× |
+| entry = 2.0 | -0.16 | -0.84 | 19× |
+| entry = 2.5 | -0.32 | -0.85 | 13× |
+| entry = 3.0 | -0.03 | -0.44 | 7× |
+| exit = 0.0 | -0.20 | -0.75 | 16× |
+| exit = 0.25 | +0.12 | -0.53 | 19× |
+| exit = 0.5 | -0.16 | -0.84 | 19× |
+| exit = 1.0 | +0.04 | -0.86 | 22× |
+| stop = 3.0 | -0.60 | -1.44 | 19× |
+| stop = 4.0 | -0.16 | -0.84 | 19× |
+| stop = 6.0 | -0.33 | -0.99 | 19× |
+| max_hold = 20 | -0.05 | -0.89 | 19× |
+| max_hold = 60 | -0.16 | -0.84 | 19× |
+| max_hold = 120 | -0.24 | -0.90 | 19× |
+| z_window = 30 | -0.18 | -1.21 | 31× |
+| z_window = 60 | -0.16 | -0.84 | 19× |
+| z_window = 120 | -0.05 | -0.54 | 12× |
+| z_window = 250 | -0.10 | -0.52 | 9× |
+| screen_alpha = 0.01 | -0.66 | -1.24 | 9× |
+| screen_alpha = 0.05 | -0.16 | -0.84 | 19× |
+| screen_alpha = 0.1 | -0.44 | -1.04 | 20× |
+| screen_alpha = 0.2 | +0.19 | -0.41 | 22× |
+| screen_half_life = 5-60 | -0.16 | -0.84 | 19× |
+| screen_half_life = 2-120 | -0.13 | -0.80 | 19× |
+| screen_half_life = 10-40 | -0.18 | -0.88 | 19× |
+| portfolio_size = 10 | -0.31 | -1.00 | 22× |
+| portfolio_size = 20 | -0.16 | -0.84 | 19× |
+| portfolio_size = 40 | -0.06 | -0.79 | 19× |
+
+Only 18 % of the pair variants have a positive gross Sharpe (best +0.47; none reaches 0.5), the median is -0.16, and none is positive net (best -0.41). There is no region of the
+parameter space with a stable gross edge: the six positive variants (entry 1.0 and 1.5, exit 0.25 and 1.0, the expanding hedge, α = 0.20) are scattered with no pattern and none is above 0.5.
+
+### 11.3 Stability (hypothesis B)
+
+**Pair relationships.** For every selected pair and for the baseline pool, the training hedge ratio and mean are frozen and the spread is examined over the test year (Stage 3's metrics), across all four folds:
+
+| Frozen-hedge spread out of sample | Pairs | ADF rejects at 5 % | Median sd ratio (test / train) | Median mean shift (train sd) | Median half-life (days) |
+| --- | ---: | ---: | ---: | ---: | ---: |
+| Selected pairs (20 per fold, 4 folds) | 80 | 3.8 % [1.3, 10.5] | 1.25 | 1.79 | 53 |
+| Baseline pool (calibrated p > 0.05, beta > 0) | 4807 | 7.1 % [6.4, 7.8] | 0.78 | 1.23 | 50 |
+
+The selected pairs are **not** more likely to stay cointegrated than pairs picked at random (3.8 % against 7.1 % reject; the pool's own rate is above the nominal 5 %, consistent with §4.3's finding that the test is not calibrated),
+and their out-of-sample spread is *wider* than in training (median ratio 1.25, against 0.78 for the pool), which is what selecting on in-sample tightness would produce through regression to the mean (a reading, not something separately tested). The rank correlation between a pair's in-sample
+calibrated p-value and its out-of-sample ADF p-value is **+0.016** (p = 0.26, 4887 pairs): in-sample cointegration strength carries no information about out-of-sample strength.
+
+**The PCA factor space** is much more stable than any pair. On the 302 names present in every fold, refitted monthly on 504 days (72 fits, 2013-01-07 to 2018-12-07):
+
+| Overlap of the leading-k factor space between fits this many months apart | 1 | 3 | 6 | 12 | 24 | 36 | 60 |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
+| k = 5 (random subspaces: 0.017) | 0.98 | 0.94 | 0.88 | 0.76 | 0.64 | 0.62 | 0.59 |
+| k = 10 (random subspaces: 0.033) | 0.97 | 0.93 | 0.87 | 0.77 | 0.63 | 0.60 | 0.55 |
+| First eigenvector (market), abs cosine | 1.000 | 0.999 | 0.997 | 0.993 | 0.985 | 0.981 | 0.961 |
+
+The market direction is essentially fixed (|cos| 0.993 at a year), the leading five- and ten-dimensional spaces stay close to themselves for a few months and drift steadily thereafter, settling at a
+persistent overlap of about 0.6 (far above the random level). This is consistent with refitting monthly rather than once a year (at twelve months only ≈ 76 % of the space is shared); the refit frequency itself is a sensitivity dimension in §11.2 and matters little.
+
+**Structural breaks in performance.** A sup-F mean-shift test on each gross series (15 % trimming, bootstrap p): 0 of 15 have p < 0.05 (smallest 0.22); none survives BH. Six illustrative rows:
+
+| Strategy (gross) | Estimated break | Sharpe before → after | sup-F p | BH-adjusted p |
+| --- | ---: | ---: | ---: | ---: |
+| expanding, entry 1.5 | 2015-08-26 | -1.45 → +0.60 | 0.744 | 0.933 |
+| Kalman, entry 2.0 | 2016-02-11 | -1.16 → +0.43 | 0.504 | 0.933 |
+| static, entry 1.5 | 2015-08-26 | -1.63 → +0.54 | 0.706 | 0.933 |
+| PCA s-score, k = 5 | 2016-04-25 | +2.67 → +0.11 | 0.224 | 0.933 |
+| PCA reversal, k = 5 | 2018-05-10 | +0.79 → +2.42 | 0.562 | 0.933 |
+| PCA reversal, k = 15 | 2017-10-25 | +0.18 → +1.89 | 0.584 | 0.933 |
+
+For seven of the nine pair configurations the estimated break falls in 2015–16 and is an *improvement* (a Sharpe of about −1.5 before, +0.5 after; the two entry-2.5 configurations show a 2017 decline instead), the PCA s-score's is a decline (2.7 → 0.1) and the reversal's a late improvement; none is distinguishable from
+chance. With 1,006 days the test cannot see a fall from a Sharpe of 1 to 0, so **not rejecting is not evidence of stability**.
+
+### 11.4 Regimes (hypothesis G)
+
+Three regimes fixed in advance, each labelled from data through the previous day against an expanding median: market volatility (36 % of days "high"), the market's 126-day trend (85 % "up") and cross-sectional dispersion
+(56 % "high"); 15 strategies × 3 regimes = 45 tests of "the Sharpe ratio is the same in both states" (stationary bootstrap, BH):
+
+| Gross Sharpe, first state / second state (bootstrap p) | High vs low volatility | Uptrend vs downtrend | High vs low dispersion |
+| --- | ---: | ---: | ---: |
+| PCA reversal, k = 5 | +1.69 / +0.74 (0.422) | +0.83 / +2.50 (0.198) | +2.32 / -0.92 (0.001) |
+| PCA reversal, k = 10 | +1.11 / +0.51 (0.595) | +0.75 / +0.79 (0.980) | +1.79 / -1.12 (0.004) |
+| PCA reversal, k = 15 | +1.34 / +0.37 (0.406) | +0.73 / +0.90 (0.905) | +1.84 / -1.09 (0.004) |
+| PCA s-score, k = 5 | +1.51 / +0.48 (0.303) | +0.59 / +2.29 (0.162) | +1.60 / -0.33 (0.048) |
+| PCA s-score, k = 10 | +0.80 / +0.34 (0.633) | +0.25 / +1.83 (0.211) | +0.91 / -0.12 (0.289) |
+| PCA s-score, k = 15 | +0.31 / +0.22 (0.930) | +0.11 / +1.00 (0.406) | +0.40 / +0.01 (0.675) |
+| Pair configurations (9): median difference (smallest p) | +0.39  (0.486) | +0.46  (0.296) | +1.29  (0.050) |
+
+Of the 45 tests 5 have p < 0.05 (2.3 expected by chance) and **3 survive BH at 10 %: the three PCA reversal configurations against the dispersion regime**, which is one effect seen three times (the configurations are highly correlated). It is the only one:
+volatility and trend show nothing, and the pair strategies' differences are individually weak (smallest p 0.050), although *all fifteen* strategies have a higher Sharpe when dispersion is high. **This contradicts my prior (H9e: nothing survives).**
+
+Because it was unexpected, it was probed with a post-hoc script (`stage9_regime_followup.py`; labelled as such, not part of the pre-specified verdict, and any further look at these regimes would be another trial):
+
+* the label is not too persistent for the test: 19 high-dispersion episodes with a median length of 26 days; the p-value for reversal k = 5 is stable across mean block lengths of 5 to 63 days:
+
+| Mean bootstrap block (days) | Reversal k = 5 | k = 10 | k = 15 | Strategies of 15 with p < 0.05 |
+| --- | ---: | ---: | ---: | ---: |
+| 5.0 | 0.0012 | 0.0046 | 0.0046 | 5 |
+| 10.0 | 0.0008 | 0.0026 | 0.0048 | 4 |
+| 21.0 | 0.0008 | 0.0014 | 0.0024 | 5 |
+| 63.0 | 0.0004 | 0.0004 | 0.0022 | 5 |
+
+* a **circular-shift test** (keeps the label's persistence and pattern exactly, breaks only its alignment with the returns; validated on noise, size 5 %) gives p = 0.0034 / 0.0057 / 0.0079 for reversal k = 5 / 10 / 15 and again 3 BH rejections;
+* it is **not one episode**: the contrast has the same sign in every year.
+
+| Reversal k = 5, gross Sharpe | 2015 | 2016 | 2017 | 2018 |
+| --- | ---: | ---: | ---: | ---: |
+| High dispersion | +3.26 | +0.44 | +6.06 | +2.75 |
+| Low dispersion | -1.25 | -1.25 | -0.18 | -2.15 |
+| Days (high / low) | 132 / 120 | 185 / 67 | 64 / 187 | 182 / 69 |
+
+Interpretation, with care: short-horizon residual reversal earns more when there is more idiosyncratic movement to absorb — a plausible mechanism (liquidity provision is paid when order-flow imbalances are large) — and the effect is strong and consistent in this sample.
+But it is one regime split found after looking, in four years, and **it does not rescue the strategy**: even in the favourable regime the *net* Sharpe of reversal k = 5 is -2.33 (against -5.83 otherwise). Trading only in high-dispersion states would be a new, unregistered configuration
+chosen from a look at these data, so it was not tried.
+
+### 11.5 Capacity (hypothesis H)
+
+Impact per unit of capital scales with √capital and participation with capital, so the saved cost components at $100M give the net return at any capital exactly (§11.1):
+
+| Strategy | Gross, bps/yr | Spread + commission + borrow | Impact at $100M | Net at zero impact | Break-even capital (central) | … fixed costs × 0.5 | … × 0.25 | Fixed-cost multiple for break-even at vanishing size |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
+| PCA reversal, k = 5 | 684 | 808 | 1992 | -124 | none | $2.0M | $5.9M | 0.85 |
+| PCA reversal, k = 10 | 386 | 871 | 2116 | -484 | none | none | $634K | 0.44 |
+| PCA reversal, k = 15 | 369 | 939 | 2250 | -569 | none | none | $358K | 0.39 |
+| PCA s-score, k = 5 | 380 | 529 | 1211 | -150 | none | $898K | $4.2M | 0.72 |
+| PCA s-score, k = 10 | 204 | 625 | 1431 | -421 | none | none | $110K | 0.33 |
+| PCA s-score, k = 15 | 96 | 736 | 1691 | -640 | none | none | none | 0.13 |
+| expanding, entry 1.5 | 141 | 93 | 314 | 48 | $2.3M | $9.0M | $14.1M | 1.51 |
+| static, entry 1.5 | 109 | 93 | 315 | 16 | $247K | $3.9M | $7.4M | 1.17 |
+| static, entry 2.0 | -66 | 68 | 219 | -134 | none | none | none | 0.00 |
+
+*Break-even capital* is where the mean net return reaches zero ("none" = negative even at vanishing size). Under the **central costs no PCA configuration breaks even at any capital**: spread, commission and borrow alone (529–939 bps a year)
+exceed the gross (96–684); the best, reversal k = 5, would need fixed costs 15 % lower than the tiers assumed and then could hold about $2.0M with fixed costs halved.
+**Two pair configurations do break even** at a tiny scale (expanding, entry 1.5: $2.3M; static, entry 1.5: $247K), on a gross edge whose Sharpe is 0.23–0.30 and whose Romano–Wolf adjusted p-value is ≈ 0.6 (§10): a capacity of a few million dollars for something not distinguishable from zero.
+**My prior (H9h: zero for all) was wrong for these two.** Participation:
+
+| PCA strategy | Days with a trade above 10 % of ADV at $1M / $10M / $100M / $1B | Capital at which 5 % of days breach |
+| --- | ---: | ---: |
+| PCA reversal, k = 5 | 0 % / 0 % / 29 % / 100 % | $35.5M |
+| PCA reversal, k = 10 | 0 % / 0 % / 29 % / 100 % | $37.2M |
+| PCA reversal, k = 15 | 0 % / 0 % / 32 % / 100 % | $38.0M |
+| PCA s-score, k = 5 | 0 % / 0 % / 19 % / 100 % | $43.0M |
+| PCA s-score, k = 10 | 0 % / 0 % / 22 % / 100 % | $42.3M |
+| PCA s-score, k = 15 | 0 % / 0 % / 23 % / 100 % | $38.0M |
+
+At the central $100M, 19–32 % of days breach 10 % of some name's ADV, and 5 % of days already breach at $35.5M–$43.0M. But size is not what stops these strategies: they lose money even at vanishing size (the column "net at zero impact"), because of how much they trade (§9.5).
+
+### 11.6 Hypotheses
+
+* **H9a — the PCA reversal gross effect is not an isolated peak: confirmed** (robust by the pre-specified rule for both anchors; 100 % of one-at-a-time neighbours positive). Its size depends mostly on the number of factors.
+* **H9b — no variant has a positive net Sharpe at $100M: confirmed** (best −2.2 for the PCA surface, −0.4 for the pairs).
+* **H9c — no stable positive region for the pairs: confirmed** (18 % of variants positive, best +0.47).
+* **H9d — pair relationships are unstable out of sample: confirmed** (3.8 % vs 7.1 % ADF rejections, rank correlation +0.016).
+* **H9e — no regime difference survives BH: refuted** for the dispersion regime (3 PCA reversal configurations; robust to block length, a persistence-preserving shift test and year by year), with the caveats above.
+* **H9f — no break survives BH: confirmed**, with the test's low power. **H9g** (factor space): the market direction and the k = 5 space are stable at short lags as predicted, but *k = 10 is not less stable than k = 5*.
+* **H9h — no strategy has positive break-even capital: partly refuted** (two pair configurations, at ≤ $2.3M).
+
+### 11.7 What this shows and does not show
+
+* Within this sample the PCA residual-reversal gross effect is **not a fragile artefact of one parameter setting** (§11.2) and has an economically coherent regime dependence (§11.4). §10 still says it is not distinguishable
+  from selection luck after 24 trials; this stage widens the burden (the surface as trials: DSR 0.38) rather than lifting it.
+* **Neither family can be made profitable by any tested robustness lever.** Lowering turnover helps the net result; nothing tested makes it positive. The pair relationships do not persist out of sample and their screen has no predictive value.
+* Limits: four years and one universe; the surfaces are one-at-a-time (interactions are seen only in the entry × k grid); regimes were split three ways and found one effect after the fact; the break test has little power; capacity is a model of impact
+  (§8), and the analytic scaling holds only *within* that model; and every look here is a look at research data that a future registered trial cannot reuse for confirmation.
+
+## 12. Statistical-arbitrage methodology *(hypotheses A–H; Stage 10 will summarise)*
 
 Hypotheses to be tested, each with its data, method, assumptions, uncertainty, failure cases and
 limitations recorded when run:
 
 * **A** cointegrated pairs show economically meaningful out-of-sample mean reversion;
-* **B** cointegration relationships and hedge ratios are stable through time;
-* **C** performance is robust to entry/exit thresholds and look-back windows;
+* **B** cointegration relationships and hedge ratios are stable through time *(tested in §11.3)*;
+* **C** performance is robust to entry/exit thresholds and look-back windows *(tested in §11.2)*;
 * **D** residuals of a common-factor (PCA) model mean-revert exploitably *(tested in §9)*;
 * **E** how much apparent performance survives realistic costs;
 * **F** how much survives correction for the number of hypotheses tested *(tested in §10)*;
-* **G** whether behaviour differs across market regimes;
-* **H** how much capital the strategy can deploy before impact removes the edge.
+* **G** whether behaviour differs across market regimes *(tested in §11.4)*;
+* **H** how much capital the strategy can deploy before impact removes the edge *(tested in §11.5)*.
 
 The train / validation / final-holdout split, the walk-forward scheme, the cost model, the
 multiple-testing framework and the experiment registry will be documented here as each is built.
 
-## 12. Limitations so far
+## 13. Limitations so far
 
 * The reconstructed S&P 500 membership is trustworthy only from 2011-01-01 (§2.1); earlier dates are
   not used for any claim, and even later dates inherit the change log's residual gaps.
@@ -1428,6 +1673,9 @@ multiple-testing framework and the experiment registry will be documented here a
   samples and depends on `det_order`; ADF/Engle–Granger assume homoskedastic errors and read a structural
   break as a unit root. None of these are corrected for yet beyond what §4 states.
 * (Stage 2) Critical-value tables come from statsmodels; a defect there would propagate.
+* (Stage 9) Everything is on four research years and one universe; the sensitivity surfaces are one-at-a-time and every point is a look
+  (93 configurations, none selectable); the dispersion-regime finding is post-hoc in its follow-up and is one split of three found after
+  the fact; the break test has little power; capacity is a property of the impact model, not measured (§11.7).
 * (Stage 8) The trial count (24) is a lower bound and the effective count uncertain (3–9); the joint tests use the 15 trials
   that share a sample; the tests are on mean returns over four years, so a modest real effect would be missed; the Reality
   Check's answer depends on the strategies' scale (§10.5); BH on the pair screens is limited by the null's resolution (§10.4).

@@ -441,3 +441,56 @@ def test_a_split_after_train_end_does_not_change_the_result(tmp_path, calendar, 
 def test_too_few_eligible_tickers_is_an_error(pipe):
     with pytest.raises(ValueError, match="eligible"):
         discover_pairs(pipe, TRAIN_START, TRAIN_END, ScreenConfig(min_median_dollar_volume=1e15))
+
+
+def test_reselect_pairs_reproduces_the_screens_own_selection_and_responds_to_thresholds():
+    from statarb.selection.screening import reselect_pairs
+
+    rng = np.random.default_rng(0)
+    n = 1500
+    df = pd.DataFrame(
+        {
+            "p_calibrated": rng.uniform(0, 0.4, n),
+            "half_life": rng.uniform(1, 120, n),
+            "beta": rng.normal(0.5, 0.6, n),
+            "edge_bps_per_day": rng.normal(5, 3, n),
+        }
+    )
+    m = reselect_pairs(df, 0.05, 5.0, 60.0, 20)
+    ok = df[(df.p_calibrated <= 0.05) & df.half_life.between(5, 60) & (df.beta > 0)]
+    expect = ok.sort_values("edge_bps_per_day", ascending=False).head(20).index
+    assert set(df.index[m]) == set(expect) and m.sum() == 20
+    assert reselect_pairs(df, 0.05, 5.0, 60.0, 1000).sum() == len(
+        ok
+    )  # no cap: everything that passes
+    assert set(df.index[reselect_pairs(df, 0.01, 5.0, 60.0, 1000)]) <= set(
+        df.index[reselect_pairs(df, 0.05, 5.0, 60.0, 1000)]
+    )
+    assert reselect_pairs(df, 0.05, 20.0, 40.0, 1000).sum() <= len(ok)
+    assert (
+        df.loc[reselect_pairs(df, 0.4, 1.0, 120.0, 1), "edge_bps_per_day"].iloc[0]
+        == df[(df.beta > 0)]["edge_bps_per_day"].max()
+    )
+    assert reselect_pairs(df, 0.05, 5.0, 60.0, 1000, require_positive_beta=False).sum() > len(ok)
+    assert m.index.equals(df.index) and m.dtype == bool
+
+
+def test_reselect_pairs_boundaries_are_inclusive():
+    from statarb.selection.screening import reselect_pairs
+
+    df = pd.DataFrame(
+        {
+            "p_calibrated": [0.05, 0.05, 0.0500001, 0.01, 0.01],
+            "half_life": [30.0, 30.0, 30.0, 5.0, 60.0],
+            "beta": [1.0, 1.0, 1.0, 1.0, 1.0],
+            "edge_bps_per_day": [1.0, 2.0, 3.0, 4.0, 5.0],
+        }
+    )
+    m = reselect_pairs(df, 0.05, 5.0, 60.0, 10)
+    assert m.tolist() == [
+        True,
+        True,
+        False,
+        True,
+        True,
+    ]  # p == alpha and half-life == bound both pass

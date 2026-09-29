@@ -261,7 +261,7 @@ PYTHONPATH=. .venv/bin/python -m experiments.stage10_report     # README.md and 
 
 ## 11. Engineering, and coverage of the specified tests
 
-570 tests (`pytest`, plus property-based tests with `hypothesis`); code style enforced with `ruff`. The specified categories (spec §26) map onto the suite as follows.
+570 tests (`pytest`, plus property-based tests with `hypothesis`); code style enforced with `ruff`; both run in CI (`.github/workflows/ci.yml`) from a clean install on Python 3.11 and 3.13, needing no network or price data. The specified categories (spec §26) map onto the suite as follows.
 
 | Required (spec §26) | Where |
 |---|---|

@@ -1,0 +1,28 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ["3.11", "3.13"]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v6
+      - name: Install
+        run: |
+          uv venv --python ${{ matrix.python-version }} .venv
+          uv pip install --python .venv/bin/python -e ".[dev]"
+      - name: Lint
+        run: |
+          .venv/bin/ruff check statarb tests experiments
+          .venv/bin/ruff format --check statarb tests experiments
+      - name: Tests
+        # the suite uses synthetic stores and the committed results; it needs no network or price data
+        run: .venv/bin/python -m pytest -p no:cacheprovider
